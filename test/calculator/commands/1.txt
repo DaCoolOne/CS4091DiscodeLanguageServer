@@ -1,0 +1,25 @@
+
+/**
+ * Adds two numbers
+ */
+function add: msg {
+
+    args = msg.text.split(" ");
+
+    if args.length != 3 {
+        !message.reply(msg, "Incorrect number of arguments! Expected 2");
+        return;
+    }
+
+    a <= !conv.toNumber(args.at(1));
+    b <= !conv.toNumber(args.at(2));
+
+    if a == NULL or b == NULL {
+        !message.reply(msg, "Could not parse arguments! Expected int, int");
+        return;
+    }
+
+    !message.send(msg.channel, !conv.toStr(a + b));
+
+}
+
