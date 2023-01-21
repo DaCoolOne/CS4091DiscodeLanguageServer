@@ -32,7 +32,7 @@ def build():
         "ws2_32"
     ]
 
-    proc = [ 'g++', *cppfiles, '-I "."', *[ f'-l{lib}' for lib in libs ], '-o server.exe' ]
+    proc = [ 'g++', *cppfiles, '-I "."', *[ f'-l{lib}' for lib in libs ], '-o', 'server.exe' ]
     print(proc)
     subprocess.run(proc)
 
