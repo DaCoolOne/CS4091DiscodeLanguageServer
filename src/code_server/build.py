@@ -25,15 +25,15 @@ def get_all_cpp_files(directory: str) -> List[str]:
 
 def build():
     # Find all files
-    cppfiles = get_all_cpp_files(os.path.dirname(__file__))
+    base_dir = os.path.dirname(__file__)
+    cppfiles = get_all_cpp_files(base_dir)
 
     # Required libraries
     libs = [
         "ws2_32"
     ]
 
-    proc = [ 'g++', *cppfiles, '-I "."', *[ f'-l{lib}' for lib in libs ], '-o', 'server.exe' ]
-    print(proc)
+    proc = [ 'g++', *cppfiles, '-I', base_dir, *[ f'-l{lib}' for lib in libs ], '-o', os.path.join(base_dir, 'server.exe') ]
     subprocess.run(proc)
 
 if __name__ == "__main__":

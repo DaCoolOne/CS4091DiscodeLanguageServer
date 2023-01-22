@@ -3,15 +3,38 @@
 #include "json.hpp"
 
 // Local procedures
-char nextNonWhitespace(std::istream & in) {
+char nextNonWhitespace(std::istream & in)
+{
     char c;
     do {
-        in.get(c);
+        if(!in.get(c)) { return EOF; }
     } while(c == ' ' || c == '\n' || c == '\t' || c == '\r');
     return c;
 }
 
-std::string loadstring(std::istream & in) {
+std::string outString(std::string in) {
+    std::string res = "\"";
+    for (int i = 0; i < in.length(); i ++) {
+        switch (in.at(i)) {
+            case '\n': res += "\\n";  break;
+            case '\r': res += "\\r";  break;
+            case '\t': res += "\\t";  break;
+            case '\\': res += "\\\\"; break;
+            case '\"': res += "\\\""; break;
+
+            default: res += in.at(i);
+        }
+    }
+    res += '"';
+    return res;
+}
+
+std::string outNumber(double in) {
+    return std::to_string(in);
+}
+
+std::string loadstring(std::istream & in)
+{
     // Load a string
     std::string s;
     char c;
@@ -30,8 +53,9 @@ std::string loadstring(std::istream & in) {
             case '\'': s += '\''; break;
             
             default:
-                throw std::logic_error("Unknown escape sequence");
+                throw std::logic_error(std::string("Unknown escape sequence '\\") + c + '\'');
             }
+            escape = false;
         }
         else {
             if (c == '\\') {
@@ -47,7 +71,8 @@ std::string loadstring(std::istream & in) {
     return s;
 }
 
-bool readExpected(std::istream & in, std::string target) {
+bool readExpected(std::istream & in, std::string target)
+{
     char c;
     for(int i = 0; i < target.length(); i ++) {
         if (!in.get(c)) return false;
@@ -56,7 +81,8 @@ bool readExpected(std::istream & in, std::string target) {
     return true;
 }
 
-std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in) {
+std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
+{
 
     // Look at first character in the stream to determine the json object type
     char c = nextNonWhitespace(in);
@@ -73,7 +99,7 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in) {
     }
     else if (c >= '0' && c <= '9') {
         // Load a number
-
+        
     }
     else if (c == '{') {
         // Load an object
@@ -97,11 +123,12 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in) {
         c = nextNonWhitespace(in);
         json::JsonArray * jsonArray = new json::JsonArray();
         data = std::shared_ptr<json::JsonData>(jsonArray);
-        do {
+        while (c != ']') {
             std::shared_ptr<json::JsonData> value = _loadJsonDataRec(in);
             c = nextNonWhitespace(in);
-        } while (c == ',');
-        if(c != ']') { throw std::logic_error("Malformed array"); }
+            if (c != ',' && c != ']') throw std::logic_error("Malformed array");
+            if (c == ',') c = nextNonWhitespace(in);
+        }
     }
     else if (c == 't' || c == 'f') {
         // Load boolean
@@ -128,13 +155,69 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in) {
     return data;
 }
 
-std::shared_ptr<json::JsonData> json::loadJsonData(std::istream& in) {
-    
+std::shared_ptr<json::JsonData> json::loadJsonData(std::istream& in)
+{
+
     std::shared_ptr<json::JsonData> data = _loadJsonDataRec(in);
 
-    if (!in.eof()) {
-        throw std::logic_error("Unexpected EOF");
+    char c = nextNonWhitespace(in);
+    if (c != EOF) {
+        throw std::logic_error("Unexpected character, expected EOF");
     }
 
     return data;
 }
+
+std::string json::getTypeName(json::JsonDataType type)
+{
+    switch(type) {
+        case json::JSON_DATA_NULL:   return "Null";
+        case json::JSON_DATA_BOOL:   return "Boolean";
+        case json::JSON_DATA_NUMBER: return "Number";
+        case json::JSON_DATA_STRING: return "String";
+        case json::JSON_DATA_ARRAY:  return "Array";
+        case json::JSON_DATA_OBJECT: return "Object";
+
+        default: return "Unknown";
+    }
+}
+
+std::string json::JsonNumber::toJsonString()
+{
+    return outNumber(_data);
+}
+
+std::string json::JsonString::toJsonString()
+{
+    return outString(_data);
+}
+
+std::string json::JsonArray::toJsonString()
+{
+    std::string res = "[";
+    for(int i = 0; i < _data.size(); i ++) {
+        if (i != 0) {
+            res += ',';
+        }
+        res += _data.at(i)->toJsonString();
+    }
+    res += ']';
+    return res;
+}
+
+std::string json::JsonObject::toJsonString()
+{
+    std::string res = "{";
+    for(std::map<std::string, std::shared_ptr<json::JsonData>>::iterator iter = _data.begin(); iter != _data.end(); iter++) {
+        if (iter != _data.begin()) {
+            res += ',';
+        }
+        res += outString(iter->first);
+        res += ':';
+        res += iter->second->toJsonString();
+    }
+    res += '}';
+    return res;
+}
+
+

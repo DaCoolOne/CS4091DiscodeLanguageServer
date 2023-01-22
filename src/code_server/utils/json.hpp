@@ -63,7 +63,7 @@ public:
 
     double asNumber() { return _data; }
 
-    // std::string toJsonString();
+    std::string toJsonString();
 };
 
 class JsonString: public JsonData
@@ -74,7 +74,7 @@ public:
 
     std::string asString() { return _data; }
 
-    // std::string toJsonString();
+    std::string toJsonString();
 };
 
 class JsonArray: public JsonData
@@ -88,7 +88,7 @@ public:
     std::vector<std::shared_ptr<JsonData>> asVector() { return _data; }
     void add(std::shared_ptr<JsonData> value) { _data.push_back(value); }
 
-    // std::string toJsonString();
+    std::string toJsonString();
 };
 
 class JsonObject: public JsonData
@@ -100,12 +100,14 @@ public:
     JsonObject(): JsonData(JSON_DATA_OBJECT) {}
 
     std::shared_ptr<JsonData> at(std::string key) { return _data.at(key); }
-    void add(std::string key, std::shared_ptr<JsonData> value) { _data.at(key) = value; }
+    void add(std::string key, std::shared_ptr<JsonData> value) { _data.insert(std::pair<std::string, std::shared_ptr<JsonData>>(key, value)); }
 
-    // std::string toJsonString();
+    std::string toJsonString();
 };
 
 std::shared_ptr<JsonData> loadJsonData(std::istream& in);
+
+std::string getTypeName(JsonDataType type);
 
 };
 
