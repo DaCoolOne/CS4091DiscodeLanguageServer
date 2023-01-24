@@ -171,12 +171,12 @@ std::shared_ptr<json::JsonData> json::loadJsonData(std::istream& in)
 std::string json::getTypeName(json::JsonDataType type)
 {
     switch(type) {
-        case json::JSON_DATA_NULL:   return "Null";
-        case json::JSON_DATA_BOOL:   return "Boolean";
-        case json::JSON_DATA_NUMBER: return "Number";
-        case json::JSON_DATA_STRING: return "String";
-        case json::JSON_DATA_ARRAY:  return "Array";
-        case json::JSON_DATA_OBJECT: return "Object";
+        case json::JsonDataType::JSON_DATA_NULL:   return "Null";
+        case json::JsonDataType::JSON_DATA_BOOL:   return "Boolean";
+        case json::JsonDataType::JSON_DATA_NUMBER: return "Number";
+        case json::JsonDataType::JSON_DATA_STRING: return "String";
+        case json::JsonDataType::JSON_DATA_ARRAY:  return "Array";
+        case json::JsonDataType::JSON_DATA_OBJECT: return "Object";
 
         default: return "Unknown";
     }

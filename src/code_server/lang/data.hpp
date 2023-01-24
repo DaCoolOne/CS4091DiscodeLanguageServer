@@ -25,17 +25,14 @@ struct Data
     Type type;
     std::shared_ptr<void> data;
 
-    Data(): type(TYPE_NULL), data(nullptr) {}
-    Data(bool * data): type(TYPE_BOOL), data(data) {}
-    Data(double * data): type(TYPE_NUMBER), data(data) {}
-    Data(std::string * data): type(TYPE_STRING), data(data) {}
-    Data(std::vector<Data> * data): type(TYPE_ARRAY), data(data) {}
-    Data(std::map<std::string, Data> * data): type(TYPE_ARRAY), data(data) {}
-};
+    Data(): type(Type::TYPE_NULL), data(nullptr) {}
+    Data(bool * _data): type(Type::TYPE_BOOL), data(_data) {}
+    Data(double * _data): type(Type::TYPE_NUMBER), data(_data) {}
+    Data(std::string * _data): type(Type::TYPE_STRING), data(_data) {}
+    Data(std::vector<Data> * _data): type(Type::TYPE_ARRAY), data(_data) {}
+    Data(std::map<std::string, Data> * _data): type(Type::TYPE_OBJECT), data(_data) {}
 
-class Function
-{
-
+    void swap(Data &other) { std::swap(type, other.type); data.swap(other.data); }
 };
 
 };
