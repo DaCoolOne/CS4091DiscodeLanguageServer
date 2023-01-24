@@ -49,7 +49,7 @@ def build_server():
 def build():
     build_parser()
 
-    # build_server()
+    build_server()
 
 if __name__ == "__main__":
     build()
