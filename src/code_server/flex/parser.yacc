@@ -5,7 +5,7 @@
 #include <iostream>
 
 int yylex(void);
-int yynrrer(const char *s);
+void yyerror(const char *s);
 
 %}
 
@@ -160,4 +160,9 @@ TERMINAL            : NUMBER
                     ;
 
 %%
+
+void yyerror (char const *s)
+{
+    std::cout << s << std::endl;
+}
 

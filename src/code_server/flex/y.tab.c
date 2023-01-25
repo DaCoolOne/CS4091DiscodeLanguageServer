@@ -76,7 +76,7 @@
 #include <iostream>
 
 int yylex(void);
-int yynrrer(const char *s);
+void yyerror(const char *s);
 
 
 
@@ -1715,5 +1715,10 @@ yyreturn:
 /* Line 1675 of yacc.c  */
 #line 162 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
 
+
+void yyerror (char const *s)
+{
+    std::cout << s << std::endl;
+}
 
 

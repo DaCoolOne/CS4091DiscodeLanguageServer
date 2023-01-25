@@ -1,6 +1,10 @@
 %{
 #include "y.tab.h"
+
+unsigned long linecounter = 0;
 %}
+
+%option noyywrap
 
 %%
 
@@ -48,5 +52,5 @@ not                     { return KEYWORD_NOT; }
 \)                      { return OPERATOR_CLOSE_PAREN; }
 
 \s                      {}
-
+\n                      { linecounter++; }
 

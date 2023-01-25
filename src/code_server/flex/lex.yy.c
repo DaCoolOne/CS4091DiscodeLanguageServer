@@ -261,6 +261,9 @@ static void yy_flex_free YY_PROTO(( void * ));
 
 #define YY_AT_BOL() (yy_current_buffer->yy_at_bol)
 
+
+#define yywrap() 1
+#define YY_SKIP_YYWRAP
 typedef unsigned char YY_CHAR;
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
 typedef int yy_state_type;
@@ -282,37 +285,37 @@ static void yy_fatal_error YY_PROTO(( yyconst char msg[] ));
 	*yy_cp = '\0'; \
 	yy_c_buf_p = yy_cp;
 
-#define YY_NUM_RULES 38
-#define YY_END_OF_BUFFER 39
-static yyconst short int yy_accept[88] =
+#define YY_NUM_RULES 39
+#define YY_END_OF_BUFFER 40
+static yyconst short int yy_accept[89] =
     {   0,
-        0,    0,   39,   38,   30,   38,   29,   35,   36,   23,
-       21,   28,   22,   27,   24,   14,   31,   32,   25,   38,
-       26,   38,   38,   38,   38,   38,   38,   38,   38,   37,
-       38,   15,   33,   34,   17,    0,   14,   20,   18,   16,
-       19,    0,    0,    0,    0,    1,    0,    0,    0,   11,
-        0,    0,    0,   15,   13,   10,    0,    0,    0,    0,
-       12,    0,    0,    0,    0,    0,    0,    0,    0,    7,
-        0,    8,    0,    0,    9,    0,    0,    0,    2,    0,
-        0,    6,    3,    4,    0,    5,    0
+        0,    0,   40,   39,   38,   30,   39,   29,   35,   36,
+       23,   21,   28,   22,   27,   24,   14,   31,   32,   25,
+       39,   26,   39,   39,   39,   39,   39,   39,   39,   39,
+       37,   39,   15,   33,   34,   17,    0,   14,   20,   18,
+       16,   19,    0,    0,    0,    0,    1,    0,    0,    0,
+       11,    0,    0,    0,   15,   13,   10,    0,    0,    0,
+        0,   12,    0,    0,    0,    0,    0,    0,    0,    0,
+        7,    0,    8,    0,    0,    9,    0,    0,    0,    2,
+        0,    0,    6,    3,    4,    0,    5,    0
     } ;
 
 static yyconst int yy_ec[256] =
     {   0,
+        1,    1,    1,    1,    1,    1,    1,    1,    1,    2,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    3,    4,    5,    1,    1,    1,    1,    6,
+        7,    8,    9,   10,   11,   12,   13,   14,   14,   14,
+       14,   14,   14,   14,   14,   14,   14,   15,   16,   17,
+       18,   19,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    2,    3,    4,    1,    1,    1,    1,    5,
-        6,    7,    8,    9,   10,   11,   12,   13,   13,   13,
-       13,   13,   13,   13,   13,   13,   13,   14,   15,   16,
-       17,   18,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,   19,    1,   20,   21,
+        1,    1,    1,    1,    1,    1,   20,    1,   21,   22,
 
-       22,   23,    1,   24,   25,    1,    1,   26,   27,   28,
-       29,    1,    1,   30,   31,   32,   33,    1,   34,    1,
-        1,    1,   35,    1,   36,    1,    1,    1,    1,    1,
+       23,   24,    1,   25,   26,    1,    1,   27,   28,   29,
+       30,    1,    1,   31,   32,   33,   34,    1,   35,    1,
+        1,    1,   36,    1,   37,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
@@ -329,74 +332,74 @@ static yyconst int yy_ec[256] =
         1,    1,    1,    1,    1
     } ;
 
-static yyconst int yy_meta[37] =
+static yyconst int yy_meta[38] =
     {   0,
-        1,    1,    2,    1,    1,    1,    1,    1,    1,    1,
+        1,    1,    1,    2,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1
+        1,    1,    1,    1,    1,    1,    1
     } ;
 
-static yyconst short int yy_base[89] =
+static yyconst short int yy_base[90] =
     {   0,
-        0,    0,   91,   92,   73,    0,   92,   92,   92,   92,
-       92,   92,   92,   92,   92,   76,   92,   92,   27,   71,
-       70,   58,   63,   19,   61,   61,   10,   52,   59,   92,
-       50,   16,   92,   92,   92,   76,   65,   92,   92,   92,
-       92,   56,   56,   49,   46,   92,   41,   40,   45,   92,
-       38,   36,   43,   33,   92,   92,   40,   34,   44,   39,
-       92,   36,   28,   38,   33,   39,   35,   24,   26,   92,
-       24,   92,   31,   21,   92,   24,   27,   19,   92,   24,
-       16,   92,   92,   92,   14,   92,   92,   40
+        0,    0,   92,   93,   93,   73,    0,   93,   93,   93,
+       93,   93,   93,   93,   93,   93,   76,   93,   93,   27,
+       71,   70,   58,   63,   19,   61,   61,   10,   52,   59,
+       93,   50,   16,   93,   93,   93,   76,   65,   93,   93,
+       93,   93,   56,   56,   49,   46,   93,   41,   40,   45,
+       93,   38,   36,   43,   33,   93,   93,   40,   34,   44,
+       39,   93,   36,   28,   38,   33,   39,   35,   24,   26,
+       93,   24,   93,   31,   21,   93,   24,   27,   19,   93,
+       24,   16,   93,   93,   93,   14,   93,   93,   41
     } ;
 
-static yyconst short int yy_def[89] =
+static yyconst short int yy_def[90] =
     {   0,
-       87,    1,   87,   87,   87,   88,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   88,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,    0,   87
+       88,    1,   88,   88,   88,   88,   89,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   89,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,    0,   88
     } ;
 
-static yyconst short int yy_nxt[129] =
+static yyconst short int yy_nxt[131] =
     {   0,
         4,    5,    6,    7,    8,    9,   10,   11,   12,   13,
-       14,   15,   16,   17,   18,   19,   20,   21,   22,    4,
-       23,    4,   24,    4,   25,    4,   26,   27,   28,   29,
-       30,   31,    4,   32,   33,   34,   38,   44,   48,   53,
-       36,   86,   49,   39,   85,   84,   83,   82,   81,   54,
-       80,   45,   79,   78,   77,   76,   75,   74,   73,   72,
-       71,   70,   69,   68,   67,   66,   54,   65,   64,   63,
-       62,   61,   60,   59,   58,   57,   56,   37,   55,   52,
-       51,   50,   47,   46,   43,   42,   41,   40,   37,   35,
-       87,    3,   87,   87,   87,   87,   87,   87,   87,   87,
+       14,   15,   16,   17,   18,   19,   20,   21,   22,   23,
+        4,   24,    4,   25,    4,   26,    4,   27,   28,   29,
+       30,   31,   32,    4,   33,   34,   35,   39,   45,   49,
+       54,   37,   87,   50,   40,   86,   85,   84,   83,   82,
+       55,   81,   46,   80,   79,   78,   77,   76,   75,   74,
+       73,   72,   71,   70,   69,   68,   67,   55,   66,   65,
+       64,   63,   62,   61,   60,   59,   58,   57,   38,   56,
+       53,   52,   51,   48,   47,   44,   43,   42,   41,   38,
+       36,   88,    3,   88,   88,   88,   88,   88,   88,   88,
 
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88
     } ;
 
-static yyconst short int yy_chk[129] =
+static yyconst short int yy_chk[131] =
     {   0,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
         1,    1,    1,    1,    1,    1,    1,    1,    1,    1,
-        1,    1,    1,    1,    1,    1,   19,   24,   27,   32,
-       88,   85,   27,   19,   81,   80,   78,   77,   76,   32,
-       74,   24,   73,   71,   69,   68,   67,   66,   65,   64,
-       63,   62,   60,   59,   58,   57,   54,   53,   52,   51,
-       49,   48,   47,   45,   44,   43,   42,   37,   36,   31,
-       29,   28,   26,   25,   23,   22,   21,   20,   16,    5,
-        3,   87,   87,   87,   87,   87,   87,   87,   87,   87,
+        1,    1,    1,    1,    1,    1,    1,   20,   25,   28,
+       33,   89,   86,   28,   20,   82,   81,   79,   78,   77,
+       33,   75,   25,   74,   72,   70,   69,   68,   67,   66,
+       65,   64,   63,   61,   60,   59,   58,   55,   54,   53,
+       52,   50,   49,   48,   46,   45,   44,   43,   38,   37,
+       32,   30,   29,   27,   26,   24,   23,   22,   21,   17,
+        6,    3,   88,   88,   88,   88,   88,   88,   88,   88,
 
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87,   87,   87,
-       87,   87,   87,   87,   87,   87,   87,   87
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88,
+       88,   88,   88,   88,   88,   88,   88,   88,   88,   88
     } ;
 
 static yy_state_type yy_last_accepting_state;
@@ -413,8 +416,10 @@ char *yytext;
 #line 1 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 #define INITIAL 0
 #line 2 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
-#include "parser.yacc.h"
-#line 418 "lex.yy.c"
+#include "y.tab.h"
+
+unsigned long linecounter = 0;
+#line 423 "lex.yy.c"
 
 /* Macros after this point can all be overridden by user definitions in
  * section 1.
@@ -565,10 +570,10 @@ YY_DECL
 	register char *yy_cp, *yy_bp;
 	register int yy_act;
 
-#line 5 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 9 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 
 
-#line 572 "lex.yy.c"
+#line 577 "lex.yy.c"
 
 	if ( yy_init )
 		{
@@ -619,13 +624,13 @@ yy_match:
 			while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 				{
 				yy_current_state = (int) yy_def[yy_current_state];
-				if ( yy_current_state >= 88 )
+				if ( yy_current_state >= 89 )
 					yy_c = yy_meta[(unsigned int) yy_c];
 				}
 			yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
 			++yy_cp;
 			}
-		while ( yy_base[yy_current_state] != 92 );
+		while ( yy_base[yy_current_state] != 93 );
 
 yy_find_action:
 		yy_act = yy_accept[yy_current_state];
@@ -653,196 +658,201 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 7 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 11 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_IF; }
 	YY_BREAK
 case 2:
 YY_RULE_SETUP
-#line 8 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 12 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_WHILE; }
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 9 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 13 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_RETURN; }
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 10 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 14 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_DECLARE; }
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 11 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 15 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_FUNCTION; }
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 12 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 16 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_METHOD; }
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 13 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 17 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_NULL; }
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 14 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 18 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_TRUE; }
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 15 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 19 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_FALSE; }
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 16 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 20 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_AND; }
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 17 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 21 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_OR; }
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 18 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 22 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return KEYWORD_NOT; }
 	YY_BREAK
 /* Todo: Make these regexes better */
 case 13:
 YY_RULE_SETUP
-#line 21 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 25 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return STRING; }
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 22 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 26 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return NUMBER; }
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 23 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 27 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return IDENTIFIER; }
 	YY_BREAK
 case 16:
 YY_RULE_SETUP
-#line 25 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 29 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_EQ; }
 	YY_BREAK
 case 17:
 YY_RULE_SETUP
-#line 26 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 30 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_NEQ; }
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 27 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 31 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_LSEQ; }
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 28 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 32 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_GTEQ; }
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 30 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 34 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_ASSIGN; }
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 32 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 36 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_ADD; }
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 33 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 37 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_SUB; }
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 34 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 38 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_MUL; }
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 35 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 39 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_DIV; }
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 36 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 40 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_LSS; }
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 37 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 41 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_GTR; }
 	YY_BREAK
 case 27:
 YY_RULE_SETUP
-#line 39 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 43 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_DOT; }
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 40 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 44 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_COMMA; }
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 41 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 45 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_POUND; }
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
-#line 42 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 46 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_EXCLAM; }
 	YY_BREAK
 case 31:
 YY_RULE_SETUP
-#line 43 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 47 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_COLON; }
 	YY_BREAK
 case 32:
 YY_RULE_SETUP
-#line 44 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 48 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_SEMICOLON; }
 	YY_BREAK
 case 33:
 YY_RULE_SETUP
-#line 45 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 49 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_OPEN_BRACE; }
 	YY_BREAK
 case 34:
 YY_RULE_SETUP
-#line 46 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 50 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_CLOSE_BRACE; }
 	YY_BREAK
 case 35:
 YY_RULE_SETUP
-#line 47 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 51 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_OPEN_PAREN; }
 	YY_BREAK
 case 36:
 YY_RULE_SETUP
-#line 48 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 52 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 { return OPERATOR_CLOSE_PAREN; }
 	YY_BREAK
 case 37:
 YY_RULE_SETUP
-#line 50 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 54 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 {}
 	YY_BREAK
 case 38:
 YY_RULE_SETUP
-#line 53 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 55 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+{ linecounter++; }
+	YY_BREAK
+case 39:
+YY_RULE_SETUP
+#line 57 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
 ECHO;
 	YY_BREAK
-#line 846 "lex.yy.c"
+#line 856 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1134,7 +1144,7 @@ static yy_state_type yy_get_previous_state()
 		while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 			{
 			yy_current_state = (int) yy_def[yy_current_state];
-			if ( yy_current_state >= 88 )
+			if ( yy_current_state >= 89 )
 				yy_c = yy_meta[(unsigned int) yy_c];
 			}
 		yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
@@ -1169,11 +1179,11 @@ yy_state_type yy_current_state;
 	while ( yy_chk[yy_base[yy_current_state] + yy_c] != yy_current_state )
 		{
 		yy_current_state = (int) yy_def[yy_current_state];
-		if ( yy_current_state >= 88 )
+		if ( yy_current_state >= 89 )
 			yy_c = yy_meta[(unsigned int) yy_c];
 		}
 	yy_current_state = yy_nxt[yy_base[yy_current_state] + (unsigned int) yy_c];
-	yy_is_jam = (yy_current_state == 87);
+	yy_is_jam = (yy_current_state == 88);
 
 	return yy_is_jam ? 0 : yy_current_state;
 	}
@@ -1728,4 +1738,4 @@ int main()
 	return 0;
 	}
 #endif
-#line 53 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"
+#line 57 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.lex"

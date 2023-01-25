@@ -128,7 +128,8 @@ void discode::InstructionReturn::execute(discode::VM * vm)
     vm->popStack();
 
     if (hasRet) {
-        vm->write(discode::NamedReference(discode::ScopeType::SCOPE_LOCAL, "$ret"), ret);
+        discode::NamedReference rpath(discode::ScopeType::SCOPE_LOCAL, "$ret");
+        vm->write(rpath, ret);
     }
 }
 
