@@ -1,10 +1,9 @@
+%option noyywrap yylineno
+
 %{
-#include "y.tab.h"
-
-unsigned long linecounter = 0;
+#include "flex/ast.h"
+#include "flex/y.tab.h"
 %}
-
-%option noyywrap
 
 %%
 
@@ -51,6 +50,5 @@ not                     { return KEYWORD_NOT; }
 \(                      { return OPERATOR_OPEN_PAREN; }
 \)                      { return OPERATOR_CLOSE_PAREN; }
 
-\s                      {}
-\n                      { linecounter++; }
+\s                      {  }
 

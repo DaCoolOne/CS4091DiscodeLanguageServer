@@ -63,25 +63,28 @@
 /* Using locations.  */
 #define YYLSP_NEEDED 0
 
+/* "%code top" blocks.  */
+
+/* Line 171 of yacc.c  */
+#line 2 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+
+#include <stdio.h>
+#include "flex/ast.h"
+
+void yyerror(char *s);
+
+
+
+
+/* Line 171 of yacc.c  */
+#line 81 "y.tab.c"
 
 
 /* Copy the first part of user declarations.  */
 
-/* Line 189 of yacc.c  */
-#line 1 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
-
-
-// Attempt to use c++ constructs...
-// Please work...
-#include <iostream>
-
-int yylex(void);
-void yyerror(const char *s);
-
-
 
 /* Line 189 of yacc.c  */
-#line 85 "y.tab.c"
+#line 88 "y.tab.c"
 
 /* Enabling traces.  */
 #ifndef YYDEBUG
@@ -188,7 +191,20 @@ void yyerror(const char *s);
 
 
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+typedef union YYSTYPE
+{
+
+/* Line 214 of yacc.c  */
+#line 10 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+
+    AST_Node* node;
+    char* string;
+
+
+
+/* Line 214 of yacc.c  */
+#line 207 "y.tab.c"
+} YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
@@ -199,7 +215,7 @@ typedef int YYSTYPE;
 
 
 /* Line 264 of yacc.c  */
-#line 203 "y.tab.c"
+#line 219 "y.tab.c"
 
 #ifdef short
 # undef short
@@ -412,9 +428,9 @@ union yyalloc
 #endif
 
 /* YYFINAL -- State number of the termination state.  */
-#define YYFINAL  33
+#define YYFINAL  15
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   146
+#define YYLAST   145
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  39
@@ -423,7 +439,7 @@ union yyalloc
 /* YYNRULES -- Number of rules.  */
 #define YYNRULES  60
 /* YYNRULES -- Number of states.  */
-#define YYNSTATES  106
+#define YYNSTATES  108
 
 /* YYTRANSLATE(YYLEX) -- Bison symbol number corresponding to YYLEX.  */
 #define YYUNDEFTOK  2
@@ -472,13 +488,13 @@ static const yytype_uint8 yytranslate[] =
    YYRHS.  */
 static const yytype_uint8 yyprhs[] =
 {
-       0,     0,     3,     5,     7,     9,    15,    21,    25,    29,
-      30,    33,    38,    41,    45,    49,    52,    56,    61,    62,
-      64,    66,    70,    71,    73,    75,    79,    82,    85,    87,
-      89,    93,    95,    97,    99,   102,   106,   108,   112,   114,
-     118,   122,   126,   130,   134,   138,   140,   144,   148,   150,
-     154,   158,   160,   162,   165,   167,   169,   171,   173,   175,
-     177
+       0,     0,     3,     5,     7,     9,    15,    21,    27,    31,
+      32,    35,    40,    43,    47,    51,    54,    58,    63,    64,
+      66,    68,    72,    73,    75,    77,    81,    84,    87,    89,
+      91,    95,    97,    99,   102,   104,   108,   110,   114,   116,
+     120,   124,   128,   132,   136,   140,   142,   146,   150,   152,
+     156,   160,   162,   165,   167,   169,   171,   173,   175,   177,
+     179
 };
 
 /* YYRHS -- A `-1'-separated list of the rules' RHS.  */
@@ -486,35 +502,35 @@ static const yytype_int8 yyrhs[] =
 {
       40,     0,    -1,    41,    -1,    42,    -1,    43,    -1,     7,
       17,    33,    50,    44,    -1,     8,    17,    33,    50,    44,
-      -1,     6,    54,    34,    -1,    35,    45,    36,    -1,    -1,
-      46,    45,    -1,    52,    22,    54,    34,    -1,    54,    34,
-      -1,     3,    54,    44,    -1,     4,    54,    44,    -1,     5,
-      34,    -1,     5,    54,    34,    -1,    52,    37,    48,    38,
-      -1,    -1,    49,    -1,    54,    -1,    54,    30,    49,    -1,
-      -1,    51,    -1,    17,    -1,    17,    30,    51,    -1,    31,
-      53,    -1,    32,    53,    -1,    53,    -1,    17,    -1,    53,
-      29,    17,    -1,    47,    -1,    55,    -1,    56,    -1,    14,
-      56,    -1,    56,    13,    57,    -1,    57,    -1,    57,    12,
-      58,    -1,    58,    -1,    58,    27,    59,    -1,    58,    20,
-      59,    -1,    58,    28,    59,    -1,    58,    21,    59,    -1,
-      58,    19,    59,    -1,    58,    18,    59,    -1,    59,    -1,
-      59,    23,    60,    -1,    59,    24,    60,    -1,    60,    -1,
-      60,    25,    61,    -1,    60,    26,    61,    -1,    61,    -1,
-      62,    -1,    24,    62,    -1,    15,    -1,    16,    -1,    11,
-      -1,    10,    -1,     9,    -1,    52,    -1,    37,    54,    38,
-      -1
+      -1,     6,    52,    22,    54,    34,    -1,    35,    45,    36,
+      -1,    -1,    46,    45,    -1,    52,    22,    54,    34,    -1,
+      54,    34,    -1,     3,    54,    44,    -1,     4,    54,    44,
+      -1,     5,    34,    -1,     5,    54,    34,    -1,    52,    37,
+      48,    38,    -1,    -1,    49,    -1,    54,    -1,    54,    30,
+      49,    -1,    -1,    51,    -1,    17,    -1,    17,    30,    51,
+      -1,    31,    53,    -1,    32,    53,    -1,    53,    -1,    17,
+      -1,    53,    29,    17,    -1,    47,    -1,    55,    -1,    14,
+      56,    -1,    56,    -1,    56,    13,    57,    -1,    57,    -1,
+      57,    12,    58,    -1,    58,    -1,    58,    27,    59,    -1,
+      58,    20,    59,    -1,    58,    28,    59,    -1,    58,    21,
+      59,    -1,    58,    19,    59,    -1,    58,    18,    59,    -1,
+      59,    -1,    59,    23,    60,    -1,    59,    24,    60,    -1,
+      60,    -1,    60,    25,    61,    -1,    60,    26,    61,    -1,
+      61,    -1,    24,    62,    -1,    62,    -1,    15,    -1,    16,
+      -1,    11,    -1,    10,    -1,     9,    -1,    52,    -1,    37,
+      54,    38,    -1
 };
 
 /* YYRLINE[YYN] -- source line where rule number YYN was defined.  */
 static const yytype_uint8 yyrline[] =
 {
-       0,    57,    57,    58,    59,    62,    65,    68,    71,    74,
-      75,    78,    79,    80,    81,    82,    83,    86,    89,    90,
-      93,    94,    97,    98,   101,   102,   105,   106,   107,   110,
-     111,   114,   115,   118,   119,   122,   123,   126,   127,   130,
-     131,   132,   133,   134,   135,   136,   139,   140,   141,   144,
-     145,   146,   149,   150,   153,   154,   155,   156,   157,   158,
-     159
+       0,    60,    60,    61,    62,    65,    68,    71,    74,    77,
+      78,    81,    82,    83,    84,    85,    86,    89,    92,    93,
+      96,    97,   100,   101,   104,   105,   108,   109,   110,   113,
+     114,   117,   118,   121,   122,   125,   126,   129,   130,   133,
+     134,   135,   136,   137,   138,   139,   142,   143,   144,   147,
+     148,   149,   152,   153,   156,   157,   158,   159,   160,   161,
+     162
 };
 #endif
 
@@ -569,12 +585,12 @@ static const yytype_uint8 yyr1[] =
 /* YYR2[YYN] -- Number of symbols composing right hand side of rule YYN.  */
 static const yytype_uint8 yyr2[] =
 {
-       0,     2,     1,     1,     1,     5,     5,     3,     3,     0,
+       0,     2,     1,     1,     1,     5,     5,     5,     3,     0,
        2,     4,     2,     3,     3,     2,     3,     4,     0,     1,
        1,     3,     0,     1,     1,     3,     2,     2,     1,     1,
-       3,     1,     1,     1,     2,     3,     1,     3,     1,     3,
+       3,     1,     1,     2,     1,     3,     1,     3,     1,     3,
        3,     3,     3,     3,     3,     1,     3,     3,     1,     3,
-       3,     1,     1,     2,     1,     1,     1,     1,     1,     1,
+       3,     1,     2,     1,     1,     1,     1,     1,     1,     1,
        3
 };
 
@@ -583,51 +599,51 @@ static const yytype_uint8 yyr2[] =
    means the default is an error.  */
 static const yytype_uint8 yydefact[] =
 {
-       0,     0,     0,     0,     0,     2,     3,     4,    58,    57,
-      56,     0,    54,    55,    29,     0,     0,     0,     0,    31,
-      59,    28,     0,    32,    33,    36,    38,    45,    48,    51,
-      52,     0,     0,     1,    59,    34,    53,    26,    27,     0,
-      18,     0,     7,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,     0,    22,    22,    60,     0,    19,
-      20,    30,    35,    37,    44,    43,    40,    42,    39,    41,
-      46,    47,    49,    50,    24,     0,    23,     0,    17,     0,
-       0,     9,     5,     6,    21,    25,     0,     0,     0,     0,
-       9,    59,     0,     0,     0,    15,     0,     8,    10,     0,
-      12,    13,    14,    16,     0,    11
+       0,     0,     0,     0,     0,     2,     3,     4,    29,     0,
+       0,     0,    28,     0,     0,     1,    26,    27,     0,     0,
+      22,    22,    58,    57,    56,     0,    54,    55,     0,     0,
+      31,    59,     0,    32,    34,    36,    38,    45,    48,    51,
+      53,    30,    24,     0,    23,     0,    59,    33,    52,     0,
+      18,     7,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     9,     5,     6,    60,     0,
+      19,    20,    35,    37,    44,    43,    40,    42,    39,    41,
+      46,    47,    49,    50,    25,     0,     0,     0,     0,     9,
+      59,     0,    17,     0,     0,     0,    15,     0,     8,    10,
+       0,    12,    21,    13,    14,    16,     0,    11
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-      -1,     4,     5,     6,     7,    82,    89,    90,    19,    58,
-      59,    75,    76,    34,    21,    60,    23,    24,    25,    26,
-      27,    28,    29,    30
+      -1,     4,     5,     6,     7,    66,    88,    89,    30,    69,
+      70,    43,    44,    46,    12,    71,    33,    34,    35,    36,
+      37,    38,    39,    40
 };
 
 /* YYPACT[STATE-NUM] -- Index in YYTABLE of the portion describing
    STATE-NUM.  */
-#define YYPACT_NINF -76
+#define YYPACT_NINF -44
 static const yytype_int8 yypact[] =
 {
-       3,    93,   -10,    18,    40,   -76,   -76,   -76,   -76,   -76,
-     -76,   103,   -76,   -76,   -76,    27,    46,    46,    93,   -76,
-      20,    37,    31,   -76,    56,    59,   -15,    -9,    -2,   -76,
-     -76,    39,    41,   -76,   -76,    56,   -76,    37,    37,    38,
-      93,    58,   -76,   103,   103,   103,   103,   103,   103,   103,
-     103,   103,   103,   103,   103,    60,    60,   -76,    43,   -76,
-      49,   -76,    59,   -15,    -9,    -9,    -9,    -9,    -9,    -9,
-      -2,    -2,   -76,   -76,    52,    48,   -76,    48,   -76,    93,
-      60,    17,   -76,   -76,   -76,   -76,    93,    93,    36,    54,
-      17,   -21,    50,    48,    48,   -76,    57,   -76,   -76,    93,
-     -76,   -76,   -76,   -76,    62,   -76
+      -2,    -6,   -10,    -4,    27,   -44,   -44,   -44,   -44,    24,
+      24,    25,    21,    26,    32,   -44,    21,    21,    65,    37,
+      45,    45,   -44,   -44,   -44,    94,   -44,   -44,    97,    65,
+     -44,    34,    33,   -44,    60,    75,   117,     0,    30,   -44,
+     -44,   -44,    63,    59,   -44,    59,   -44,    60,   -44,    57,
+      65,   -44,    94,    94,    94,    94,    94,    94,    94,    94,
+      94,    94,    94,    94,    45,     5,   -44,   -44,   -44,    62,
+     -44,    68,    75,   117,     0,     0,     0,     0,     0,     0,
+      30,    30,   -44,   -44,   -44,    65,    65,    29,    79,     5,
+     -19,    67,   -44,    65,    59,    59,   -44,    82,   -44,   -44,
+      65,   -44,   -44,   -44,   -44,   -44,    83,   -44
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-     -76,   -76,   -76,   -76,   -76,   -75,     2,   -76,   -76,   -76,
-      21,    45,    19,    -1,    13,     7,   -76,    94,    68,    71,
-      96,     4,     8,   101
+     -44,   -44,   -44,   -44,   -44,   -43,    31,   -44,   -44,   -44,
+      39,    98,    58,    -1,    48,   -17,   -44,    96,    71,    74,
+     -24,    17,    28,   102
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]].  What to do in state STATE-NUM.  If
@@ -637,57 +653,57 @@ static const yytype_int8 yypgoto[] =
 #define YYTABLE_NINF -1
 static const yytype_uint8 yytable[] =
 {
-      20,    99,    83,    45,    46,    47,    48,    31,    22,     1,
-       2,     3,    49,    50,    51,    52,    40,    20,   101,   102,
-      86,    87,    88,    53,    54,    39,     8,     9,    10,    37,
-      38,    11,    12,    13,    14,    32,     8,     9,    10,    20,
-      33,    15,    12,    13,    14,     8,     9,    10,    16,    17,
-      11,    12,    13,    14,    18,    70,    71,    40,    16,    17,
-      15,    72,    73,    14,    18,    42,    41,    16,    17,    43,
-      95,    44,    55,    18,    56,    61,    57,    74,    20,    79,
-      91,    78,    80,    81,   100,    20,    20,    20,    92,    91,
-      97,   103,    98,    93,    94,    96,   105,    92,    20,    85,
-      84,    77,     8,     9,    10,    35,   104,    11,    12,    13,
-      14,    62,     8,     9,    10,    63,    36,    15,    12,    13,
-      14,     0,     0,     0,    16,    17,     0,    15,     0,     0,
-      18,     0,     0,     0,    16,    17,     0,     0,     0,     0,
-      18,    64,    65,    66,    67,    68,    69
+      11,    32,    67,   100,     1,     2,     3,    13,    85,    86,
+      87,     8,    49,    14,    22,    23,    24,    31,    50,    25,
+      26,    27,     8,    60,    61,     9,    10,    15,    31,    28,
+      74,    75,    76,    77,    78,    79,     9,    10,    22,    23,
+      24,     8,    29,    25,    26,    27,     8,    18,    91,    31,
+      19,   103,   104,    28,    41,    62,    63,    16,    17,    20,
+       9,    10,    42,    96,    90,    21,    29,    51,    94,    95,
+      97,    50,    91,    52,    22,    23,    24,    80,    81,    25,
+      26,    27,     8,   106,    31,    31,    31,    53,    90,    28,
+      82,    83,    31,    64,    65,    68,     9,    10,    93,    31,
+      92,   101,    29,    22,    23,    24,    22,    23,    24,    26,
+      27,     8,    26,    27,     8,    98,   105,   107,    28,    45,
+      99,    47,    84,    72,     0,     9,    10,    73,     9,    10,
+      48,    29,   102,     0,    29,    54,    55,    56,    57,     0,
+       0,     0,     0,     0,    58,    59
 };
 
 static const yytype_int8 yycheck[] =
 {
-       1,    22,    77,    18,    19,    20,    21,    17,     1,     6,
-       7,     8,    27,    28,    23,    24,    37,    18,    93,    94,
-       3,     4,     5,    25,    26,    18,     9,    10,    11,    16,
-      17,    14,    15,    16,    17,    17,     9,    10,    11,    40,
-       0,    24,    15,    16,    17,     9,    10,    11,    31,    32,
-      14,    15,    16,    17,    37,    51,    52,    37,    31,    32,
-      24,    53,    54,    17,    37,    34,    29,    31,    32,    13,
-      34,    12,    33,    37,    33,    17,    38,    17,    79,    30,
-      81,    38,    30,    35,    34,    86,    87,    88,    81,    90,
-      36,    34,    90,    86,    87,    88,    34,    90,    99,    80,
-      79,    56,     9,    10,    11,    11,    99,    14,    15,    16,
-      17,    43,     9,    10,    11,    44,    15,    24,    15,    16,
-      17,    -1,    -1,    -1,    31,    32,    -1,    24,    -1,    -1,
-      37,    -1,    -1,    -1,    31,    32,    -1,    -1,    -1,    -1,
-      37,    45,    46,    47,    48,    49,    50
+       1,    18,    45,    22,     6,     7,     8,    17,     3,     4,
+       5,    17,    29,    17,     9,    10,    11,    18,    37,    14,
+      15,    16,    17,    23,    24,    31,    32,     0,    29,    24,
+      54,    55,    56,    57,    58,    59,    31,    32,     9,    10,
+      11,    17,    37,    14,    15,    16,    17,    22,    65,    50,
+      29,    94,    95,    24,    17,    25,    26,     9,    10,    33,
+      31,    32,    17,    34,    65,    33,    37,    34,    85,    86,
+      87,    37,    89,    13,     9,    10,    11,    60,    61,    14,
+      15,    16,    17,   100,    85,    86,    87,    12,    89,    24,
+      62,    63,    93,    30,    35,    38,    31,    32,    30,   100,
+      38,    34,    37,     9,    10,    11,     9,    10,    11,    15,
+      16,    17,    15,    16,    17,    36,    34,    34,    24,    21,
+      89,    25,    64,    52,    -1,    31,    32,    53,    31,    32,
+      28,    37,    93,    -1,    37,    18,    19,    20,    21,    -1,
+      -1,    -1,    -1,    -1,    27,    28
 };
 
 /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
    symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,     6,     7,     8,    40,    41,    42,    43,     9,    10,
-      11,    14,    15,    16,    17,    24,    31,    32,    37,    47,
-      52,    53,    54,    55,    56,    57,    58,    59,    60,    61,
-      62,    17,    17,     0,    52,    56,    62,    53,    53,    54,
-      37,    29,    34,    13,    12,    18,    19,    20,    21,    27,
-      28,    23,    24,    25,    26,    33,    33,    38,    48,    49,
-      54,    17,    57,    58,    59,    59,    59,    59,    59,    59,
-      60,    60,    61,    61,    17,    50,    51,    50,    38,    30,
-      30,    35,    44,    44,    49,    51,     3,     4,     5,    45,
-      46,    52,    54,    54,    54,    34,    54,    36,    45,    22,
-      34,    44,    44,    34,    54,    34
+       0,     6,     7,     8,    40,    41,    42,    43,    17,    31,
+      32,    52,    53,    17,    17,     0,    53,    53,    22,    29,
+      33,    33,     9,    10,    11,    14,    15,    16,    24,    37,
+      47,    52,    54,    55,    56,    57,    58,    59,    60,    61,
+      62,    17,    17,    50,    51,    50,    52,    56,    62,    54,
+      37,    34,    13,    12,    18,    19,    20,    21,    27,    28,
+      23,    24,    25,    26,    30,    35,    44,    44,    38,    48,
+      49,    54,    57,    58,    59,    59,    59,    59,    59,    59,
+      60,    60,    61,    61,    51,     3,     4,     5,    45,    46,
+      52,    54,    38,    30,    54,    54,    34,    54,    36,    45,
+      22,    34,    49,    44,    44,    34,    54,    34
 };
 
 #define yyerrok		(yyerrstatus = 0)
@@ -1498,10 +1514,402 @@ yyreduce:
   YY_REDUCE_PRINT (yyn);
   switch (yyn)
     {
-      
+        case 2:
 
 /* Line 1455 of yacc.c  */
-#line 1505 "y.tab.c"
+#line 60 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 3:
+
+/* Line 1455 of yacc.c  */
+#line 61 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 4:
+
+/* Line 1455 of yacc.c  */
+#line 62 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 5:
+
+/* Line 1455 of yacc.c  */
+#line 65 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createDeclareFunction(createSignature((yyvsp[(2) - (5)].node), (yyvsp[(4) - (5)].node)), (yyvsp[(5) - (5)].node)); }
+    break;
+
+  case 6:
+
+/* Line 1455 of yacc.c  */
+#line 68 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createDeclareMethod(createSignature((yyvsp[(2) - (5)].node), (yyvsp[(4) - (5)].node)), (yyvsp[(5) - (5)].node)); }
+    break;
+
+  case 7:
+
+/* Line 1455 of yacc.c  */
+#line 71 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createDeclare((yyvsp[(2) - (5)].node), (yyvsp[(4) - (5)].node)); }
+    break;
+
+  case 8:
+
+/* Line 1455 of yacc.c  */
+#line 74 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(2) - (3)].node); }
+    break;
+
+  case 9:
+
+/* Line 1455 of yacc.c  */
+#line 77 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = NULL; }
+    break;
+
+  case 10:
+
+/* Line 1455 of yacc.c  */
+#line 78 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createStatementList((yyvsp[(1) - (2)].node), (yyvsp[(2) - (2)].node)); }
+    break;
+
+  case 11:
+
+/* Line 1455 of yacc.c  */
+#line 81 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createAssign((yyvsp[(1) - (4)].node), (yyvsp[(3) - (4)].node)); }
+    break;
+
+  case 12:
+
+/* Line 1455 of yacc.c  */
+#line 82 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createAssign(NULL, (yyvsp[(1) - (2)].node)); }
+    break;
+
+  case 13:
+
+/* Line 1455 of yacc.c  */
+#line 83 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIf((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 14:
+
+/* Line 1455 of yacc.c  */
+#line 84 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createWhile((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 15:
+
+/* Line 1455 of yacc.c  */
+#line 85 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createReturn(NULL); }
+    break;
+
+  case 16:
+
+/* Line 1455 of yacc.c  */
+#line 86 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createReturn((yyvsp[(2) - (3)].node)); }
+    break;
+
+  case 18:
+
+/* Line 1455 of yacc.c  */
+#line 92 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createExprList(NULL); }
+    break;
+
+  case 19:
+
+/* Line 1455 of yacc.c  */
+#line 93 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createExprList((yyvsp[(1) - (1)].node)); }
+    break;
+
+  case 20:
+
+/* Line 1455 of yacc.c  */
+#line 96 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createExprListElement((yyvsp[(1) - (1)].node), NULL); }
+    break;
+
+  case 21:
+
+/* Line 1455 of yacc.c  */
+#line 97 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createExprListElement((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 22:
+
+/* Line 1455 of yacc.c  */
+#line 100 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentList(NULL); }
+    break;
+
+  case 23:
+
+/* Line 1455 of yacc.c  */
+#line 101 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentList((yyvsp[(1) - (1)].node)); }
+    break;
+
+  case 24:
+
+/* Line 1455 of yacc.c  */
+#line 104 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentListElement((yyvsp[(1) - (1)].string), NULL); }
+    break;
+
+  case 25:
+
+/* Line 1455 of yacc.c  */
+#line 105 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentListElement((yyvsp[(1) - (3)].string), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 26:
+
+/* Line 1455 of yacc.c  */
+#line 108 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createGlobalResolution((yyvsp[(2) - (2)].node)); }
+    break;
+
+  case 27:
+
+/* Line 1455 of yacc.c  */
+#line 109 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createLibraryResolution((yyvsp[(2) - (2)].node)); }
+    break;
+
+  case 28:
+
+/* Line 1455 of yacc.c  */
+#line 110 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 29:
+
+/* Line 1455 of yacc.c  */
+#line 113 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentifier((yyvsp[(1) - (1)].string)); }
+    break;
+
+  case 30:
+
+/* Line 1455 of yacc.c  */
+#line 114 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createIdentifierPath((yyvsp[(2) - (3)].node), (yyvsp[(3) - (3)].string)); }
+    break;
+
+  case 33:
+
+/* Line 1455 of yacc.c  */
+#line 121 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createNotExpr((yyvsp[(2) - (2)].node)); }
+    break;
+
+  case 34:
+
+/* Line 1455 of yacc.c  */
+#line 122 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 35:
+
+/* Line 1455 of yacc.c  */
+#line 125 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createOrExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 36:
+
+/* Line 1455 of yacc.c  */
+#line 126 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 37:
+
+/* Line 1455 of yacc.c  */
+#line 129 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createAndExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 38:
+
+/* Line 1455 of yacc.c  */
+#line 130 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 39:
+
+/* Line 1455 of yacc.c  */
+#line 133 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createGtrExpr((yyvsp[(3) - (3)].node), (yyvsp[(1) - (3)].node)); }
+    break;
+
+  case 40:
+
+/* Line 1455 of yacc.c  */
+#line 134 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createGteqExpr((yyvsp[(3) - (3)].node), (yyvsp[(1) - (3)].node)); }
+    break;
+
+  case 41:
+
+/* Line 1455 of yacc.c  */
+#line 135 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createGtrExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 42:
+
+/* Line 1455 of yacc.c  */
+#line 136 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createGteqExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 43:
+
+/* Line 1455 of yacc.c  */
+#line 137 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createNotExpr(createEqExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node))); }
+    break;
+
+  case 44:
+
+/* Line 1455 of yacc.c  */
+#line 138 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createEqExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 45:
+
+/* Line 1455 of yacc.c  */
+#line 139 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 46:
+
+/* Line 1455 of yacc.c  */
+#line 142 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createAddExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 47:
+
+/* Line 1455 of yacc.c  */
+#line 143 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createSubExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 48:
+
+/* Line 1455 of yacc.c  */
+#line 144 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 49:
+
+/* Line 1455 of yacc.c  */
+#line 147 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createMulExpr((yyvsp[(1) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 50:
+
+/* Line 1455 of yacc.c  */
+#line 148 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createDivExpr((yyvsp[(2) - (3)].node), (yyvsp[(3) - (3)].node)); }
+    break;
+
+  case 51:
+
+/* Line 1455 of yacc.c  */
+#line 149 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 52:
+
+/* Line 1455 of yacc.c  */
+#line 152 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createNegExpr((yyvsp[(2) - (2)].node)); }
+    break;
+
+  case 53:
+
+/* Line 1455 of yacc.c  */
+#line 153 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 54:
+
+/* Line 1455 of yacc.c  */
+#line 156 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createNumber((yyvsp[(1) - (1)].string)); }
+    break;
+
+  case 55:
+
+/* Line 1455 of yacc.c  */
+#line 157 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createString((yyvsp[(1) - (1)].string)); }
+    break;
+
+  case 56:
+
+/* Line 1455 of yacc.c  */
+#line 158 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createBool(FALSE); }
+    break;
+
+  case 57:
+
+/* Line 1455 of yacc.c  */
+#line 159 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createBool(TRUE); }
+    break;
+
+  case 58:
+
+/* Line 1455 of yacc.c  */
+#line 160 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = createNull(); }
+    break;
+
+  case 59:
+
+/* Line 1455 of yacc.c  */
+#line 161 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(1) - (1)].node); }
+    break;
+
+  case 60:
+
+/* Line 1455 of yacc.c  */
+#line 162 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+    { (yyval.node) = (yyvsp[(2) - (3)].node); }
+    break;
+
+
+
+/* Line 1455 of yacc.c  */
+#line 1913 "y.tab.c"
       default: break;
     }
   YY_SYMBOL_PRINT ("-> $$ =", yyr1[yyn], &yyval, &yyloc);
@@ -1713,12 +2121,11 @@ yyreturn:
 
 
 /* Line 1675 of yacc.c  */
-#line 162 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
+#line 165 "c:\\Users\\_DaCoolOne_\\Documents\\GitHub\\DiscodeLanguageServer\\src\\code_server\\flex\\parser.yacc"
 
 
-void yyerror (char const *s)
-{
-    std::cout << s << std::endl;
+void yyerror(char *s) {
+    printf("%s", s);
 }
 
 
