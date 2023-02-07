@@ -5,6 +5,19 @@
 
 #include "flex/ast.h"
 
+AST_Bool getBool(AST_Node * node)
+{
+    return node->asBool;
+}
+char * getStr(AST_Node * node)
+{
+    return node->asStr;
+}
+double getDouble(AST_Node * node)
+{
+    return node->asDouble;
+}
+
 AST_Node * createNull()
 {
     AST_Node * node = malloc(sizeof(AST_Node));
@@ -14,7 +27,7 @@ AST_Node * createNull()
     return node;
 }
 
-AST_Node * createBool(boolean val)
+AST_Node * createBool(AST_Bool val)
 {
     AST_Node * node = malloc(sizeof(AST_Node));
     node->type = AST_NODE_BOOL;
@@ -38,7 +51,7 @@ AST_Node * createString(char * value)
 {
     AST_Node * node = malloc(sizeof(AST_Node));
     node->type = AST_NODE_STR;
-    node->asStr = malloc(sizeof(value));
+    node->asStr = malloc(strlen(value)+1);
     strcpy(node->asStr, value);
     node->left = NULL;
     node->right = NULL;
@@ -49,7 +62,7 @@ AST_Node * createIdentifier(char * value)
 {
     AST_Node * node = malloc(sizeof(AST_Node));
     node->type = AST_NODE_STR;
-    node->asStr = malloc(sizeof(value));
+    node->asStr = malloc(strlen(value)+1);
     strcpy(node->asStr, value);
     node->left = NULL;
     node->right = NULL;
@@ -70,8 +83,8 @@ AST_Node * createBinaryExpr(AST_NODE_TYPE operation, AST_Node * lhs, AST_Node * 
 {
     AST_Node * node = malloc(sizeof(AST_Node));
     node->type = operation;
-    node->left = NULL;
-    node->right = NULL;
+    node->left = lhs;
+    node->right = rhs;
     return node;
 }
 
@@ -91,22 +104,13 @@ AST_Node * createGtrExpr(AST_Node * lhs, AST_Node * rhs) { return createBinaryEx
 AST_Node * createGteqExpr(AST_Node * lhs, AST_Node * rhs) { return createBinaryExpr(AST_NODE_GTEQ, lhs, rhs); }
 
 // Name resolution
-AST_Node * createIdentifierPath(AST_Node * lhs, char * rhs) { return createBinaryExpr(AST_NODE_RESOLVE_NAME, lhs, createIdentifier(rhs)); }
+AST_Node * createIdentifierPath(AST_Node * lhs, AST_Node * rhs) { return createBinaryExpr(AST_NODE_RESOLVE_NAME, lhs, rhs); }
 AST_Node * createGlobalResolution(AST_Node * lhs) { return createUnaryExpr(AST_NODE_GLOBAL_SCOPE, lhs); }
 AST_Node * createLibraryResolution(AST_Node * lhs) { return createUnaryExpr(AST_NODE_LIB_SCOPE, lhs); }
 
 // Lists
 AST_Node * createIdentList(AST_Node * rhs) { return createUnaryExpr(AST_NODE_IDENT_LIST_START, rhs); }
-AST_Node * createIdentListElement(char * value, AST_Node * rhs)
-{
-    AST_Node * node = malloc(sizeof(AST_Node));
-    node->type = AST_NODE_IDENT_LIST_CONT;
-    node->left = NULL;
-    node->right = rhs;
-    node->asStr = malloc(sizeof(value));
-    strcpy(node->asStr, value);
-    return node;
-}
+AST_Node * createIdentListElement(AST_Node * lhs, AST_Node * rhs) { return createBinaryExpr(AST_NODE_RESOLVE_NAME, lhs, rhs); }
 
 AST_Node * createExprList(AST_Node * rhs) { return createUnaryExpr(AST_NODE_ARG_LIST_START, rhs); }
 AST_Node * createExprListElement(AST_Node * expr, AST_Node * rhs) { return createBinaryExpr(AST_NODE_ARG_LIST_CONT, expr, rhs); }
@@ -132,7 +136,6 @@ void freeAST(AST_Node * node)
         // String constants
         case AST_NODE_IDENT:
         case AST_NODE_STR:
-        case AST_NODE_IDENT_LIST_CONT:
             free(node->asStr);
             break;
         
@@ -178,6 +181,11 @@ void freeAST(AST_Node * node)
         case AST_NODE_DECLARE_METHOD:
         case AST_NODE_FUNCTION_SIGNATURE:
             if (node->left) freeAST(node->left);
+            if (node->right) freeAST(node->right);
+            break;
+        
+        // Special cases
+        case AST_NODE_IDENT_LIST_CONT:
             if (node->right) freeAST(node->right);
             break;
     }

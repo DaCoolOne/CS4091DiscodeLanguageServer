@@ -3,6 +3,9 @@
 %{
 #include "flex/ast.h"
 #include "flex/y.tab.h"
+#include <stdio.h>
+
+#define YY_DECL int yylex()
 %}
 
 %%
@@ -21,9 +24,9 @@ or                      { return KEYWORD_OR; }
 not                     { return KEYWORD_NOT; }
 
     /* Todo: Make these regexes better */
-\"[^\"]+\"              { return STRING; }
-[0-9]+                  { return NUMBER; }
-\w+                     { return IDENTIFIER; }
+\"[^\"]+\"              { yylval.node = createString(yytext); return STRING; }
+[0-9]+                  { yylval.node = createNumber(yytext); return NUMBER; }
+[A-Za-z0-9_]+           { yylval.node = createIdentifier(yytext); return IDENTIFIER; }
 
 ==                      { return OPERATOR_EQ; }
 !=                      { return OPERATOR_NEQ; }
@@ -50,5 +53,15 @@ not                     { return KEYWORD_NOT; }
 \(                      { return OPERATOR_OPEN_PAREN; }
 \)                      { return OPERATOR_CLOSE_PAREN; }
 
-\s                      {  }
+\s+                     {  }
+
+%%
+
+void set_yyin(FILE * new_yyin) {
+    yyin = new_yyin;
+}
+
+int feof_yyin() {
+    return feof(yyin);
+}
 

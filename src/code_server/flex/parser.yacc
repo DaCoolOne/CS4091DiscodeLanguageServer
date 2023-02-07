@@ -1,15 +1,21 @@
 
 %code top {
+
 #include <stdio.h>
 #include "flex/ast.h"
 
 void yyerror(char *s);
 
+AST_Node * parsedStatement;
+
+#define YYERROR_VERBOSE
+
 }
 
 %union {
-    AST_Node* node;
-    char* string;
+
+AST_Node* node;
+
 }
 
 %token KEYWORD_IF
@@ -55,11 +61,13 @@ void yyerror(char *s);
 %token OPERATOR_OPEN_PAREN
 %token OPERATOR_CLOSE_PAREN
 
+%start START
+
 %%
 
-START               : FUNCTION  { $<node>$ = $<node>1; }
-                    | METHOD    { $<node>$ = $<node>1; }
-                    | DECLARE   { $<node>$ = $<node>1; }
+START               : FUNCTION  { parsedStatement = $<node>1; }
+                    | METHOD    { parsedStatement = $<node>1; }
+                    | DECLARE   { parsedStatement = $<node>1; }
                     ;
 
 FUNCTION            : KEYWORD_FUNCTION IDENTIFIER OPERATOR_COLON IDENTIFIER_LIST CODE_BLOCK     { $<node>$ = createDeclareFunction(createSignature($<node>2, $<node>4), $<node>5); }
@@ -86,7 +94,7 @@ STATEMENT           : FULL_IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_SEMICO
                     | KEYWORD_RETURN EXPRESSION OPERATOR_SEMICOLON                      { $<node>$ = createReturn($<node>2); }
                     ;
 
-FUNCTION_CALL       : FULL_IDENTIFIER OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN
+FUNCTION_CALL       : FULL_IDENTIFIER OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN    { $<node>$ = createFCall($<node>1, $<node>3); }
                     ;
 
 ARGUMENT_LIST       :               { $<node>$ = createExprList(NULL); }
@@ -101,8 +109,8 @@ IDENTIFIER_LIST     :                   { $<node>$ = createIdentList(NULL); }
                     | IDENTIFIER_REP    { $<node>$ = createIdentList($<node>1); }
                     ;
 
-IDENTIFIER_REP      : IDENTIFIER                                { $<node>$ = createIdentListElement($<string>1, NULL); }                       
-                    | IDENTIFIER OPERATOR_COMMA IDENTIFIER_REP  { $<node>$ = createIdentListElement($<string>1, $<node>3); }   
+IDENTIFIER_REP      : IDENTIFIER                                { $<node>$ = createIdentListElement($<node>1, NULL); }                       
+                    | IDENTIFIER OPERATOR_COMMA IDENTIFIER_REP  { $<node>$ = createIdentListElement($<node>1, $<node>3); }   
                     ;
 
 FULL_IDENTIFIER     : OPERATOR_POUND IDENTIFIER_PATH    { $<node>$ = createGlobalResolution($<node>2); }
@@ -110,8 +118,8 @@ FULL_IDENTIFIER     : OPERATOR_POUND IDENTIFIER_PATH    { $<node>$ = createGloba
                     | IDENTIFIER_PATH                   { $<node>$ = $<node>1; }
                     ;
 
-IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = createIdentifier($<string>1); }
-                    | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath($<node>2, $<string>3); }
+IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = $<node>1; }
+                    | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath($<node>2, $<node>3); }
                     ;
 
 EXPRESSION          : FUNCTION_CALL
@@ -153,8 +161,8 @@ UNARY_MINUS         : OPERATOR_SUB TERMINAL     { $<node>$ = createNegExpr($<nod
                     | TERMINAL                  { $<node>$ = $<node>1; }
                     ;
 
-TERMINAL            : NUMBER                                                { $<node>$ = createNumber($<string>1); }
-                    | STRING                                                { $<node>$ = createString($<string>1); }
+TERMINAL            : NUMBER                                                { $<node>$ = $<node>1; }
+                    | STRING                                                { $<node>$ = $<node>1; }
                     | KEYWORD_FALSE                                         { $<node>$ = createBool(FALSE); }
                     | KEYWORD_TRUE                                          { $<node>$ = createBool(TRUE); }
                     | KEYWORD_NULL                                          { $<node>$ = createNull(); }
@@ -166,5 +174,15 @@ TERMINAL            : NUMBER                                                { $<
 
 void yyerror(char *s) {
     printf("%s", s);
+}
+
+AST_Node * parse(const char * fname) {
+    set_yyin(fopen(fname, "r"));
+
+    do {
+        yyparse();
+    } while(!feof_yyin());
+
+    return parsedStatement;
 }
 

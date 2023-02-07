@@ -25,24 +25,24 @@ def run_test():
         for msg in os.listdir(os.path.join(base, channel)):
             with open(os.path.join(base, channel, msg)) as f:
                 send_msg(client, {
-                    "Name": "Load",
-                    "Server_id": "local",
-                    "Channel_id": channel,
+                    "Name": "ParseTree",
                     "Code": f.read()
                 })
 
+    """
     send_msg(client, {
         "Name": "Run",
         "Function": "main",
         "Arguments": []
     })
+    """
 
-    print("Receiving")
-    data = client.recv(1028)
+    # print("Receiving")
+    # data = client.recv(1028)
 
-    print(data)
+    # print(data)
 
-    print("done")
+    # print("done")
     client.close()
 
 if __name__ == "__main__":

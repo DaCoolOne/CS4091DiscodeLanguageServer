@@ -8,6 +8,7 @@
 #include <sstream>
 
 #include "utils/json.hpp"
+#include "flex/parser.hpp"
 
 #define PORT 3540
 
@@ -83,9 +84,17 @@ int main(int argc, char* argv[]) {
                 s->SendLine(r);
 
             }
+            else if (command == "ParseTree") {
+
+                std::string code = data->at("Code")->asString();
+
+                discode::analyze_string(code);
+
+            }
         }
     }
     
     return 0;
 }
+
 

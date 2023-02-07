@@ -1,8 +1,10 @@
 #ifndef AST_H
 #define AST_H
 
+#include <stdio.h>
+
 typedef unsigned short uint16;
-typedef char boolean;
+typedef char AST_Bool;
 #define TRUE 1
 #define FALSE 0
 
@@ -57,7 +59,7 @@ struct AST_Node_raw
 
     union data
     {
-        boolean asBool;
+        AST_Bool asBool;
         char * asStr;
         double asDouble;
     };
@@ -65,8 +67,13 @@ struct AST_Node_raw
 };
 typedef struct AST_Node_raw AST_Node;
 
+// Specialized getters
+AST_Bool getBool(AST_Node * node);
+char * getStr(AST_Node * node);
+double getDouble(AST_Node * node);
+
 AST_Node * createNull();
-AST_Node * createBool(boolean val);
+AST_Node * createBool(AST_Bool val);
 AST_Node * createNumber(char * value);
 AST_Node * createString(char * value);
 AST_Node * createIdentifier(char * value);
@@ -87,13 +94,13 @@ AST_Node * createGtrExpr(AST_Node * lhs, AST_Node * rhs);
 AST_Node * createGteqExpr(AST_Node * lhs, AST_Node * rhs);
 
 // Name resolution operations
-AST_Node * createIdentifierPath(AST_Node * lhs, char * rhs);
+AST_Node * createIdentifierPath(AST_Node * lhs, AST_Node * rhs);
 AST_Node * createGlobalResolution(AST_Node * lhs);
 AST_Node * createLibraryResolution(AST_Node * lhs);
 
 // Lists
 AST_Node * createIdentList(AST_Node * rhs);
-AST_Node * createIdentListElement(char * value, AST_Node * rhs);
+AST_Node * createIdentListElement(AST_Node * value, AST_Node * rhs);
 
 AST_Node * createExprList(AST_Node * rhs);
 AST_Node * createExprListElement(AST_Node * expr, AST_Node * rhs);
@@ -113,5 +120,11 @@ AST_Node * createDeclareFunction(AST_Node * signature, AST_Node * code);
 AST_Node * createDeclareMethod(AST_Node * signature, AST_Node * code);
 
 AST_Node * createSignature(AST_Node * identifier, AST_Node * arglist);
+
+// Memory management
+void freeAST(AST_Node * node);
+
+void set_yyin(FILE * new_yyin);
+int feof_yyin();
 
 #endif

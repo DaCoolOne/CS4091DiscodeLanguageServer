@@ -60,8 +60,8 @@ def build_server():
         "ws2_32"
     ]
 
-    proc_compile_c = [ 'gcc', '-std=c99', '-c', *cfiles, '-I', base_dir ]
-    proc_compile_cpp = [ 'g++', '-c', *cppfiles, '-I', base_dir ]
+    proc_compile_c = [ 'gcc', '-g', '-std=c99', '-c', *cfiles, '-I', base_dir ]
+    proc_compile_cpp = [ 'g++', '-g', '-c', *cppfiles, '-I', base_dir ]
     proc_link = [ 'g++', '-o', os.path.join(base_dir, 'server.exe'), *construct_linker_list(cppfiles + cfiles), *[ f'-l{lib}' for lib in libs ] ]
 
     DOING = "building C files"
