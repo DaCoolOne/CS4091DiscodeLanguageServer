@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "lang/data.hpp"
+#include "lang/function.hpp"
 #include "lang/error.hpp"
 
 namespace discode {
