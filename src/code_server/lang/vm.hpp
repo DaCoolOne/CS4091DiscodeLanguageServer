@@ -15,12 +15,10 @@ class VM {
     Scope globals;
     Scope lib; // Todo: Generate library functions
     Data acc;
-    std::vector<Data> args;
-    std::vector<FunctionPtr> stack;
+    std::vector<Data> argument_stack;
+    std::vector<FunctionPtr> function_stack;
 
     std::unique_ptr<discode::Error> err;
-
-    bool halted = true;
 
 };
 
