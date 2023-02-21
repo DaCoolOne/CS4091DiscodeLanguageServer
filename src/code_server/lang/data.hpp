@@ -23,16 +23,60 @@ enum Type
 struct Data
 {
     Type type;
-    std::shared_ptr<void> data;
 
-    Data(): type(Type::TYPE_NULL), data(nullptr) {}
-    Data(bool * _data): type(Type::TYPE_BOOL), data(_data) {}
-    Data(double * _data): type(Type::TYPE_NUMBER), data(_data) {}
-    Data(std::string * _data): type(Type::TYPE_STRING), data(_data) {}
-    Data(std::vector<Data> * _data): type(Type::TYPE_ARRAY), data(_data) {}
-    Data(std::map<std::string, Data> * _data): type(Type::TYPE_OBJECT), data(_data) {}
+    Data(Type _type): type(_type) {}
 
-    void swap(Data &other) { std::swap(type, other.type); data.swap(other.data); }
+    virtual bool getBool() { throw std::logic_error("Could not convert object to bool"); }
+    virtual double getNumber() { throw std::logic_error("Could not convert object to double"); }
+    virtual std::string getString() { throw std::logic_error("Could not convert object to string"); }
+    virtual std::vector<std::shared_ptr<Data>> * getVector() { throw std::logic_error("Could not convert object to vector"); }
+    virtual std::map<std::string, std::shared_ptr<Data>> * getMap() { throw std::logic_error("Could not convert object to map"); }
+};
+
+class Null : Data
+{
+public:
+    Null(): Data(Type::TYPE_NULL) {}
+};
+
+class Boolean : Data
+{
+    bool val;
+public:
+    Boolean(bool value): Data(Type::TYPE_STRING), val(value) {}
+    bool getBool() { return val; }
+};
+
+class Number : Data
+{
+    double val;
+public:
+    Number(double value): Data(Type::TYPE_STRING), val(value) {}
+    double getNumber() { return val; }
+};
+
+struct String : Data
+{
+    std::string val;
+public:
+    String(std::string &value): Data(Type::TYPE_STRING), val(value) {}
+    std::string getString() { return val; }
+};
+
+struct Array : Data
+{
+    std::vector<std::shared_ptr<Data>> data;
+public:
+    Array(std::vector<std::shared_ptr<Data>> &value): Data(Type::TYPE_STRING), data(value) {}
+    std::vector<std::shared_ptr<Data>> * getVector() { return &data; }
+};
+
+struct Object : Data
+{
+    std::map<std::string, std::shared_ptr<Data>> data;
+public:
+    Object(std::map<std::string, std::shared_ptr<Data>> &value): Data(Type::TYPE_STRING), data(value) {}
+    std::map<std::string, std::shared_ptr<Data>> * getMap() { return &data; }
 };
 
 };

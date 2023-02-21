@@ -50,10 +50,13 @@ not                     { return KEYWORD_NOT; }
 \;                      { return OPERATOR_SEMICOLON; }
 \{                      { return OPERATOR_OPEN_BRACE; }
 \}                      { return OPERATOR_CLOSE_BRACE; }
+\[                      { return OPERATOR_OPEN_SQUARE; }
+\]                      { return OPERATOR_CLOSE_SQUARE; }
 \(                      { return OPERATOR_OPEN_PAREN; }
 \)                      { return OPERATOR_CLOSE_PAREN; }
 
 \s+                     {  }
+\n                      {}
 
 %%
 

@@ -58,6 +58,8 @@ AST_Node* node;
 %token OPERATOR_SEMICOLON
 %token OPERATOR_OPEN_BRACE
 %token OPERATOR_CLOSE_BRACE
+%token OPERATOR_OPEN_SQUARE
+%token OPERATOR_CLOSE_SQUARE
 %token OPERATOR_OPEN_PAREN
 %token OPERATOR_CLOSE_PAREN
 
@@ -123,7 +125,24 @@ IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = $<n
                     ;
 
 EXPRESSION          : FUNCTION_CALL
+                    | INDEX
+                    | ARRAY
+                    | OBJECT
                     | UNARY_BOOL_EXPR
+                    ;
+
+INDEX               : FULL_IDENTIFIER OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>2); }
+                    ;
+
+ARRAY               : OPERATOR_OPEN_SQUARE ARGUMENT_LIST OPERATOR_CLOSE_SQUARE  { $<node>$ = createArray($<node>2); }
+                    ;
+
+OBJECT              : OPERATOR_OPEN_BRACE KEY_VALUE_LIST OPERATOR_CLOSE_BRACE   { $<node>$ = createObjectDefinition($<node>2); }
+                    ;
+
+KEY_VALUE_LIST      :                                                                       { $<node>$ = NULL; }
+                    | IDENTIFIER OPERATOR_COLON EXPRESSION                                  { $<node>$ = createKeyValueList(createKeyValuePair($<node>1, $<node>3), NULL); }
+                    | IDENTIFIER OPERATOR_COLON EXPRESSION OPERATOR_COMMA KEY_VALUE_LIST    { $<node>$ = createKeyValueList(createKeyValuePair($<node>1, $<node>3), $<node>5); }
                     ;
 
 UNARY_BOOL_EXPR     : KEYWORD_NOT OR_EXPR   { $<node>$ = createNotExpr($<node>2); }

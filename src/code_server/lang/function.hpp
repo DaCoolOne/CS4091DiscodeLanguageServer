@@ -10,6 +10,8 @@
 
 namespace discode {
 
+// Note: I don't know if this is the right way to represent functions and function pointers. This is an educated guess.
+
 class Function
 {
     std::vector<std::string> argnames;

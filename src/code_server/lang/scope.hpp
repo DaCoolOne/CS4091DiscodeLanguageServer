@@ -40,49 +40,15 @@ public:
         }
     }
 
-    bool resolveOrMake(Scope * scope, Data &out) {
-        std::string key;
-        size_t max_elmnt = _path.size() - 1;
-        out.type = Type::TYPE_OBJECT;
-        
-        for (int i = 0; i < max_elmnt; i ++) {
-            scope = static_cast<std::map<std::string, Data>*>(out.data.get());
-            key = _path.at(i);
-            if (!scope->count(key)) {
-                return false;
-            }
-            out = scope->at(_path.at(i));
-            if (out.type != Type::TYPE_OBJECT) {
-                return false;
-            }
-        }
+    bool resolveOrMake(Scope * scope, Data ** out) {
+        // Todo
 
-        scope = static_cast<std::map<std::string, Data>*>(out.data.get());
-        key = _path.at(max_elmnt);
-        if (!scope->count(key)) {
-            out = Data();
-            scope->insert(std::pair<std::string, Data>(key, out));
-            return false;
-        }
-        out = scope->at(_path.at(max_elmnt));
-
-        return true;
+        return false;
     }
-    bool resolve(Scope * scope, Data &out) {
-        std::string key;
-        out.type = Type::TYPE_OBJECT;
-        for (int i = 0; i < _path.size(); i ++) {
-            if (out.type != Type::TYPE_OBJECT) {
-                return false;
-            }
-            scope = static_cast<std::map<std::string, Data>*>(out.data.get());
-            key = _path.at(i);
-            if (!scope->count(key)) {
-                return false;
-            }
-            out = scope->at(_path.at(i));
-        }
-        return true;
+    bool resolve(Scope * scope, Data ** out) {
+        // Todo
+
+        return false;
     }
 };
 

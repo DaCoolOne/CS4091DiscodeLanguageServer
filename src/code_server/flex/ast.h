@@ -48,7 +48,13 @@ typedef enum {
     AST_NODE_DECLARE_FUNCTION,
     AST_NODE_DECLARE_METHOD,
 
-    AST_NODE_FUNCTION_SIGNATURE
+    AST_NODE_FUNCTION_SIGNATURE,
+
+    AST_NODE_INDEX,
+    AST_NODE_ARRAY_DEF,
+    AST_NODE_OBJECT_DEF,
+    AST_NODE_KEY_VALUE_PAIR,
+    AST_NODE_OBJECT_LIST
 } AST_NODE_TYPE;
 
 struct AST_Node_raw
@@ -120,6 +126,14 @@ AST_Node * createDeclareFunction(AST_Node * signature, AST_Node * code);
 AST_Node * createDeclareMethod(AST_Node * signature, AST_Node * code);
 
 AST_Node * createSignature(AST_Node * identifier, AST_Node * arglist);
+
+// Indexing, arrays, objects
+AST_Node * createIndex(AST_Node * base, AST_Node * index);
+
+AST_Node * createArray(AST_Node * elements);
+AST_Node * createObject(AST_Node * elements);
+AST_Node * createKeyValueList(AST_Node * keyvalue, AST_Node * next);
+AST_Node * createKeyValuePair(AST_Node * key, AST_Node * value);
 
 // Memory management
 void freeAST(AST_Node * node);

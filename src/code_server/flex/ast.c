@@ -129,6 +129,13 @@ AST_Node * createDeclareMethod(AST_Node * signature, AST_Node * code) { return c
 
 AST_Node * createSignature(AST_Node * identifier, AST_Node * arglist) { return createBinaryExpr(AST_NODE_FUNCTION_SIGNATURE, identifier, arglist); }
 
+AST_Node * createIndex(AST_Node * base, AST_Node * index) { return createBinaryExpr(AST_NODE_INDEX, base, index); }
+
+AST_Node * createArray(AST_Node * elements) { return createUnaryExpr(AST_NODE_ARRAY_DEF, elements); }
+AST_Node * createObject(AST_Node * elements) { return createUnaryExpr(AST_NODE_OBJECT_DEF, elements); }
+AST_Node * createKeyValueList(AST_Node * keyvalue, AST_Node * next) { return createBinaryExpr(AST_NODE_OBJECT_LIST, keyvalue, next); }
+AST_Node * createKeyValuePair(AST_Node * key, AST_Node * value) { return createBinaryExpr(AST_NODE_KEY_VALUE_PAIR, key, value); }
+
 void freeAST(AST_Node * node)
 {
     switch (node->type)
