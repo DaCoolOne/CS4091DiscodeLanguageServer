@@ -131,7 +131,7 @@ EXPRESSION          : FUNCTION_CALL
                     | UNARY_BOOL_EXPR
                     ;
 
-INDEX               : FULL_IDENTIFIER OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>2); }
+INDEX               : FULL_IDENTIFIER OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>1, $<node>3); }
                     ;
 
 ARRAY               : OPERATOR_OPEN_SQUARE ARGUMENT_LIST OPERATOR_CLOSE_SQUARE  { $<node>$ = createArray($<node>2); }

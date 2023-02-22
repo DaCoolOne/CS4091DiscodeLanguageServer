@@ -135,6 +135,8 @@ AST_Node * createObject(AST_Node * elements);
 AST_Node * createKeyValueList(AST_Node * keyvalue, AST_Node * next);
 AST_Node * createKeyValuePair(AST_Node * key, AST_Node * value);
 
+AST_Node * createObjectDefinition(AST_Node * def);
+
 // Memory management
 void freeAST(AST_Node * node);
 

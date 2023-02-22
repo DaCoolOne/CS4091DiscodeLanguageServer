@@ -136,6 +136,8 @@ AST_Node * createObject(AST_Node * elements) { return createUnaryExpr(AST_NODE_O
 AST_Node * createKeyValueList(AST_Node * keyvalue, AST_Node * next) { return createBinaryExpr(AST_NODE_OBJECT_LIST, keyvalue, next); }
 AST_Node * createKeyValuePair(AST_Node * key, AST_Node * value) { return createBinaryExpr(AST_NODE_KEY_VALUE_PAIR, key, value); }
 
+AST_Node * createObjectDefinition(AST_Node * def) { return createUnaryExpr(AST_NODE_ARRAY_DEF, def); }
+
 void freeAST(AST_Node * node)
 {
     switch (node->type)
