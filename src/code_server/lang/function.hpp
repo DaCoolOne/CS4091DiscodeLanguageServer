@@ -4,6 +4,7 @@
 #include <memory>
 #include <map>
 #include <vector>
+#include <stdexcept>
 
 #include "lang/data.hpp"
 #include "lang/instruction.hpp"

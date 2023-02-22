@@ -2,6 +2,7 @@
 #define INSTRUCTION_HPP
 
 #include <vector>
+#include <stdexcept>
 
 #include "lang/data.hpp"
 #include "lang/scope.hpp"

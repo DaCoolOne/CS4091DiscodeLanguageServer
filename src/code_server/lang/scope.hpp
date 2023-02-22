@@ -2,6 +2,7 @@
 #define SCOPE_HPP
 
 #include <map>
+#include <stdexcept>
 #include "lang/data.hpp"
 #include "utils/string.hpp"
 

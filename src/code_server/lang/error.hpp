@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include <stdexcept>
 #include "lang/scope.hpp"
 #include "utils/string.hpp"
 
