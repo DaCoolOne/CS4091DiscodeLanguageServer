@@ -21,6 +21,16 @@ enum Type
     TYPE_METHOD
 };
 
+enum OPCODE
+{
+    ADD,
+    SUB,
+    DIV,
+    MUL,
+    ICONST,
+    HALT
+};
+
 struct Data
 {
     Type type;
