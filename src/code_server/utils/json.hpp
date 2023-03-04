@@ -42,7 +42,7 @@ class JsonNull: public JsonData
 public:
     JsonNull(): JsonData(JsonDataType::JSON_DATA_NULL) {}
 
-    std::string toJsonString() { return "null"; }
+    std::string toJsonString() override { return "null"; }
 };
 
 class JsonBool: public JsonData
@@ -51,9 +51,9 @@ class JsonBool: public JsonData
 public:
     JsonBool(bool value): JsonData(JsonDataType::JSON_DATA_BOOL), _data(value) {}
 
-    bool asBool() { return _data; }
+    bool asBool() override { return _data; }
 
-    std::string toJsonString() { return _data ? "true" : "false"; }
+    std::string toJsonString() override { return _data ? "true" : "false"; }
 };
 
 class JsonNumber: public JsonData
@@ -62,9 +62,9 @@ class JsonNumber: public JsonData
 public:
     JsonNumber(double value): JsonData(JsonDataType::JSON_DATA_NUMBER), _data(value) {}
 
-    double asNumber() { return _data; }
+    double asNumber() override { return _data; }
 
-    std::string toJsonString();
+    std::string toJsonString() override;
 };
 
 class JsonString: public JsonData
@@ -73,9 +73,9 @@ class JsonString: public JsonData
 public:
     JsonString(std::string value): JsonData(JsonDataType::JSON_DATA_STRING), _data(value) {}
 
-    std::string asString() { return _data; }
+    std::string asString() override { return _data; }
 
-    std::string toJsonString();
+    std::string toJsonString() override;
 };
 
 class JsonArray: public JsonData
@@ -86,10 +86,10 @@ private:
 public:
     JsonArray(): JsonData(JsonDataType::JSON_DATA_ARRAY) {}
 
-    std::vector<std::shared_ptr<JsonData>> asVector() { return _data; }
+    std::vector<std::shared_ptr<JsonData>> asVector() override { return _data; }
     void add(std::shared_ptr<JsonData> value) { _data.push_back(value); }
 
-    std::string toJsonString();
+    std::string toJsonString() override;
 };
 
 class JsonObject: public JsonData
@@ -100,10 +100,10 @@ private:
 public:
     JsonObject(): JsonData(JsonDataType::JSON_DATA_OBJECT) {}
 
-    std::shared_ptr<JsonData> at(std::string key) { return _data.at(key); }
+    std::shared_ptr<JsonData> at(std::string key) override { return _data.at(key); }
     void add(std::string key, std::shared_ptr<JsonData> value) { _data.insert(std::pair<std::string, std::shared_ptr<JsonData>>(key, value)); }
 
-    std::string toJsonString();
+    std::string toJsonString() override;
 };
 
 std::shared_ptr<JsonData> loadJsonData(std::istream& in);

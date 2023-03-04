@@ -9,7 +9,7 @@
 namespace discode
 {
 
-typedef std::map<std::string, Data> Scope;
+typedef std::map<std::string, std::shared_ptr<Data>> Scope;
 
 enum ScopeType
 {
@@ -39,6 +39,7 @@ public:
             case ScopeType::SCOPE_GLOBAL: return "#" + util::join(_path);
             case ScopeType::SCOPE_LIBRARY: return "!" + util::join(_path);
         }
+        return "UNKNOWN";
     }
 
     bool resolveOrMake(Scope * scope, Data ** out) {

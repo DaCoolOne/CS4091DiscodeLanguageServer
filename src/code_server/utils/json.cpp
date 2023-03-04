@@ -95,7 +95,7 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
     if (c == '"') {
         // Load a string
         std::string s = loadstring(in);
-        data = std::shared_ptr<json::JsonData>(new json::JsonString(s));
+        data = std::make_shared<json::JsonString>(s);
     }
     else if (c >= '0' && c <= '9') {
         // Load a number
@@ -104,8 +104,8 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
     else if (c == '{') {
         // Load an object
         c = nextNonWhitespace(in);
-        json::JsonObject * jsonObject = new json::JsonObject();
-        data = std::shared_ptr<json::JsonData>(jsonObject);
+        auto jsonObject = std::make_shared<json::JsonObject>();
+        data = jsonObject;
         while(c == '"') {
             std::string key = loadstring(in);
             c = nextNonWhitespace(in);
@@ -121,19 +121,20 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
     else if (c == '[') {
         // Load an array
         c = nextNonWhitespace(in);
-        json::JsonArray * jsonArray = new json::JsonArray();
-        data = std::shared_ptr<json::JsonData>(jsonArray);
+        auto jsonArray = std::make_shared<json::JsonArray>();
         while (c != ']') {
             std::shared_ptr<json::JsonData> value = _loadJsonDataRec(in);
+            jsonArray->add(value);
             c = nextNonWhitespace(in);
             if (c != ',' && c != ']') throw std::logic_error("Malformed array");
             if (c == ',') c = nextNonWhitespace(in);
         }
+        data = jsonArray;
     }
     else if (c == 't' || c == 'f') {
         // Load boolean
         if(readExpected(in, c == 't' ? "rue" : "alse")) {
-            data = std::shared_ptr<json::JsonData>(new json::JsonBool(c == 't'));
+            data = std::make_shared<json::JsonBool>(c == 't');
         }
         else {
             throw std::logic_error("Unexpected character");
@@ -142,7 +143,7 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
     else if (c == 'n') {
         // Load null
         if(readExpected(in, "ull")) {
-            data = std::shared_ptr<json::JsonData>(new json::JsonNull());
+            data = std::make_shared<json::JsonNull>();
         }
         else {
             throw std::logic_error("Unexpected character");

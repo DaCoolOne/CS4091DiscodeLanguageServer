@@ -61,7 +61,7 @@ AST_Node * createString(char * value)
 AST_Node * createIdentifier(char * value)
 {
     AST_Node * node = malloc(sizeof(AST_Node));
-    node->type = AST_NODE_STR;
+    node->type = AST_NODE_IDENT;
     node->asStr = malloc(strlen(value)+1);
     strcpy(node->asStr, value);
     node->left = NULL;

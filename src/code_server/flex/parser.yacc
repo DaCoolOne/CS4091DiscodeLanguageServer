@@ -120,8 +120,8 @@ FULL_IDENTIFIER     : OPERATOR_POUND IDENTIFIER_PATH    { $<node>$ = createGloba
                     | IDENTIFIER_PATH                   { $<node>$ = $<node>1; }
                     ;
 
-IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = $<node>1; }
-                    | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath($<node>2, $<node>3); }
+IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = createIdentifierPath(NULL, $<node>1); }
+                    | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath($<node>1, $<node>3); }
                     ;
 
 EXPRESSION          : FUNCTION_CALL
