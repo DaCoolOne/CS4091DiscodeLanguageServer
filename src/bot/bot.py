@@ -22,6 +22,8 @@ token = str(os.getenv("TOKEN"))
 # =================== Server Communication =================== #
 
 def nonBlockSend(port: int, message):
+
+    time.sleep(1)
     # Sends data packets to the server, to reduce rendundant code.
     client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
@@ -149,9 +151,9 @@ def main_loop():
         while True :
             try :
                 message = s.recv(4096)
-                message = json.loads(message.decode(encoding='utf8'))
-                print(message)
-                handle_message(message)
+                obj = json.loads(message.decode(encoding='utf8'))
+                print("Message: ", obj)
+                handle_message(obj)
             except BlockingIOError :
                 pass
             except Exception as e :
