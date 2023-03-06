@@ -5,6 +5,7 @@
 #include <map>
 #include <stdexcept>
 #include <iostream>
+#include "utils/json.hpp"
 
 void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
 {
@@ -20,6 +21,7 @@ void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
     }
 
     discode::Function * function = dynamic_cast<discode::Function *>(obj.get());
+
     if(function->args().size() != 1) {
         error(discode::ErrorBadArgumentCount(function->args().size()));
         return;
@@ -27,6 +29,9 @@ void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
     Scope locals;
     locals.insert(std::pair<std::string, std::shared_ptr<discode::Data>>(function->args().at(0), msg));
     
+    argument_stack.clear();
+    function_stack.clear();
+
     discode::FunctionPtr fptr(function, locals);
     pushFunction(fptr);
 }
@@ -37,6 +42,8 @@ void discode::VM::step()
     {
         return;
     }
+
+    // print();
 
     discode::FunctionPtr &active = function_stack.back();
     if (active.isComplete())
@@ -253,8 +260,12 @@ void discode::VM::print()
     }
 }
 
-discode::VM::VM()
+discode::VM::VM(Socket * sock): _sock(sock)
 {
     lib::loadAll(this);
 }
 
+void discode::VM::sendObject(json::JsonData * data)
+{
+    _sock->SendLine(data->toJsonString());
+}

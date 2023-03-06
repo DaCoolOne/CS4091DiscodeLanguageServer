@@ -337,6 +337,8 @@ std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::bui
 void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
 {
     std::pair<std::shared_ptr<discode::Function>, std::string> func;
+    json::JsonArray arglist;
+    json::JsonObject jsonData;
     switch (node->type)
     {
         case AST_NODE_DECLARE:
@@ -345,6 +347,16 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
         case AST_NODE_DECLARE_FUNCTION:
             func = discode_internal::buildFunction(node);
             vm->writeGlobal(channel, func.second, func.first);
+            if(channel == "commands") {
+                jsonData.add("Name", std::make_shared<json::JsonString>("Add Func"));
+                jsonData.add("Server_id", std::make_shared<json::JsonString>("TODO"));
+                jsonData.add("Function_name", std::make_shared<json::JsonString>(func.second));
+                for (auto const &arg : func.first->args()) {
+                    arglist.add(std::make_shared<json::JsonString>(arg));
+                }
+                jsonData.add("Arguments", std::make_shared<json::JsonArray>(arglist));
+                vm->sendObject(&jsonData);
+            }
         break;
         case AST_NODE_DECLARE_METHOD:
             // Todo

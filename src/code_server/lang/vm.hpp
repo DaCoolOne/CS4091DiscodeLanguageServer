@@ -9,6 +9,9 @@
 #include "lang/function.hpp"
 #include "lang/error.hpp"
 
+#include "socket/Socket.hpp"
+#include "utils/json.hpp"
+
 namespace discode {
 
 #define MAX_FUNCTION_STACK_SIZE 1024
@@ -22,8 +25,10 @@ class VM {
 
     std::shared_ptr<discode::Error> err;
 
+    Socket * _sock;
+
 public:
-    VM();
+    VM(Socket * sock);
 
     void push(std::shared_ptr<discode::Data> data);
     void pushNull();
@@ -59,6 +64,9 @@ public:
     void clearAll();
     void writeGlobal(std::string channel, std::string data_name, std::shared_ptr<Data> data);
     void writeLib(std::string channel, std::string data_name, std::shared_ptr<Data> data);
+
+    // Functions for sending stuff to the server
+    void sendObject(json::JsonData * data);
 
 };
 

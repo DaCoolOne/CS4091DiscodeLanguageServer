@@ -13,7 +13,8 @@
 #include "lang/instruction.hpp"
 #include "lang/vm.hpp"
 
-#define PORT 3540
+#define INPORT  3540
+#define OUTPORT 3541
 
 /*
 unsigned __stdcall Answer(void* a) {
@@ -79,65 +80,63 @@ int main(int argc, char* argv[]) {
     }
 
     try {
-        SocketServer in(PORT,5);
+        SocketServer    in (  INPORT, 5);
+        SocketServer    out( OUTPORT, 5);
 
         while (1) {
-            Socket* s = in.Accept();
+            Socket* s_in  = in.Accept();
+            Socket* s_out = out.Accept();
 
-            discode::VM vm;
+            discode::VM vm(s_out);
 
             while (1) {
-                std::string r = s->ReceiveLine();
-                std::cout << r << std::endl;
+                std::string r = s_in->ReceiveBytes();
                 
-                if (r.empty()) break;
-                std::stringstream streamdata(r);
-                std::shared_ptr<json::JsonData> data = json::loadJsonData(streamdata);
-                
-                assert(data->type() == json::JSON_DATA_OBJECT); 
-                assert(data->at("Name")->type() == json::JSON_DATA_STRING);
-                
-                std::string command = data->at("Name")->asString();
-                std::cout << "Recieved " << command << " command" << std::endl;
+                if (!r.empty()) {
+                    std::cout << r << std::endl;
 
-                if (command == "Load") {
+                    std::stringstream streamdata(r);
+                    std::shared_ptr<json::JsonData> data = json::loadJsonData(streamdata);
                     
-                    std::string server_id = data->at("Server_id")->asString();
-                    std::string channel_id = data->at("Channel_id")->asString();
-                    std::string code = data->at("Code")->asString();
+                    assert(data->type() == json::JSON_DATA_OBJECT); 
+                    assert(data->at("Name")->type() == json::JSON_DATA_STRING);
                     
-                    std::cout << "(" << server_id << ") #" << channel_id << '\n' << code << std::endl;
+                    std::string command = data->at("Name")->asString();
+                    std::cout << "Recieved " << command << " command" << std::endl;
 
-                    discode::loadVM_string(&vm, channel_id, code);
-                }
-                else if (command == "Run") {
+                    if (command == "Load") {
+                        
+                        std::string server_id = data->at("Server_id")->asString();
+                        std::string channel_id = data->at("Channel_id")->asString();
+                        std::string code = data->at("Code")->asString();
+                        
+                        std::cout << "(" << server_id << ") #" << channel_id << '\n' << code << std::endl;
 
-                    std::string server_id = data->at("Server_id")->asString();
-                    std::string function = data->at("Function")->asString();
-                    json::JsonData * message = data->at("Message").get();
-
-                    // Build message object
-                    std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
-                    message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", std::make_shared<discode::String>("default")));
-
-                    vm.init(function, message_object);
-                    vm.run(100); // Limit ourselves to 100 steps
-
-                    discode::Error * err = vm.getError();
-                    if(err != nullptr) {
-                        std::cout << "VM exited with error: " << err->what() << std::endl;
+                        discode::loadVM_string(&vm, channel_id, code);
                     }
-                    else {
-                        std::cout << "VM exited successfully" << std::endl;
+                    else if (command == "Run") {
+
+                        std::string channel_id = data->at("Channel_id")->asString();
+                        std::string function = data->at("Function")->asString();
+                        json::JsonData * message = data->at("Message").get();
+
+                        // Build message object
+                        std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
+                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", std::make_shared<discode::String>("default")));
+
+                        vm.init(function, message_object);
+
+                    }
+                    else if (command == "ParseTree") {
+
+                        std::string code = data->at("Code")->asString();
+
+                        discode::analyze_string(code);
+
                     }
                 }
-                else if (command == "ParseTree") {
 
-                    std::string code = data->at("Code")->asString();
-
-                    discode::analyze_string(code);
-
-                }
+                vm.step();
             }
 
             if (single) {

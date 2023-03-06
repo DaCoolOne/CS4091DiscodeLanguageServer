@@ -6,11 +6,11 @@ import time
 import socket
 import json
 
-import signal
+import queue
 import subprocess
 import threading
 
-CREATE_SERVER = False
+CREATE_SERVER = True
 
 def send_msg(client: socket.socket, obj: dict):
     client.send((json.dumps(obj) + '\n').encode(encoding='utf8'))
@@ -27,21 +27,69 @@ def run_test():
         time.sleep(1)
 
         # Create a connection
-        print("Create socket")
+        print("Create sockets")
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        
+        response_client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
         print("Connecting")
         client.connect(("localhost", 3540))
+        response_client.connect(("localhost", 3541))
+
+        client.setblocking(False)
+        response_client.setblocking(False)
+
+        EXISTING_COMMANDS = set()
+
+        def recvcommands(q: queue.Queue):
+            while q.empty():
+                # Todo: make data have more length
+                try:
+                    data = response_client.recv(4096)
+                    obj = json.loads(data.decode(encoding='utf8'))
+                    if obj['Name'] == 'Add Func':
+                        server_id = obj['Server_id']
+                        name = obj['Function_name']
+                        args = obj['Arguments']
+                        arg_str = ','.join(args)
+                        print(f"Register command {name}({arg_str})")
+                        EXISTING_COMMANDS.add(name)
+                    elif obj['Name'] == 'Send Message':
+                        chid = obj['Channel_id']
+                        msg = obj['Message']
+                        print(f'#{chid}: {msg}')
+                except BlockingIOError:
+                    pass
+                
+                time.sleep(0.01)
+
+        def sendcommands():
+            time.sleep(1) # Give time for VM to sort itself
+            while True:
+                cmd = input("Enter command: ")
+                if cmd == 'quit' or cmd == '':
+                    break
+                if cmd in EXISTING_COMMANDS:
+                    send_msg(client, {
+                        "Name": "Run",
+                        "Channel_id": "tester",
+                        "Function": cmd,
+                        "Message": {  },
+                    })
+                else:
+                    print(f"{cmd} is not a command")
+                time.sleep(0.05)
+
+        stopQueue = queue.Queue()
+        t1 = threading.Thread(target=sendcommands)
+        t2 = threading.Thread(target=recvcommands, args=(stopQueue,))
+
+        t2.start()
 
         print("Send code")
         for channel in os.listdir(base):
             print(f"Found channel {channel}")
             for msg in os.listdir(os.path.join(base, channel)):
                 with open(os.path.join(base, channel, msg)) as f:
-                    """send_msg(client, {
-                        "Name": "ParseTree",
-                        "Code": f.read()
-                    })"""
                     send_msg(client, {
                         "Name": "Load",
                         "Server_id": "tester",
@@ -49,21 +97,14 @@ def run_test():
                         "Code": f.read()
                     })
 
-        while True:
-            cmd = input("Enter command: ")
-            if cmd == 'quit' or cmd == '':
-                break
-            print("Sending")
-            send_msg(client, {
-                "Name": "Run",
-                "Server_id": "tester",
-                "Function": cmd,
-                "Message": {  },
-            })
-            print("Sent!")
+        t1.start()
+        t1.join()
 
         print("Shutting down")
+        stopQueue.put("Stop")
+        t2.join()
         client.close()
+        response_client.close()
 
     finally:
         if CREATE_SERVER:
