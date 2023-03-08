@@ -30,33 +30,19 @@ def nonBlockSend(port: int, message):
     client.connect(("localhost", port))
     client.setblocking(False)
 
-    # Make sure the whole message goes through!
-    size_message = len(message)
-    total_sent = 0
-    while len(message) :
-        try :
-            # Send as much as you can at once
-            total_sent += client.send(message)
-            # Don't send the same part again
-            message = message[total_sent:]
-        except socket.error as e :
-            # Make sure the problem is a full buffer
-            if e.errno != errno.EAGAIN :
-                raise e
-            select.select([],[client],[])
-    assert total_sent == size_message
+    client.send((json.dumps(message) + '\n').encode(encoding='utf8'))
     client.close()
 
 
 def load(server_id: int, channel_id: int, message_id: int, code: str):
     # Load a new codeblock into the server
 
-    message = json.dumps({
+    message = {
         "Name": "Load",
         "Server_id": str(server_id),
         "Channel_id": str(channel_id),
         "Code": code
-    }).encode(encoding='utf8')
+    }
 
     nonBlockSend(3540, message)
 
@@ -64,12 +50,12 @@ def load(server_id: int, channel_id: int, message_id: int, code: str):
 def run(func_name: str, message_id: int, arguments = {}):
     # Tell the server to run a command, probably triggered by a user's slash command
 
-    message = json.dumps({
+    message = {
         "Name": "Run",
         "Function": func_name,
         "Message_id": message_id,
         "Arguments": arguments
-    }).encode(encoding='utf8')
+    }
 
     nonBlockSend(3540, message)
 
@@ -142,9 +128,8 @@ async def on_message(message):
 # =========================== MAIN =========================== #
 
 def main_loop():
-    out_port = 3541
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.connect(("localhost", out_port))
+    s.connect(("localhost", 3541))
     s.setblocking(False)
 
     try : 
