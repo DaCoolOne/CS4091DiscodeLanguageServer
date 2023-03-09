@@ -9,12 +9,24 @@
 #include <iostream>
 #include <limits>
 
-// Implement instructions here
+bool discode::isTruthy(std::shared_ptr<discode::Data> data) {
+    if (data->type == discode::Type::TYPE_NULL) { return false; }
+    if (data->type == discode::Type::TYPE_BOOL && !data->getBool()) { return false; }
+    return true;
+}
+
 void discode::InstructionPush::execute(discode::VM * vm) {
     vm->push(_data->copy());
 }
 std::string discode::InstructionPush::repr() {
     return "PUSH " + _data->repr();
+}
+
+void discode::InstructionPop::execute(discode::VM * vm) {
+    vm->pop();
+}
+std::string discode::InstructionPop::repr() {
+    return "POP";
 }
 
 void discode::InstructionFunctionCall::execute(discode::VM * vm) {
@@ -74,7 +86,7 @@ std::string discode::InstructionUJump::repr() {
 void discode::InstructionCJump::execute(discode::VM * vm) {
     std::shared_ptr<Data> jump_val = vm->pop();
     
-    if (jump_val->type != TYPE_NULL && (jump_val->type != TYPE_BOOL || jump_val->getBool())) {
+    if (discode::isTruthy(jump_val)) {
         vm->jump(targetIndex);
     }
 }
@@ -124,8 +136,238 @@ std::string discode::InstructionGetStack::repr() {
 }
 
 void discode::InstructionGetIndexedStack::execute(discode::VM * vm) {
-    
+    // Todo. Used for getting when indexing is involved.
 }
 std::string discode::InstructionGetIndexedStack::repr() {
     return "RESOLVE INDEX";
 }
+
+void discode::InstructionWriteLocal::execute(discode::VM * vm) {
+    auto object = vm->pop();
+    vm->writeLocal(ident, object);
+}
+std::string discode::InstructionWriteLocal::repr() {
+    return "WRITE " + ident;
+}
+
+void discode::InstructionWriteLibrary::execute(discode::VM * vm) {
+    // Todo: Lock libraries to read-only
+}
+std::string discode::InstructionWriteLibrary::repr() {
+    return "WRITE !" + ident;
+}
+
+void discode::InstructionWriteGlobal::execute(discode::VM * vm) {
+    // Todo: how to set globals? Maybe make this also read-only?
+}
+std::string discode::InstructionWriteGlobal::repr() {
+    return "WRITE #" + ident;
+}
+
+void discode::InstructionWriteStack::execute(discode::VM * vm) {
+    auto object = vm->pop();
+    auto value = vm->pop();
+    
+    if (object->type != discode::Type::TYPE_OBJECT) {
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_OBJECT, object->type));
+        return;
+    }
+
+    object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>(ident, value));
+}
+std::string discode::InstructionWriteStack::repr() {
+    return "WRITE STACK " + ident;
+}
+
+void discode::InstructionAdd::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    vm->push(a->getNumber() + b->getNumber());
+}
+std::string discode::InstructionAdd::repr() {
+    return "ADD";
+}
+
+void discode::InstructionSub::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    vm->push(a->getNumber() - b->getNumber());
+}
+std::string discode::InstructionSub::repr() {
+    return "SUB";
+}
+
+void discode::InstructionMul::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    vm->push(a->getNumber() * b->getNumber());
+}
+std::string discode::InstructionMul::repr() {
+    return "MUL";
+}
+
+void discode::InstructionDivide::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    if (b->getNumber() == 0) {
+        if (a->getNumber() >= 0) {
+            vm->push(std::numeric_limits<double>::infinity());
+        }
+        else {
+            vm->push(-std::numeric_limits<double>::infinity());
+        }
+    }
+    else {
+        vm->push(a->getNumber() / b->getNumber());
+    }
+}
+std::string discode::InstructionDivide::repr() {
+    return "DIV";
+}
+
+void discode::InstructionAnd::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+    vm->push(discode::isTruthy(a) && discode::isTruthy(b));
+}
+std::string discode::InstructionAnd::repr() {
+    return "AND";
+}
+
+void discode::InstructionOr::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+    vm->push(discode::isTruthy(a) || discode::isTruthy(b));
+}
+std::string discode::InstructionOr::repr() {
+    return "OR";
+}
+
+void discode::InstructionNot::execute(discode::VM * vm) {
+    vm->push(!discode::isTruthy(vm->pop()));
+}
+std::string discode::InstructionNot::repr() {
+    return "NOT";
+}
+
+void discode::InstructionNeg::execute(discode::VM * vm) {
+    auto a = vm->pop();
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    vm->push(-a->getNumber());
+}
+std::string discode::InstructionNeg::repr() {
+    return "NEG";
+}
+
+void discode::InstructionGtr::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    vm->push(a->getNumber() > b->getNumber());
+}
+std::string discode::InstructionGtr::repr() {
+    return "GTR";
+}
+
+void discode::InstructionGteq::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    vm->push(a->getNumber() >= b->getNumber());
+}
+std::string discode::InstructionGteq::repr() {
+    return "GTEQ";
+}
+
+void discode::InstructionEq::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != b->type) {
+        vm->push(false);
+        return;
+    }
+    
+    switch(a->type) {
+        case discode::Type::TYPE_NULL:
+            vm->push(true);
+        break;
+        case discode::Type::TYPE_BOOL:
+            vm->push(a->getBool() == b->getBool());
+        break;
+        case discode::Type::TYPE_NUMBER:
+            vm->push(a->getNumber() == b->getNumber());
+        break;
+        case discode::Type::TYPE_STRING:
+            vm->push(a->getString() == b->getString());
+        break;
+        default:
+            vm->push(false);
+        break;
+    }
+}
+std::string discode::InstructionEq::repr() {
+    return "EQ";
+}
+

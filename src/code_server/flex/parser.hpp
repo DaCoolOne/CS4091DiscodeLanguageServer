@@ -38,6 +38,9 @@ std::vector<std::shared_ptr<discode::Instruction>> buildAssign(AST_Node * assign
 std::vector<std::shared_ptr<discode::Instruction>> buildStatement(AST_Node * statement, uint16_t jumpoffset);
 std::vector<std::shared_ptr<discode::Instruction>> buildStatements(AST_Node * node, uint16_t jumpoffset = 0);
 std::pair<std::shared_ptr<discode::Function>, std::string> buildFunction(AST_Node * node);
+std::vector<std::shared_ptr<discode::Instruction>> buildBinaryOperator(AST_Node * node);
+std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node * node);
+std::vector<std::shared_ptr<discode::Instruction>> buildAssignReturn(AST_Node * ret_node);
 
 };
 #endif

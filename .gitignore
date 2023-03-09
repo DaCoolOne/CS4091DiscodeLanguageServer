@@ -3,6 +3,7 @@
 *.exe
 *.o
 temp.*
+*.md5
 
 y.tab.c
 y.tab.h

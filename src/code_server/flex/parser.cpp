@@ -225,6 +225,48 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFuncti
     return arglist.first;
 }
 
+// Pre: expr is an operator
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildBinaryOperator(AST_Node * node) {
+    auto lhs = discode_internal::buildExpressionEval(node->left);
+    auto rhs = discode_internal::buildExpressionEval(node->right);
+
+    lhs.reserve(lhs.size() + rhs.size() + 1);
+    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+
+    switch (node->type)
+    {
+        case AST_NODE_ADD:  lhs.push_back(std::make_shared<discode::InstructionAdd>()); break;
+        case AST_NODE_SUB:  lhs.push_back(std::make_shared<discode::InstructionSub>()); break;
+        case AST_NODE_MUL:  lhs.push_back(std::make_shared<discode::InstructionMul>()); break;
+        case AST_NODE_DIV:  lhs.push_back(std::make_shared<discode::InstructionDivide>()); break;
+        case AST_NODE_GTR:  lhs.push_back(std::make_shared<discode::InstructionGtr>()); break;
+        case AST_NODE_GTEQ: lhs.push_back(std::make_shared<discode::InstructionGteq>()); break;
+        case AST_NODE_EQ:   lhs.push_back(std::make_shared<discode::InstructionEq>()); break;
+        case AST_NODE_AND:  lhs.push_back(std::make_shared<discode::InstructionAnd>()); break;
+        case AST_NODE_OR:   lhs.push_back(std::make_shared<discode::InstructionOr>()); break;
+
+        default:
+            throw std::logic_error("Unknown EXPR OP node type " + std::to_string(node->type));
+        break;
+    }
+    return lhs;
+}
+
+std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node * node) {
+    auto rhs = discode_internal::buildExpressionEval(node->right);
+
+    switch (node->type)
+    {
+        case AST_NODE_NEG: rhs.push_back(std::make_shared<discode::InstructionNeg>()); break;
+        case AST_NODE_NOT: rhs.push_back(std::make_shared<discode::InstructionNot>()); break;
+
+        default:
+            throw std::logic_error("Unknown EXPR OP node type " + std::to_string(node->type));
+        break;
+    }
+    return rhs;
+}
+
 // Pre: expr is not NULL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpressionEval(AST_Node * expr) {
     switch (expr->type)
@@ -242,6 +284,17 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
         case AST_NODE_STR:
             return discode_internal::buildConstant(expr);
         
+        case AST_NODE_ADD:
+        case AST_NODE_SUB:
+        case AST_NODE_MUL:
+        case AST_NODE_DIV:
+        case AST_NODE_GTR:
+        case AST_NODE_GTEQ:
+        case AST_NODE_EQ:
+        case AST_NODE_AND:
+        case AST_NODE_OR:
+            return discode_internal::buildBinaryOperator(expr);
+
         default:
             throw std::logic_error("Unknown EXPR node type " + std::to_string(expr->type));
         break;
@@ -251,6 +304,24 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
     return std::vector<std::shared_ptr<discode::Instruction>>();
 }
 
+// Pre: node type is NAME_RESOLVE, LOCAL, or GLOBAL
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssignReturn(AST_Node * ret_node) {
+    // For now, only assign local
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    if (ret_node->type == AST_NODE_RESOLVE_NAME) {
+        if (ret_node->left) {
+            
+        }
+        else {
+            ins.push_back(std::make_shared<discode::InstructionWriteLocal>(getStr(ret_node->right)));
+        }
+    }
+    else if (ret_node->type == AST_NODE_GLOBAL_SCOPE) {
+
+    }
+    return ins;
+}
+
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign(AST_Node * assign, uint16_t jumpoffset) {
 
     AST_Node * returns_to = assign->left;
@@ -258,13 +329,18 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
 
     // Ignore return value
     if (returns_to == nullptr) {
-        return discode_internal::buildExpressionEval(expr);
+        auto eval = discode_internal::buildExpressionEval(expr);
+        eval.push_back(std::make_shared<discode::InstructionPop>());
+        return eval;
     }
     // Assign return value
     else {
-
-        // Todo: Return value assignment
-        return discode_internal::buildExpressionEval(expr);
+        printNode(returns_to, "");
+        auto eval = discode_internal::buildExpressionEval(expr);
+        auto assign = discode_internal::buildAssignReturn(returns_to);
+        eval.reserve(eval.size() + assign.size());
+        eval.insert(eval.end(), assign.begin(), assign.end());
+        return eval;
     }
 
 }
@@ -346,6 +422,7 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
         break;
         case AST_NODE_DECLARE_FUNCTION:
             func = discode_internal::buildFunction(node);
+            std::cout << func.first->deepRepr() << std::endl;
             vm->writeGlobal(channel, func.second, func.first);
             if(channel == "commands") {
                 jsonData.add("Name", std::make_shared<json::JsonString>("Add Func"));
@@ -377,7 +454,7 @@ void discode::analyze_file(std::string path)
     // Print the generated code
     if (ast->type == AST_NODE_DECLARE_FUNCTION) {
         auto func = discode_internal::buildFunction(ast);
-        std::cout << func.second << " = " << func.first->repr() << std::endl;
+        std::cout << func.second << " = " << func.first->deepRepr() << std::endl;
     }
     else {
         std::cout << "Unknown node" << std::endl;
@@ -402,9 +479,13 @@ void discode::loadVM(discode::VM * vm, std::string channel, std::string path)
 {
     AST_Node * ast = parse(path.c_str());
 
-    load(vm, ast, channel);
-
-    freeAST(ast);
+    if(ast) {
+        load(vm, ast, channel);
+        freeAST(ast);
+    }
+    else {
+        std::cout << "\nSyntax error probably (todo make better handling for this)" << std::endl;
+    }
 }
 
 void discode::loadVM_string(discode::VM * vm, std::string channel, std::string str)

@@ -65,6 +65,8 @@ public:
     void writeGlobal(std::string channel, std::string data_name, std::shared_ptr<Data> data);
     void writeLib(std::string channel, std::string data_name, std::shared_ptr<Data> data);
 
+    void writeLocal(std::string ident, std::shared_ptr<Data> data);
+
     // Functions for sending stuff to the server
     void sendObject(json::JsonData * data);
 

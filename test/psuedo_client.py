@@ -10,7 +10,7 @@ import queue
 import subprocess
 import threading
 
-CREATE_SERVER = True
+CREATE_SERVER = False
 
 def send_msg(client: socket.socket, obj: dict):
     client.send((json.dumps(obj) + '\n').encode(encoding='utf8'))
