@@ -31,6 +31,7 @@ AST_Node * createBool(AST_Bool val)
 {
     AST_Node * node = malloc(sizeof(AST_Node));
     node->type = AST_NODE_BOOL;
+    node->asBool = val;
     node->left = NULL;
     node->right = NULL;
     return node;

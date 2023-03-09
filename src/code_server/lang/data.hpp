@@ -73,7 +73,7 @@ class String : public Data
     std::string val;
 public:
     String(const char * value): Data(Type::TYPE_STRING), val(value) {}
-    String(std::string &value): Data(Type::TYPE_STRING), val(value) {}
+    String(const std::string &value): Data(Type::TYPE_STRING), val(value) {}
     std::shared_ptr<Data> copy() override { return std::make_shared<String>(val); }
     std::string getString() override { return val; }
     std::string repr() override { return val; }

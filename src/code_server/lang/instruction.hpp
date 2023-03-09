@@ -9,7 +9,7 @@
 
 namespace discode {
 
-// Forward-declare the virtual machine
+// Forward-declare the virtual machine.
 class VM;
 
 struct Instruction
@@ -20,6 +20,8 @@ struct Instruction
     virtual bool hasArrow() { return false; }
 };
 
+bool isTruthy(std::shared_ptr<discode::Data> data);
+
 // Place instructions here
 class InstructionPush : public Instruction
 {
@@ -27,6 +29,13 @@ class InstructionPush : public Instruction
 public:
     InstructionPush(std::shared_ptr<Data> data): _data(data) { }
 
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionPop : public Instruction
+{
+public:
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -110,6 +119,123 @@ class InstructionGetIndexedStack : public Instruction
 public:
     InstructionGetIndexedStack() { }
 
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionWriteLocal : public Instruction
+{
+    std::string ident;
+public:
+    InstructionWriteLocal(std::string identifier): ident(identifier) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionWriteLibrary : public Instruction
+{
+    std::string ident;
+public:
+    InstructionWriteLibrary(std::string identifier): ident(identifier) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionWriteGlobal : public Instruction
+{
+    std::string ident;
+public:
+    InstructionWriteGlobal(std::string identifier): ident(identifier) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionWriteStack : public Instruction
+{
+    std::string ident;
+public:
+    InstructionWriteStack(std::string identifier): ident(identifier) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionAdd : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionSub : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionMul : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionDivide : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionAnd : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionOr : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionNot : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionNeg : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionGtr : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionGteq : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionEq : public Instruction
+{
+public:
     void execute(discode::VM * vm);
     std::string repr();
 };

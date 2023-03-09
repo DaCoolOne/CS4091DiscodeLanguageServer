@@ -1,0 +1,5 @@
+function test : msg {
+    a <- 10 + 4 * 80 + 2 / 5;
+    b <- a > 10 and true or false;
+    !message.send(msg.channel, !conv.str(a));
+}

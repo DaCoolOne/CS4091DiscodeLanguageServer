@@ -7,6 +7,9 @@
 #include <iostream>
 #include "utils/json.hpp"
 
+#include <chrono>
+#include <thread>
+
 void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
 {
     if(globals.count("commands") == 0 || globals.at("commands")->type != Type::TYPE_OBJECT || globals.at("commands")->getMap()->count(fname) == 0) {
@@ -40,10 +43,9 @@ void discode::VM::step()
 {
     if (function_stack.empty())
     {
+        std::this_thread::sleep_for(std::chrono::milliseconds(5));
         return;
     }
-
-    // print();
 
     discode::FunctionPtr &active = function_stack.back();
     if (active.isComplete())
@@ -156,6 +158,12 @@ void discode::VM::pushLocal(std::string ident)
         return;
     }
     argument_stack.push_back(local->at(ident));
+}
+
+void discode::VM::writeLocal(std::string ident, std::shared_ptr<discode::Data> data)
+{
+    Scope * local = function_stack.back().getLocal();
+    local->insert(std::pair<std::string, std::shared_ptr<discode::Data>>(ident, data));
 }
 
 void discode::VM::pushLib(std::string ident)
