@@ -1,8 +1,7 @@
 import socket
 import json
-import select
-import threading
 import time
+import asyncio
 
 import os
 import dotenv
@@ -19,18 +18,20 @@ from discord import guild_only
 dotenv.load_dotenv()
 token = str(os.getenv("TOKEN"))
 
+global client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+client.connect(("localhost", port))
+client.setblocking(False)
+
 # =================== Server Communication =================== #
 
 def nonBlockSend(port: int, message):
 
     time.sleep(1)
     # Sends data packets to the server, to reduce rendundant code.
-    client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-
-    client.connect(("localhost", port))
-    client.setblocking(False)
 
     client.send((json.dumps(message) + '\n').encode(encoding='utf8'))
+    print('Sent message:', message)
     client.close()
 
 
@@ -47,26 +48,30 @@ def load(server_id: int, channel_id: int, message_id: int, code: str):
     nonBlockSend(3540, message)
 
 
-def run(func_name: str, message_id: int, arguments = {}):
+def run(func_name: str, channel_id, arguments = {}):
     # Tell the server to run a command, probably triggered by a user's slash command
 
+    print ("Trying to run function", func_name)
     message = {
         "Name": "Run",
+        "Channel_id": channel_id,
         "Function": func_name,
-        "Message_id": message_id,
-        "Arguments": arguments
+        "Message": {  },
     }
 
     nonBlockSend(3540, message)
+    print ("Run request sent...")
 
 
-def add_func(Server_id, Function_name, arguments):
-    exec(f"""
-        @bot.slash_command(name={Function_name}, guild_ids = [{Server_id}])
-        @guild_only()
-        async def {Function_name}(ctx):
-            run({Function_name}, ctx.message.id)
-        """)
+async def add_func(Server_id, Function_name, arguments):
+    @bot.slash_command(name=Function_name, guild_ids = [Server_id])
+    @guild_only()
+    async def temp(ctx):
+        interaction = await ctx.respond("Handing command to server!")
+        origin = await interaction.original_message()
+        run((ctx.command.name), origin.channel.name)
+
+    await bot.sync_commands(force = True, guild_ids=[Server_id])
 
 
 async def send_message(channel_id, output):
@@ -74,17 +79,21 @@ async def send_message(channel_id, output):
     await channel.message.send(output)
 
 
-def handle_message(message: dict):
+async def handle_message(message: dict):
     if message != None :
-        print(message)
         if message["Name"] == 'Add Func' :
             # Server says a function compiled and we're good to let users run it
-            print("Adding function ", message["Function_name"])
-            add_func(int(message["Server_id"]), message["Function_name"], message["Arguments"])
+
+            # !! TODO:  Replace this ID with message['Server_id'] once the server is ready to handle that
+            await add_func(int(286505243959754753), message["Function_name"], message["Arguments"])
             # ID the code was sent in, the name of the function, and the arguments it takes
         elif message["Name"] == 'Send Message' :
             # Server says we need to send output
-            send_message(int(message["Channel_id"]), message["Output"])
+
+            # !! TODO:  Replace this id with message['Channel_id'] once the server is ready to handle that properly
+            print("Sending message", message["Output"], "to", str(286505243959754753))
+            await send_message(286505243959754753, message["Output"])
+            print("Message should be sent!")
             # The ID of the message that requested the server run the command, and the desired output in response to that.
 
 
@@ -127,7 +136,7 @@ async def on_message(message):
 
 # =========================== MAIN =========================== #
 
-def main_loop():
+async def main_loop():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(("localhost", 3541))
     s.setblocking(False)
@@ -137,28 +146,24 @@ def main_loop():
             try :
                 message = s.recv(4096)
                 obj = json.loads(message.decode(encoding='utf8'))
-                print("Message: ", obj)
-                handle_message(obj)
+                await handle_message(obj)
             except BlockingIOError :
                 pass
             except Exception as e :
                 print('Error: ', e)
                 raise e
                 break
-            time.sleep(.01)
+            await asyncio.sleep(.01)
     except Exception as e :
         print('Error: ', e)
     finally :
         s.close()
+        client.close()
             
 
 if __name__ == "__main__" :
     # Process server inputs as a thread on their own,
     # as bot.run seems to be a constant loop
-
-    main_thread = threading.Thread(target=main_loop)
-    main_thread.daemon = True
-    main_thread.start()
-
+    asyncio.get_event_loop().create_task(main_loop())
 
     bot.run(token)
