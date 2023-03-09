@@ -18,9 +18,9 @@ from discord import guild_only
 dotenv.load_dotenv()
 token = str(os.getenv("TOKEN"))
 
-global client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-client.connect(("localhost", port))
+client.connect(("localhost", 3540))
 client.setblocking(False)
 
 # =================== Server Communication =================== #
