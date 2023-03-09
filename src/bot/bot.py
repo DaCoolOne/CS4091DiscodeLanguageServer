@@ -74,7 +74,7 @@ async def send_message(channel_id, output):
     await channel.message.send(output)
 
 
-def handler(message: dict):
+def handle_message(message: dict):
     if message != None :
         print(message)
         if message["Name"] == 'Add Func' :
@@ -118,7 +118,7 @@ async def on_message(message):
     # Check if the message is code in the appropriate channel
     if message.content.startswith("```") and cat_name == "DISCODE-CODE" :
         server_id = message.guild.id
-        channel_id = message.channel.id
+        channel_id = message.channel.name
         message_id = message.id
         code = message.content[3:-3]
         load(server_id, channel_id, message_id, code)
