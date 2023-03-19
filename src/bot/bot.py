@@ -32,7 +32,6 @@ def nonBlockSend(port: int, message):
 
     client.send((json.dumps(message) + '\n').encode(encoding='utf8'))
     print('Sent message:', message)
-    client.close()
 
 
 def load(server_id: int, channel_id: int, message_id: int, code: str):
