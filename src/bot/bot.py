@@ -69,31 +69,29 @@ async def add_func(Server_id, Function_name, arguments):
     @bot.slash_command(name=Function_name, guild_ids = [Server_id])
     @guild_only()
     async def temp(ctx):
-        interaction = await ctx.respond("Handing command to server!")
-        origin = await interaction.original_response()
-        print(origin)
+        interaction = await ctx.respond("Sending command to server...")
         run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name)
+        await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
 
     await bot.sync_commands(force = True, guild_ids=[Server_id])
 
 
 async def send_message(channel_id, output):
-    channel = bot.get_channel(channel_id)
+    channel = bot.get_channel(int(channel_id))
     await channel.send(output)
 
 
 async def handle_message(message: dict):
     if message != None :
+        print("Got message", message)
         if message['Name'] == 'Add Func' :
             # Server says a function compiled and we're good to let users run it
 
-            # !! TODO:  Replace this ID with message['Server_ID'] once the server is ready to handle that
             await add_func(message['Server_ID'], message['Function_name'], message['Arguments'])
             # ID the code was sent in, the name of the function, and the arguments it takes
         elif message['Name'] == 'Send Message' :
             # Server says we need to send output
 
-            # !! TODO:  Replace this id with message['Channel_ID'] once the server is ready to handle that properly
             print("Sending message", message['Message'], "to", message['Channel_ID'])
             await send_message(message['Channel_ID'], message['Message'])
             print("Message should be sent!")
