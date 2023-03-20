@@ -268,7 +268,7 @@ void discode::VM::print()
     }
 }
 
-discode::VM::VM(Socket * sock): _sock(sock)
+discode::VM::VM(Socket * sock, std::string server_id): _sock(sock), __server_id(server_id)
 {
     lib::loadAll(this);
 }

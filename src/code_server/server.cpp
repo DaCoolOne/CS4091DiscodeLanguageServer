@@ -12,6 +12,7 @@
 #include "lang/function.hpp"
 #include "lang/instruction.hpp"
 #include "lang/vm.hpp"
+#include "lang/vm_pool.hpp"
 
 #define INPORT  3540
 #define OUTPORT 3541
@@ -87,7 +88,7 @@ int main(int argc, char* argv[]) {
             Socket* s_in  = in.Accept();
             Socket* s_out = out.Accept();
 
-            discode::VM vm(s_out);
+            discode::VM_Pool vms;
 
             while (1) {
                 std::string r = s_in->ReceiveBytes();
@@ -106,25 +107,39 @@ int main(int argc, char* argv[]) {
 
                     if (command == "Load") {
                         
-                        std::string server_id = data->at("Server_id")->asString();
-                        std::string channel_id = data->at("Channel_id")->asString();
+                        std::string server_id = data->at("Server_ID")->asString();
+                        std::string server_name = data->at("Server_Name")->asString();
+                        std::string channel_id = data->at("Channel_ID")->asString();
+                        std::string channel_name = data->at("Channel_Name")->asString();
                         std::string code = data->at("Code")->asString();
                         
-                        std::cout << "(" << server_id << ") #" << channel_id << '\n' << code << std::endl;
+                        std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
 
-                        discode::loadVM_string(&vm, channel_id, code);
+                        discode::loadVM_string(vms.get(s_out, server_id), channel_name, code);
                     }
                     else if (command == "Run") {
 
-                        std::string channel_id = data->at("Channel_id")->asString();
+                        std::string server_id = data->at("Server_ID")->asString();
+                        std::string server_name = data->at("Server_Name")->asString();
+                        std::string channel_id = data->at("Channel_ID")->asString();
+                        std::string channel_name = data->at("Channel_Name")->asString();
                         std::string function = data->at("Function")->asString();
                         json::JsonData * message = data->at("Message").get();
 
                         // Build message object
-                        std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
-                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", std::make_shared<discode::String>("default")));
+                        std::shared_ptr<discode::Object> channel_object = std::make_shared<discode::Object>();
+                        channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(channel_id)));
+                        channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(channel_name)));
 
-                        vm.init(function, message_object);
+                        std::shared_ptr<discode::Object> server_object = std::make_shared<discode::Object>();
+                        server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(server_id)));
+                        server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(server_name)));
+
+                        std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
+                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", channel_object));
+                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("server", server_object));
+
+                        vms.get(s_out, server_id)->init(function, message_object);
 
                     }
                     else if (command == "ParseTree") {
@@ -136,7 +151,7 @@ int main(int argc, char* argv[]) {
                     }
                 }
 
-                vm.step();
+                vms.stepall();
             }
 
             if (single) {

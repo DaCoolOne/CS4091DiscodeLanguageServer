@@ -426,7 +426,7 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
             vm->writeGlobal(channel, func.second, func.first);
             if(channel == "commands") {
                 jsonData.add("Name", std::make_shared<json::JsonString>("Add Func"));
-                jsonData.add("Server_id", std::make_shared<json::JsonString>("TODO"));
+                jsonData.add("Server_ID", std::make_shared<json::JsonString>(vm->getServerId()));
                 jsonData.add("Function_name", std::make_shared<json::JsonString>(func.second));
                 for (auto const &arg : func.first->args()) {
                     arglist.add(std::make_shared<json::JsonString>(arg));

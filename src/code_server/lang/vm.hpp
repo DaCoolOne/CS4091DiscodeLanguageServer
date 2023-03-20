@@ -27,8 +27,12 @@ class VM {
 
     Socket * _sock;
 
+    std::string __server_id;
+
 public:
-    VM(Socket * sock);
+    VM(Socket * sock, std::string server_id);
+
+    std::string getServerId() { return __server_id; }
 
     void push(std::shared_ptr<discode::Data> data);
     void pushNull();
