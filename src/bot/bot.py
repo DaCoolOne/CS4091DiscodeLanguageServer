@@ -26,8 +26,6 @@ client.setblocking(False)
 # =================== Server Communication =================== #
 
 def nonBlockSend(port: int, message):
-
-    time.sleep(1)
     # Sends data packets to the server, to reduce rendundant code.
 
     client.send((json.dumps(message) + '\n').encode(encoding='utf8'))
