@@ -11,7 +11,7 @@ std::shared_ptr<discode::Data> lib_message::Send::execute(discode::VM * vm, std:
     
     json::JsonObject obj;
     obj.add("Name", std::make_shared<json::JsonString>("Send Message"));
-    obj.add("Channel_id", std::make_shared<json::JsonString>(data.at(0)->getString()));
+    obj.add("Channel_ID", std::make_shared<json::JsonString>(data.at(0)->getString()));
     obj.add("Message", std::make_shared<json::JsonString>(data.at(1)->getString()));
     vm->sendObject(&obj);
 
