@@ -70,8 +70,8 @@ async def add_func(Server_id, Function_name, arguments):
     @guild_only()
     async def temp(ctx):
         interaction = await ctx.respond("Handing command to server!")
-        origin = await interaction.original_message()
-        run((ctx.command.name), origin.channel.name)
+        origin = await interaction.original_response()
+        run((ctx.command.name), origin.guild_id, origin.guild.name, origin.channel_id, origin.channel.name)
 
     await bot.sync_commands(force = True, guild_ids=[Server_id])
 
