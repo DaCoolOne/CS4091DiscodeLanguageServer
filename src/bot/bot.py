@@ -32,26 +32,31 @@ def nonBlockSend(port: int, message):
     print('Sent message:', message)
 
 
-def load(server_id: int, channel_id: int, message_id: int, code: str):
+def load(server_id: int, server_name: str, channel_id: int, channel_name:str, message_id: int, code: str):
     # Load a new codeblock into the server
 
     message = {
         "Name": "Load",
-        "Server_id": str(server_id),
-        "Channel_id": str(channel_id),
+        "Server_ID": str(server_id),
+        "Server_Name": server_name,
+        "Channel_ID": str(channel_id),
+        "Channel_Name": channel_name,
         "Code": code
     }
 
     nonBlockSend(3540, message)
 
 
-def run(func_name: str, channel_id, arguments = {}):
+def run(func_name: str, server_id: int, server_name: str, channel_id: int, channel_name: str, arguments = {}):
     # Tell the server to run a command, probably triggered by a user's slash command
 
     print ("Trying to run function", func_name)
     message = {
         "Name": "Run",
-        "Channel_id": channel_id,
+        "Server_ID": str(server_id),
+        "Server_Name": server_name,
+        "Channel_ID": str(channel_id),
+        "Channel_Name": channel_name,
         "Function": func_name,
         "Message": {  },
     }
@@ -73,23 +78,23 @@ async def add_func(Server_id, Function_name, arguments):
 
 async def send_message(channel_id, output):
     channel = bot.get_channel(channel_id)
-    await channel.message.send(output)
+    await channel.send(output)
 
 
 async def handle_message(message: dict):
     if message != None :
-        if message["Name"] == 'Add Func' :
+        if message['Name'] == 'Add Func' :
             # Server says a function compiled and we're good to let users run it
 
-            # !! TODO:  Replace this ID with message['Server_id'] once the server is ready to handle that
-            await add_func(int(286505243959754753), message["Function_name"], message["Arguments"])
+            # !! TODO:  Replace this ID with message['Server_ID'] once the server is ready to handle that
+            await add_func(message['Server_ID'], message['Function_name'], message['Arguments'])
             # ID the code was sent in, the name of the function, and the arguments it takes
-        elif message["Name"] == 'Send Message' :
+        elif message['Name'] == 'Send Message' :
             # Server says we need to send output
 
-            # !! TODO:  Replace this id with message['Channel_id'] once the server is ready to handle that properly
-            print("Sending message", message["Output"], "to", str(286505243959754753))
-            await send_message(286505243959754753, message["Output"])
+            # !! TODO:  Replace this id with message['Channel_ID'] once the server is ready to handle that properly
+            print("Sending message", message['Message'], "to", message['Channel_ID'])
+            await send_message(message['Channel_ID'], message['Message'])
             print("Message should be sent!")
             # The ID of the message that requested the server run the command, and the desired output in response to that.
 
@@ -124,10 +129,12 @@ async def on_message(message):
     # Check if the message is code in the appropriate channel
     if message.content.startswith("```") and cat_name == "DISCODE-CODE" :
         server_id = message.guild.id
-        channel_id = message.channel.name
+        server_name = message.guild.name
+        channel_id = message.channel.id
+        channel_name = message.channel.name
         message_id = message.id
         code = message.content[3:-3]
-        load(server_id, channel_id, message_id, code)
+        load(server_id, server_name, channel_id, channel_name, message_id, code)
 
 
 
