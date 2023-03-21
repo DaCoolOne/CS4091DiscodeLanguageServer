@@ -50,6 +50,13 @@ public:
     std::string repr();
 };
 
+class InstructionReturn : public Instruction
+{
+public:
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
 class InstructionUJump : public Instruction
 {
     uint32_t targetIndex;

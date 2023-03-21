@@ -76,6 +76,13 @@ std::string discode::InstructionFunctionCall::repr() {
     return "FCALL " + std::to_string(_num_args);
 }
 
+void discode::InstructionReturn::execute(discode::VM * vm) {
+    vm->popFunction();
+}
+std::string discode::InstructionReturn::repr() {
+    return "RET";
+}
+
 void discode::InstructionUJump::execute(discode::VM * vm) {
     vm->jump(targetIndex);
 }
@@ -173,7 +180,7 @@ void discode::InstructionWriteStack::execute(discode::VM * vm) {
         return;
     }
 
-    object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>(ident, value));
+    object->getMap()->insert_or_assign(ident, value);
 }
 std::string discode::InstructionWriteStack::repr() {
     return "WRITE STACK " + ident;

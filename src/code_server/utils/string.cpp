@@ -31,3 +31,29 @@ std::string util::join(std::vector<std::string> strs, char between) {
     return s;
 }
 
+std::string util::unescape(std::string orig) {
+    std::string out;
+    out.reserve(orig.size());
+    bool escaped = false;
+    for(char c : orig) {
+        if(escaped) {
+            switch (c)
+            {
+                case 'n': out += '\n'; break;
+                case 't': out += '\t'; break;
+                case 'r': out += '\r'; break;
+                
+                default: out += c;
+            }
+            escaped = false;
+        }
+        else if(c == '\\') {
+            escaped = true;
+        }
+        else {
+            out += c;
+        }
+    }
+    return out;
+}
+

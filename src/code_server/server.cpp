@@ -94,60 +94,68 @@ int main(int argc, char* argv[]) {
                 std::string r = s_in->ReceiveBytes();
                 
                 if (!r.empty()) {
-                    std::cout << r << std::endl;
+                    auto lines = util::split(r, '\n');
 
-                    std::stringstream streamdata(r);
-                    std::shared_ptr<json::JsonData> data = json::loadJsonData(streamdata);
-                    
-                    assert(data->type() == json::JSON_DATA_OBJECT); 
-                    assert(data->at("Name")->type() == json::JSON_DATA_STRING);
-                    
-                    std::string command = data->at("Name")->asString();
-                    std::cout << "Recieved " << command << " command" << std::endl;
+                    for (auto const& line : lines)
+                    {
+                        if(line.empty()) continue;
 
-                    if (command == "Load") {
+                        std::cout << "Recieved: " << line << std::endl;
+                        std::stringstream streamdata(line);
+                        std::shared_ptr<json::JsonData> data = json::loadJsonData(streamdata);
                         
-                        std::string server_id = data->at("Server_ID")->asString();
-                        std::string server_name = data->at("Server_Name")->asString();
-                        std::string channel_id = data->at("Channel_ID")->asString();
-                        std::string channel_name = data->at("Channel_Name")->asString();
-                        std::string code = data->at("Code")->asString();
+                        assert(data->type() == json::JSON_DATA_OBJECT); 
+                        assert(data->at("Name")->type() == json::JSON_DATA_STRING);
                         
-                        std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
+                        std::string command = data->at("Name")->asString();
+                        std::cout << "Recieved " << command << " command" << std::endl;
 
-                        discode::loadVM_string(vms.get(s_out, server_id), channel_name, code);
-                    }
-                    else if (command == "Run") {
+                        if (command == "Load") {
+                            
+                            std::string server_id = data->at("Server_ID")->asString();
+                            std::string server_name = data->at("Server_Name")->asString();
+                            std::string channel_id = data->at("Channel_ID")->asString();
+                            std::string channel_name = data->at("Channel_Name")->asString();
+                            std::string code = data->at("Code")->asString();
+                            
+                            std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
 
-                        std::string server_id = data->at("Server_ID")->asString();
-                        std::string server_name = data->at("Server_Name")->asString();
-                        std::string channel_id = data->at("Channel_ID")->asString();
-                        std::string channel_name = data->at("Channel_Name")->asString();
-                        std::string function = data->at("Function")->asString();
-                        json::JsonData * message = data->at("Message").get();
+                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code);
+                        }
+                        else if (command == "Run") {
 
-                        // Build message object
-                        std::shared_ptr<discode::Object> channel_object = std::make_shared<discode::Object>();
-                        channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(channel_id)));
-                        channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(channel_name)));
+                            std::string server_id = data->at("Server_ID")->asString();
+                            std::string server_name = data->at("Server_Name")->asString();
+                            std::string channel_id = data->at("Channel_ID")->asString();
+                            std::string channel_name = data->at("Channel_Name")->asString();
+                            std::string function = data->at("Function")->asString();
+                            json::JsonData * message = data->at("Message").get();
 
-                        std::shared_ptr<discode::Object> server_object = std::make_shared<discode::Object>();
-                        server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(server_id)));
-                        server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(server_name)));
+                            std::cout << "RUN (" << server_name << ") #" << channel_name << '.' << function << std::endl;
 
-                        std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
-                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", channel_object));
-                        message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("server", server_object));
+                            // Build message object
+                            std::shared_ptr<discode::Object> channel_object = std::make_shared<discode::Object>();
+                            channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(channel_id)));
+                            channel_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(channel_name)));
 
-                        vms.get(s_out, server_id)->init(function, message_object);
+                            std::shared_ptr<discode::Object> server_object = std::make_shared<discode::Object>();
+                            server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("id", std::make_shared<discode::String>(server_id)));
+                            server_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("name", std::make_shared<discode::String>(server_name)));
 
-                    }
-                    else if (command == "ParseTree") {
+                            std::shared_ptr<discode::Object> message_object = std::make_shared<discode::Object>();
+                            message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", channel_object));
+                            message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("server", server_object));
 
-                        std::string code = data->at("Code")->asString();
+                            vms.get(s_out, server_id)->init(function, message_object);
 
-                        discode::analyze_string(code);
+                        }
+                        else if (command == "ParseTree") {
 
+                            std::string code = data->at("Code")->asString();
+
+                            discode::analyze_string(code);
+
+                        }
                     }
                 }
 

@@ -33,7 +33,10 @@ class LibLoader
 public:
     LibLoader(std::string libname): base(libname) { }
 
-    void add(std::string name, std::shared_ptr<LibFunction> function) { functions.insert(std::pair<std::string, std::shared_ptr<LibFunction>>(name, function)); }
+    void add(std::string name, std::shared_ptr<LibFunction> function) {
+        if(functions.count(name)) { throw std::logic_error("Attempt to overwrite function " + name); }
+        functions.insert(std::pair<std::string, std::shared_ptr<LibFunction>>(name, function));
+    }
 
     void load(discode::VM * vm);
 };

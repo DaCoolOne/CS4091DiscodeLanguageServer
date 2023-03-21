@@ -41,6 +41,9 @@ std::pair<std::shared_ptr<discode::Function>, std::string> buildFunction(AST_Nod
 std::vector<std::shared_ptr<discode::Instruction>> buildBinaryOperator(AST_Node * node);
 std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node * node);
 std::vector<std::shared_ptr<discode::Instruction>> buildAssignReturn(AST_Node * ret_node);
+std::vector<std::shared_ptr<discode::Instruction>> buildReturn(AST_Node * ret_node);
+std::vector<std::shared_ptr<discode::Instruction>> buildIfStatement(AST_Node * if_statement, uint16_t jumpoffset);
+std::vector<std::shared_ptr<discode::Instruction>> buildWhileStatement(AST_Node * while_statement, uint16_t jumpoffset);
 
 };
 #endif

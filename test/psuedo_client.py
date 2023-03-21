@@ -10,7 +10,7 @@ import queue
 import subprocess
 import threading
 
-CREATE_SERVER = True
+CREATE_SERVER = False
 
 def send_msg(client: socket.socket, obj: dict):
     client.send((json.dumps(obj) + '\n').encode(encoding='utf8'))
@@ -46,15 +46,16 @@ def run_test():
                 try:
                     data = response_client.recv(4096)
                     obj = json.loads(data.decode(encoding='utf8'))
+                    print(obj)
                     if obj['Name'] == 'Add Func':
-                        server_id = obj['Server_id']
+                        server_id = obj['Server_ID']
                         name = obj['Function_name']
                         args = obj['Arguments']
                         arg_str = ','.join(args)
                         print(f"Register command {name}({arg_str})")
                         EXISTING_COMMANDS.add(name)
                     elif obj['Name'] == 'Send Message':
-                        chid = obj['Channel_id']
+                        chid = obj['Channel_ID']
                         msg = obj['Message']
                         print(f'#{chid}: {msg}')
                 except BlockingIOError:
@@ -71,9 +72,12 @@ def run_test():
                 if cmd in EXISTING_COMMANDS:
                     send_msg(client, {
                         "Name": "Run",
-                        "Channel_id": "tester",
+                        "Server_ID": "psuedo",
+                        "Server_Name": "pseudo",
+                        "Channel_ID": "tester",
+                        "Channel_Name": "tester",
                         "Function": cmd,
-                        "Message": {  },
+                        "Message": {  }
                     })
                 else:
                     print(f"{cmd} is not a command")
@@ -90,12 +94,20 @@ def run_test():
             print(f"Found channel {channel}")
             for msg in os.listdir(os.path.join(base, channel)):
                 with open(os.path.join(base, channel, msg)) as f:
+                    code = f.read()
+                    send_msg(client, {
+                        "Name": "ParseTree",
+                        "Code": code
+                    })
                     send_msg(client, {
                         "Name": "Load",
-                        "Server_id": "tester",
-                        "Channel_id": channel,
-                        "Code": f.read()
+                        "Server_ID": "psuedo",
+                        "Server_Name": "pseudo",
+                        "Channel_ID": channel,
+                        "Channel_Name": channel,
+                        "Code": code
                     })
+                    time.sleep(1)
 
         t1.start()
         t1.join()

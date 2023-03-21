@@ -19,7 +19,7 @@ function add: msg {
         return;
     }
 
-    !message.send(msg.channel, !conv.toStr(a + b));
+    !message.send(msg.channel.id, !conv.toStr(a + b));
 
 }
 

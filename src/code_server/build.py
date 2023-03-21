@@ -133,7 +133,7 @@ def build_server():
         to_build_c = filterToMatching(cfiles, to_build)
         to_build_cpp = filterToMatching(cppfiles, to_build)
         proc_compile_c = [ 'gcc', '-g', '-std=c99', '-c', *to_build_c, '-I', base_dir ]
-        proc_compile_cpp = [ 'g++', '-g', '-c', *to_build_cpp, '-I', base_dir ]
+        proc_compile_cpp = [ 'g++', '--std=c++17', '-g', '-c', *to_build_cpp, '-I', base_dir ]
         proc_link = [ 'g++', '-o', os.path.join(base_dir, 'server.exe'), *construct_linker_list(cppfiles + cfiles), *[ f'-l{lib}' for lib in libs ] ]
 
         if len(to_build_c) > 0:

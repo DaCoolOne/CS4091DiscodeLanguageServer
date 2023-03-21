@@ -23,7 +23,7 @@ class Conv : public LibLoader
 {
 public:
     Conv(): LibLoader("conv") {
-        add("str", std::make_shared<lib_conv::NumToString>());
+        add("num_str", std::make_shared<lib_conv::NumToString>());
     }
 };
 

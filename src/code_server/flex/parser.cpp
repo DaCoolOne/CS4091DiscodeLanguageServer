@@ -345,6 +345,61 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
 
 }
 
+// Pre: node is AST_NODE_RETURN
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildReturn(AST_Node * ret_node) {
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+
+    if(ret_node->right) {
+        ins = discode_internal::buildExpressionEval(ret_node->right);
+        ins.push_back(std::make_shared<discode::InstructionReturn>());
+    }
+    else {
+        ins.push_back(std::make_shared<discode::InstructionPush>(std::make_shared<discode::Null>()));
+        ins.push_back(std::make_shared<discode::InstructionReturn>());
+    }
+
+    return ins;
+}
+
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIfStatement(AST_Node * if_statement, uint16_t jumpoffset) {
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    // Let the conditional branch shenanigans begin!
+    ins = discode_internal::buildExpressionEval(if_statement->left);
+
+    // Compute the else portion of the statement (todo)
+    std::vector<std::shared_ptr<discode::Instruction>> else_part;
+
+    std::vector<std::shared_ptr<discode::Instruction>> if_part = discode_internal::buildStatements(if_statement->right, jumpoffset + ins.size() + 2);
+
+    ins.push_back(std::make_shared<discode::InstructionCJump>(jumpoffset + ins.size() + else_part.size() + 2));
+    
+    ins.insert(ins.end(), else_part.begin(), else_part.end());
+
+    ins.push_back(std::make_shared<discode::InstructionUJump>(jumpoffset + ins.size() + if_part.size() + 1));
+
+    ins.insert(ins.end(), if_part.begin(), if_part.end());
+
+    return ins;
+}
+
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildWhileStatement(AST_Node * while_statement, uint16_t jumpoffset) {
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    
+    auto expr = discode_internal::buildExpressionEval(while_statement->left);
+
+    std::vector<std::shared_ptr<discode::Instruction>> loop_part = discode_internal::buildStatements(while_statement->right, jumpoffset + 1);
+
+    ins.push_back(std::make_shared<discode::InstructionUJump>(jumpoffset + loop_part.size() + 1));
+    
+    ins.insert(ins.end(), loop_part.begin(), loop_part.end());
+
+    ins.insert(ins.end(), expr.begin(), expr.end());
+
+    ins.push_back(std::make_shared<discode::InstructionCJump>(jumpoffset + 1));
+
+    return ins;
+}
+
 // Pre: statement is not NULL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatement(AST_Node * statement, uint16_t jumpoffset) {
     switch (statement->type)
@@ -353,14 +408,13 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatem
             return discode_internal::buildAssign(statement, jumpoffset);
         
         case AST_NODE_IF:
-            
-        break;
+            return discode_internal::buildIfStatement(statement, jumpoffset); 
+        
         case AST_NODE_WHILE:
+            return discode_internal::buildWhileStatement(statement, jumpoffset); 
 
-        break;
         case AST_NODE_RETURN:
-            
-        break;
+            return discode_internal::buildReturn(statement);
 
         default:
             throw std::logic_error("Unknown STATEMENT node type " + std::to_string(statement->type));

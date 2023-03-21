@@ -90,8 +90,8 @@ STATEMENT_LIST      :                           { $<node>$ = NULL; }
 
 STATEMENT           : FULL_IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_SEMICOLON     { $<node>$ = createAssign($<node>1, $<node>3); }
                     | EXPRESSION OPERATOR_SEMICOLON                                     { $<node>$ = createAssign(NULL, $<node>1); }
-                    | KEYWORD_IF EXPRESSION CODE_BLOCK                                  { $<node>$ = createIf($<node>1, $<node>3); }
-                    | KEYWORD_WHILE EXPRESSION CODE_BLOCK                               { $<node>$ = createWhile($<node>1, $<node>3); }
+                    | KEYWORD_IF EXPRESSION CODE_BLOCK                                  { $<node>$ = createIf($<node>2, $<node>3); }
+                    | KEYWORD_WHILE EXPRESSION CODE_BLOCK                               { $<node>$ = createWhile($<node>2, $<node>3); }
                     | KEYWORD_RETURN OPERATOR_SEMICOLON                                 { $<node>$ = createReturn(NULL); }
                     | KEYWORD_RETURN EXPRESSION OPERATOR_SEMICOLON                      { $<node>$ = createReturn($<node>2); }
                     ;
@@ -124,11 +124,7 @@ IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = cre
                     | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath($<node>1, $<node>3); }
                     ;
 
-EXPRESSION          : FUNCTION_CALL
-                    | INDEX
-                    | ARRAY
-                    | OBJECT
-                    | UNARY_BOOL_EXPR
+EXPRESSION          : UNARY_BOOL_EXPR
                     ;
 
 INDEX               : FULL_IDENTIFIER OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>1, $<node>3); }
@@ -187,6 +183,10 @@ TERMINAL            : NUMBER                                                { $<
                     | KEYWORD_NULL                                          { $<node>$ = createNull(); }
                     | FULL_IDENTIFIER                                       { $<node>$ = $<node>1; }
                     | OPERATOR_OPEN_PAREN EXPRESSION OPERATOR_CLOSE_PAREN   { $<node>$ = $<node>2; }
+                    | FUNCTION_CALL                                         { $<node>$ = $<node>1; }
+                    | INDEX                                                 { $<node>$ = $<node>1; }
+                    | ARRAY                                                 { $<node>$ = $<node>1; }
+                    | OBJECT                                                { $<node>$ = $<node>1; }
                     ;
 
 %%

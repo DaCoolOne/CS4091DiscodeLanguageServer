@@ -45,6 +45,7 @@ public:
     bool isComplete() { return ins_cnt >= f_ptr->length(); }
 
     std::string repr();
+    std::string smallrepr() { return std::string("F_ptr -> ") + std::to_string(ins_cnt); }
 };
 
 };

@@ -24,9 +24,11 @@ or                      { return KEYWORD_OR; }
 not                     { return KEYWORD_NOT; }
 
     /* Todo: Make these regexes better */
-\"[^\"]+\"              { yylval.node = createString(yytext); return STRING; }
+\"(\\.|[^\\\"])+\"      { yylval.node = createString(yytext); return STRING; }
+\'(\\.|[^\\\'])+\'      { yylval.node = createString(yytext); return STRING; }
 [0-9]+                  { yylval.node = createNumber(yytext); return NUMBER; }
-[A-Za-z0-9_]+           { yylval.node = createIdentifier(yytext); return IDENTIFIER; }
+[0-9]+\.[0-9]           { yylval.node = createNumber(yytext); return NUMBER; }
+[A-Za-z_][A-Za-z0-9_]*  { yylval.node = createIdentifier(yytext); return IDENTIFIER; }
 
 ==                      { return OPERATOR_EQ; }
 !=                      { return OPERATOR_NEQ; }

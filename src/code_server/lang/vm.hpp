@@ -63,6 +63,7 @@ public:
 
     // Prints the vm's internal state
     void print();
+    void smallprint();
 
     // Functions for loading instructions into the VM
     void clearAll();

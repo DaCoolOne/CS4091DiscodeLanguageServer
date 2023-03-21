@@ -148,8 +148,10 @@ async def main_loop():
         while True :
             try :
                 message = s.recv(4096)
-                obj = json.loads(message.decode(encoding='utf8'))
-                await handle_message(obj)
+                msg = message.decode(encoding='utf8')
+                for line in msg.splitlines():
+                    obj = json.loads(line)
+                    await handle_message(obj)
             except BlockingIOError :
                 pass
             except Exception as e :

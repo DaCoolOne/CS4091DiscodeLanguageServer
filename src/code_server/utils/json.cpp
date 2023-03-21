@@ -33,6 +33,32 @@ std::string outNumber(double in) {
     return std::to_string(in);
 }
 
+double loadnum(std::istream & in)
+{
+    // Load a number
+    std::string s;
+    char c;
+    bool has_delim = false, success = true;
+    if(!in.get(c)) success = false;
+    while(success && c != ',')
+    {
+        if('0' <= c && '9' >= c) {
+            s += c;
+        }
+        else if(c == '.') {
+            if (has_delim) throw std::logic_error("Improperly formatted number, two decimal places");
+            s += c;
+            has_delim = true;
+        }
+        else {
+            throw std::logic_error("Improperly formatted number!");
+        }
+
+        if(!in.get(c)) success = false;
+    }
+    return std::stod(s);
+}
+
 std::string loadstring(std::istream & in)
 {
     // Load a string
@@ -99,7 +125,8 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
     }
     else if (c >= '0' && c <= '9') {
         // Load a number
-        
+        double num = loadnum(in);
+        data = std::make_shared<json::JsonNumber>(num);
     }
     else if (c == '{') {
         // Load an object
@@ -158,12 +185,13 @@ std::shared_ptr<json::JsonData> _loadJsonDataRec(std::istream & in)
 
 std::shared_ptr<json::JsonData> json::loadJsonData(std::istream& in)
 {
-
     std::shared_ptr<json::JsonData> data = _loadJsonDataRec(in);
 
     char c = nextNonWhitespace(in);
     if (c != EOF) {
-        throw std::logic_error("Unexpected character, expected EOF");
+        char rem[32];
+        in.getline(rem, 32);
+        throw std::logic_error(std::string("Unexpected character, expected EOF but got ") + c + rem);
     }
 
     return data;

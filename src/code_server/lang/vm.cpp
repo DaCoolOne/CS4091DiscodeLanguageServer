@@ -57,6 +57,8 @@ void discode::VM::step()
     discode::Instruction * ins = active.current();
     active.gotoNext();
     ins->execute(this);
+
+    smallprint();
 }
 
 void discode::VM::run(uint16_t max_ins)
@@ -163,7 +165,7 @@ void discode::VM::pushLocal(std::string ident)
 void discode::VM::writeLocal(std::string ident, std::shared_ptr<discode::Data> data)
 {
     Scope * local = function_stack.back().getLocal();
-    local->insert(std::pair<std::string, std::shared_ptr<discode::Data>>(ident, data));
+    local->insert_or_assign(ident, data);
 }
 
 void discode::VM::pushLib(std::string ident)
@@ -204,7 +206,7 @@ void discode::VM::jump(uint32_t index)
         throw std::logic_error("Unable to jump with empty function stack");
     }
     
-    discode::FunctionPtr active = function_stack.back();
+    discode::FunctionPtr & active = function_stack.back();
     active.gotoIndex(index);
 }
 
@@ -225,7 +227,7 @@ void discode::VM::writeGlobal(std::string channel, std::string data_name, std::s
         globals.insert(std::pair<std::string, std::shared_ptr<discode::Data>>(channel, std::make_shared<discode::Object>()));
     }
     discode::Scope * channelObject = globals.at(channel)->getMap();
-    channelObject->insert(std::pair<std::string, std::shared_ptr<discode::Data>>(data_name, data));
+    channelObject->insert_or_assign(data_name, data);
 }
 
 void discode::VM::writeLib(std::string channel, std::string data_name, std::shared_ptr<discode::Data> data)
@@ -265,6 +267,18 @@ void discode::VM::print()
     std::cout << " --------- ERR STATE ---------" << std::endl;
     if (err != nullptr) {
         std::cout << err->what() << std::endl;
+    }
+}
+
+void discode::VM::smallprint()
+{
+    std::cout << " --------- ARG STACK ---------" << std::endl;
+    for(uint16_t i = 0; i < argument_stack.size(); ++i) {
+        std::cout << argument_stack.at(i)->repr() << std::endl;
+    }
+    std::cout << " --------- RET STACK ---------" << std::endl;
+    for(uint16_t i = 0; i < function_stack.size(); ++i) {
+        std::cout << function_stack.at(i).repr() << std::endl;
     }
 }
 
