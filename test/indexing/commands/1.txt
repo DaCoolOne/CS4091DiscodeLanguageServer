@@ -1,0 +1,6 @@
+
+
+function test: msg {
+    !message["send"](msg["channel"]["id"], "Hello World!");
+}
+

@@ -190,6 +190,7 @@ void freeAST(AST_Node * node)
         case AST_NODE_DECLARE_FUNCTION:
         case AST_NODE_DECLARE_METHOD:
         case AST_NODE_FUNCTION_SIGNATURE:
+        case AST_NODE_INDEX:
             if (node->left) freeAST(node->left);
             if (node->right) freeAST(node->right);
             break;

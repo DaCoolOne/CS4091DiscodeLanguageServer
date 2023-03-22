@@ -131,6 +131,9 @@ std::shared_ptr<discode::Data> discode::VM::pop()
 void discode::VM::error(discode::Error error)
 {
     err = std::make_shared<discode::Error>(error);
+
+    argument_stack.clear();
+    function_stack.clear();
 }
 
 void discode::VM::clearError()
@@ -279,6 +282,10 @@ void discode::VM::smallprint()
     std::cout << " --------- RET STACK ---------" << std::endl;
     for(uint16_t i = 0; i < function_stack.size(); ++i) {
         std::cout << function_stack.at(i).repr() << std::endl;
+    }
+    if (err != nullptr) {
+        std::cout << " --------- ERR STATE ---------" << std::endl;
+        std::cout << err->what() << std::endl;
     }
 }
 

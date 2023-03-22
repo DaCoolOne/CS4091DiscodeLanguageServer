@@ -96,7 +96,7 @@ STATEMENT           : FULL_IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_SEMICO
                     | KEYWORD_RETURN EXPRESSION OPERATOR_SEMICOLON                      { $<node>$ = createReturn($<node>2); }
                     ;
 
-FUNCTION_CALL       : FULL_IDENTIFIER OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN    { $<node>$ = createFCall($<node>1, $<node>3); }
+FUNCTION_CALL       : TERMINAL OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN    { $<node>$ = createFCall($<node>1, $<node>3); }
                     ;
 
 ARGUMENT_LIST       :               { $<node>$ = createExprList(NULL); }
@@ -127,7 +127,7 @@ IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = cre
 EXPRESSION          : UNARY_BOOL_EXPR
                     ;
 
-INDEX               : FULL_IDENTIFIER OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>1, $<node>3); }
+INDEX               : TERMINAL OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex($<node>1, $<node>3); }
                     ;
 
 ARRAY               : OPERATOR_OPEN_SQUARE ARGUMENT_LIST OPERATOR_CLOSE_SQUARE  { $<node>$ = createArray($<node>2); }

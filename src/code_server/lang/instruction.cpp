@@ -125,6 +125,17 @@ std::string discode::InstructionGetLib::repr() {
 void discode::InstructionGetStack::execute(discode::VM * vm) {
     std::shared_ptr<discode::Data> data = vm->pop();
 
+    if (data->type == discode::TYPE_ARRAY) {
+        if (name == "length") {
+            vm->push(static_cast<double>(data->getVector()->size()));
+            return;
+        }
+        else {
+            vm->error(discode::ErrorKeyNotFound(name));
+            return;
+        }
+    }
+
     if (data->type != discode::TYPE_OBJECT) {
         vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_OBJECT, data->type));
         return;
@@ -143,7 +154,43 @@ std::string discode::InstructionGetStack::repr() {
 }
 
 void discode::InstructionGetIndexedStack::execute(discode::VM * vm) {
-    // Todo. Used for getting when indexing is involved.
+    std::shared_ptr<discode::Data> index = vm->pop();
+    std::shared_ptr<discode::Data> data = vm->pop();
+
+    if (data->type == discode::Type::TYPE_ARRAY) {
+        if (index->type != discode::Type::TYPE_NUMBER) {
+            vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_NUMBER, data->type));
+            return;
+        }
+
+        int32_t int_index = static_cast<int32_t>(index->getNumber() + 0.5);
+
+        auto vec = data->getVector();
+
+        if (int_index < 0 || int_index >= vec->size()) {
+            vm->error(discode::ErrorKeyNotFound(std::to_string(int_index)));
+            return;
+        }
+
+        vm->push(vec->at(int_index));
+    }
+    else if(data->type == discode::Type::TYPE_OBJECT) {
+        if (index->type != discode::Type::TYPE_STRING) {
+            vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_STRING, data->type));
+            return;
+        }
+
+        auto map = data->getMap();
+        if (map->count(index->getString()) == 0) {
+            vm->error(discode::ErrorKeyNotFound(index->getString()));
+            return;
+        }
+
+        vm->push(map->at(index->getString()));
+    }
+    else {
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_OBJECT, data->type));
+    }
 }
 std::string discode::InstructionGetIndexedStack::repr() {
     return "RESOLVE INDEX";

@@ -40,6 +40,7 @@ std::string getNodeName(AST_Node * node)
         case AST_NODE_ARG_LIST_START: return "NODE_ARG_LIST_START";
         case AST_NODE_RETURN: return "RETURN";
         case AST_NODE_IDENT_LIST_CONT: return "IDENT_LIST_CONT";
+        case AST_NODE_INDEX: return "INDEX";
     }
 
     return "Unknown";
@@ -74,6 +75,7 @@ void printNode(AST_Node * node, std::string indent)
         case AST_NODE_FUNCTION_SIGNATURE:
 
         case AST_NODE_IDENT_LIST_CONT:
+        case AST_NODE_INDEX:
 
             std::cout << indent << getNodeName(node) << std::endl;
             printNode(node->left, indent + "  ");
@@ -165,9 +167,20 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::resolveName
     }
 }
 
+// Pre: node is of type AST_RESOLVE_NAME
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIndexResolve(AST_Node * index) {
+    auto lhs = discode_internal::buildExpressionEval(index->left);
+    auto rhs = discode_internal::buildExpressionEval(index->right);
+    lhs.reserve(lhs.size() + rhs.size() + 1);
+    lhs.insert(lhs.end(), rhs.begin(), rhs.end());
+    lhs.push_back(std::make_shared<discode::InstructionGetIndexedStack>());
+    return lhs;
+}
+
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConstant(AST_Node * constant) {
     std::shared_ptr<discode::Data> data;
     std::vector<std::shared_ptr<discode::Instruction>> ins_list;
+    std::string _temp;
     switch (constant->type)
     {
         case AST_NODE_NULL:
@@ -180,7 +193,9 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConsta
             data = std::make_shared<discode::Number>(getDouble(constant));
         break;
         case AST_NODE_STR:
-            data = std::make_shared<discode::String>(getStr(constant));
+            _temp = getStr(constant) + 1;
+            _temp.pop_back();
+            data = std::make_shared<discode::String>(util::unescape(_temp));
         break;
     
         default:
@@ -216,7 +231,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFuncti
     auto arglist = discode_internal::buildArgList(fcall->right->right);
 
     // Get the namespace of the function
-    auto name_resolution = discode_internal::resolveName(fcall->left);
+    auto name_resolution = discode_internal::buildExpressionEval(fcall->left);
 
     arglist.first.reserve(name_resolution.size() + arglist.first.size() + 1);
     arglist.first.insert(arglist.first.end(), name_resolution.begin(), name_resolution.end());
@@ -277,6 +292,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
         case AST_NODE_LIB_SCOPE:
         case AST_NODE_GLOBAL_SCOPE:
             return discode_internal::resolveName(expr);
+        case AST_NODE_INDEX:
+            return discode_internal::buildIndexResolve(expr);
         
         case AST_NODE_NULL:
         case AST_NODE_BOOL:
