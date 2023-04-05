@@ -31,6 +31,20 @@ std::string util::join(std::vector<std::string> strs, char between) {
     return s;
 }
 
+std::string util::strip(std::string str, std::string chars) {
+  std::string s = str;
+  size_t start_pos = 0;
+  while (start_pos < str.length() &&
+         chars.find(str[start_pos]) != std::string::npos) { start_pos++; }
+  s.erase(0, start_pos);
+
+  size_t end_pos = s.length() - 1;
+  while (end_pos > 0 && chars.find(s[end_pos]) != std::string::npos) { end_pos--; }
+  s.erase(end_pos + 1);
+  
+  return s;
+}
+
 std::string util::unescape(std::string orig) {
     std::string out;
     out.reserve(orig.size());

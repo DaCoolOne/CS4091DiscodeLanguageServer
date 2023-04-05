@@ -10,6 +10,8 @@ std::vector<std::string> split(std::string str, char delim = '\n');
 
 std::string join(std::vector<std::string> strs, char between = '\0');
 
+std::string strip(std::string str, std::string chars);
+
 std::string unescape(std::string orig);
 
 };
