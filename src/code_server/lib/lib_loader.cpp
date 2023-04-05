@@ -16,7 +16,7 @@ void lib::LibFunction::call(discode::VM * vm, std::vector<std::shared_ptr<discod
     for (uint16_t i = 0; i < type_vec.size(); ++i)
     {
         auto first = type_vec.at(i).begin(), last = type_vec.at(i).end();
-        if(std::find(first, last, data.at(i)->type) != last) {
+        if(std::find(first, last, data.at(i)->type) == last) {
             vm->error(discode::ErrorUnexpectedType(type_vec.at(i), data.at(i)->type));
             return;
         }

@@ -58,6 +58,13 @@ void discode::VM::step()
     active.gotoNext();
     ins->execute(this);
 
+    if (err) {
+        json::JsonObject obj = json::JsonObject();
+        obj.add("Name", std::make_shared<json::JsonString>("Error"));
+        obj.add("Error", std::make_shared<json::JsonString>(err->what()));
+        sendObject(&obj);
+    }
+
     // smallprint();
 }
 

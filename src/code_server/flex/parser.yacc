@@ -202,6 +202,8 @@ void yyerror(char *s) {
 AST_Node * parse(const char * fname) {
     set_yyin(fopen(fname, "r"));
 
+    parsedStatement = NULL;
+
     do {
         yylineno = 0;
         yyparse();

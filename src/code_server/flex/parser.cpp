@@ -524,6 +524,11 @@ void discode::analyze_file(std::string path)
 {
     AST_Node * ast = parse(path.c_str());
 
+    if (ast == NULL) {
+        // Error occured: Todo error handling
+        return;
+    }
+
     // Print the tree
     printNode(ast, "");
 

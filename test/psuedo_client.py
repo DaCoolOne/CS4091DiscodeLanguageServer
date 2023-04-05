@@ -58,6 +58,9 @@ def run_test():
                         chid = obj['Channel_ID']
                         msg = obj['Message']
                         print(f'#{chid}: {msg}')
+                    elif obj['Name'] == 'Error':
+                        err = obj['Error']
+                        print(f'ERROR: {err}')
                 except BlockingIOError:
                     pass
                 

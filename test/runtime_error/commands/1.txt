@@ -1,0 +1,3 @@
+function runtime: msg {
+    !message.send(msg.channel.id, 20);
+}
