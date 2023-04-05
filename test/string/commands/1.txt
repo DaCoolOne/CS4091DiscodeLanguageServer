@@ -1,0 +1,5 @@
+function test : msg {
+    a <- "...hello, world!...";
+    b <- ".!";
+    !message.send(msg.channel.id, !stringlib.strip(a, b));
+}
