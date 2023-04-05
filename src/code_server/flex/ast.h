@@ -75,6 +75,14 @@ struct AST_Node_raw
 };
 typedef struct AST_Node_raw AST_Node;
 
+#define MAX_ERR_LEN 256
+struct Parse_Error_raw
+{
+    char txt[MAX_ERR_LEN];
+    unsigned short line;
+};
+typedef struct Parse_Error_raw Parse_Error;
+
 // Specialized getters
 AST_Bool getBool(AST_Node * node);
 char * getStr(AST_Node * node);

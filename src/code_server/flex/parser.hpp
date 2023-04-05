@@ -8,7 +8,7 @@ extern "C"
 {
     #include "flex/ast.h"
 
-    AST_Node * parse(const char *);
+    AST_Node * parse(const char *, Parse_Error *);
     void freeAST(AST_Node *);
 }
 

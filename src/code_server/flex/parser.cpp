@@ -522,7 +522,8 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
 
 void discode::analyze_file(std::string path)
 {
-    AST_Node * ast = parse(path.c_str());
+    Parse_Error err;
+    AST_Node * ast = parse(path.c_str(), &err);
 
     if (ast == NULL) {
         // Error occured: Todo error handling
@@ -558,14 +559,18 @@ void discode::analyze_string(std::string str)
 
 void discode::loadVM(discode::VM * vm, std::string channel, std::string path)
 {
-    AST_Node * ast = parse(path.c_str());
+    Parse_Error err;
+    AST_Node * ast = parse(path.c_str(), &err);
 
     if(ast) {
         load(vm, ast, channel);
         freeAST(ast);
     }
     else {
-        std::cout << "\nSyntax error probably (todo make better handling for this)" << std::endl;
+        json::JsonObject obj = json::JsonObject();
+        obj.add("Name", std::make_shared<json::JsonString>("Error"));
+        obj.add("Error", std::make_shared<json::JsonString>(err.txt));
+        vm->sendObject(&obj);
     }
 }
 

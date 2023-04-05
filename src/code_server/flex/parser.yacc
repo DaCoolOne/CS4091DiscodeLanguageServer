@@ -2,6 +2,7 @@
 %code top {
 
 #include <stdio.h>
+#include <string.h>
 #include "flex/ast.h"
 
 void yyerror(char *s);
@@ -10,8 +11,10 @@ int yylex();
 #define YYERROR_VERBOSE
 
 AST_Node * parsedStatement;
+Parse_Error * parseError;
 
 extern int yylineno;
+
 }
 
 %union {
@@ -196,18 +199,17 @@ TERMINAL            : NUMBER                                                { $<
 %%
 
 void yyerror(char *s) {
-    printf("%s", s);
+    strncpy(parseError->txt, s, MAX_ERR_LEN);
+    parseError->line = yylineno;
 }
 
-AST_Node * parse(const char * fname) {
+AST_Node * parse(const char * fname, Parse_Error * err) {
     set_yyin(fopen(fname, "r"));
 
+    parseError = err;
     parsedStatement = NULL;
-
-    do {
-        yylineno = 0;
-        yyparse();
-    } while(!feof_yyin());
+    yylineno = 0;
+    yyparse();
 
     return parsedStatement;
 }
