@@ -58,7 +58,7 @@ void discode::VM::step()
     active.gotoNext();
     ins->execute(this);
 
-    smallprint();
+    // smallprint();
 }
 
 void discode::VM::run(uint16_t max_ins)

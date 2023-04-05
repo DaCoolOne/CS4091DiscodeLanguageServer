@@ -16,6 +16,7 @@ std::string getNodeName(AST_Node * node)
         case AST_NODE_SUB: return "SUB";
         case AST_NODE_MUL: return "MUL";
         case AST_NODE_DIV: return "DIV";
+        case AST_NODE_MOD: return "MOD";
         case AST_NODE_AND: return "AND";
         case AST_NODE_OR: return "OR";
         case AST_NODE_EQ: return "EQ";
@@ -56,6 +57,7 @@ void printNode(AST_Node * node, std::string indent)
         case AST_NODE_SUB:
         case AST_NODE_MUL:
         case AST_NODE_DIV:
+        case AST_NODE_MOD:
         case AST_NODE_AND:
         case AST_NODE_OR:
         case AST_NODE_EQ:
@@ -132,19 +134,19 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::constructNa
         std::vector<std::shared_ptr<discode::Instruction>> ins;
         
         if(scope == AST_NODE_LIB_SCOPE) {
-            ins.push_back(std::make_shared<discode::InstructionGetLib>(getStr(name->right)));
+            ins.push_back(std::make_shared<discode::InstructionGetLib>(name->lineno, getStr(name->right)));
         }
         else if(scope == AST_NODE_GLOBAL_SCOPE) {
-            ins.push_back(std::make_shared<discode::InstructionGetGlobal>(getStr(name->right)));
+            ins.push_back(std::make_shared<discode::InstructionGetGlobal>(name->lineno, getStr(name->right)));
         }
         else {
-            ins.push_back(std::make_shared<discode::InstructionGetLocal>(getStr(name->right)));
+            ins.push_back(std::make_shared<discode::InstructionGetLocal>(name->lineno, getStr(name->right)));
         }
         return ins;
     }
     else if (name->type == AST_NODE_RESOLVE_NAME) {
         std::vector<std::shared_ptr<discode::Instruction>> resolution = discode_internal::constructNameResolution(name->left, scope);
-        resolution.push_back(std::make_shared<discode::InstructionGetStack>(getStr(name->right)));
+        resolution.push_back(std::make_shared<discode::InstructionGetStack>(name->lineno, getStr(name->right)));
         return resolution;
     }
     else {
@@ -173,7 +175,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIndexR
     auto rhs = discode_internal::buildExpressionEval(index->right);
     lhs.reserve(lhs.size() + rhs.size() + 1);
     lhs.insert(lhs.end(), rhs.begin(), rhs.end());
-    lhs.push_back(std::make_shared<discode::InstructionGetIndexedStack>());
+    lhs.push_back(std::make_shared<discode::InstructionGetIndexedStack>(index->lineno));
     return lhs;
 }
 
@@ -203,7 +205,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConsta
         break;
     }
     if (ins_list.size() == 0 && data != nullptr) {
-        ins_list.push_back(std::make_shared<discode::InstructionPush>(data));
+        ins_list.push_back(std::make_shared<discode::InstructionPush>(constant->lineno, data));
     }
     return ins_list;
 }
@@ -235,7 +237,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFuncti
 
     arglist.first.reserve(name_resolution.size() + arglist.first.size() + 1);
     arglist.first.insert(arglist.first.end(), name_resolution.begin(), name_resolution.end());
-    arglist.first.push_back(std::make_shared<discode::InstructionFunctionCall>(arglist.second));
+    arglist.first.push_back(std::make_shared<discode::InstructionFunctionCall>(fcall->lineno, arglist.second));
 
     return arglist.first;
 }
@@ -250,15 +252,16 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildBinary
 
     switch (node->type)
     {
-        case AST_NODE_ADD:  lhs.push_back(std::make_shared<discode::InstructionAdd>()); break;
-        case AST_NODE_SUB:  lhs.push_back(std::make_shared<discode::InstructionSub>()); break;
-        case AST_NODE_MUL:  lhs.push_back(std::make_shared<discode::InstructionMul>()); break;
-        case AST_NODE_DIV:  lhs.push_back(std::make_shared<discode::InstructionDivide>()); break;
-        case AST_NODE_GTR:  lhs.push_back(std::make_shared<discode::InstructionGtr>()); break;
-        case AST_NODE_GTEQ: lhs.push_back(std::make_shared<discode::InstructionGteq>()); break;
-        case AST_NODE_EQ:   lhs.push_back(std::make_shared<discode::InstructionEq>()); break;
-        case AST_NODE_AND:  lhs.push_back(std::make_shared<discode::InstructionAnd>()); break;
-        case AST_NODE_OR:   lhs.push_back(std::make_shared<discode::InstructionOr>()); break;
+        case AST_NODE_ADD:  lhs.push_back(std::make_shared<discode::InstructionAdd>(node->lineno)); break;
+        case AST_NODE_SUB:  lhs.push_back(std::make_shared<discode::InstructionSub>(node->lineno)); break;
+        case AST_NODE_MUL:  lhs.push_back(std::make_shared<discode::InstructionMul>(node->lineno)); break;
+        case AST_NODE_DIV:  lhs.push_back(std::make_shared<discode::InstructionDivide>(node->lineno)); break;
+        case AST_NODE_MOD:  lhs.push_back(std::make_shared<discode::InstructionMod>(node->lineno)); break;
+        case AST_NODE_GTR:  lhs.push_back(std::make_shared<discode::InstructionGtr>(node->lineno)); break;
+        case AST_NODE_GTEQ: lhs.push_back(std::make_shared<discode::InstructionGteq>(node->lineno)); break;
+        case AST_NODE_EQ:   lhs.push_back(std::make_shared<discode::InstructionEq>(node->lineno)); break;
+        case AST_NODE_AND:  lhs.push_back(std::make_shared<discode::InstructionAnd>(node->lineno)); break;
+        case AST_NODE_OR:   lhs.push_back(std::make_shared<discode::InstructionOr>(node->lineno)); break;
 
         default:
             throw std::logic_error("Unknown EXPR OP node type " + std::to_string(node->type));
@@ -272,8 +275,8 @@ std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node *
 
     switch (node->type)
     {
-        case AST_NODE_NEG: rhs.push_back(std::make_shared<discode::InstructionNeg>()); break;
-        case AST_NODE_NOT: rhs.push_back(std::make_shared<discode::InstructionNot>()); break;
+        case AST_NODE_NEG: rhs.push_back(std::make_shared<discode::InstructionNeg>(node->lineno)); break;
+        case AST_NODE_NOT: rhs.push_back(std::make_shared<discode::InstructionNot>(node->lineno)); break;
 
         default:
             throw std::logic_error("Unknown EXPR OP node type " + std::to_string(node->type));
@@ -305,6 +308,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
         case AST_NODE_SUB:
         case AST_NODE_MUL:
         case AST_NODE_DIV:
+        case AST_NODE_MOD:
         case AST_NODE_GTR:
         case AST_NODE_GTEQ:
         case AST_NODE_EQ:
@@ -330,7 +334,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
             
         }
         else {
-            ins.push_back(std::make_shared<discode::InstructionWriteLocal>(getStr(ret_node->right)));
+            ins.push_back(std::make_shared<discode::InstructionWriteLocal>(ret_node->lineno, getStr(ret_node->right)));
         }
     }
     else if (ret_node->type == AST_NODE_GLOBAL_SCOPE) {
@@ -347,7 +351,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
     // Ignore return value
     if (returns_to == nullptr) {
         auto eval = discode_internal::buildExpressionEval(expr);
-        eval.push_back(std::make_shared<discode::InstructionPop>());
+        eval.push_back(std::make_shared<discode::InstructionPop>(assign->lineno));
         return eval;
     }
     // Assign return value
@@ -368,11 +372,11 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildReturn
 
     if(ret_node->right) {
         ins = discode_internal::buildExpressionEval(ret_node->right);
-        ins.push_back(std::make_shared<discode::InstructionReturn>());
+        ins.push_back(std::make_shared<discode::InstructionReturn>(ret_node->lineno));
     }
     else {
-        ins.push_back(std::make_shared<discode::InstructionPush>(std::make_shared<discode::Null>()));
-        ins.push_back(std::make_shared<discode::InstructionReturn>());
+        ins.push_back(std::make_shared<discode::InstructionPush>(ret_node->lineno, std::make_shared<discode::Null>()));
+        ins.push_back(std::make_shared<discode::InstructionReturn>(ret_node->lineno));
     }
 
     return ins;
@@ -388,11 +392,11 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIfStat
 
     std::vector<std::shared_ptr<discode::Instruction>> if_part = discode_internal::buildStatements(if_statement->right, jumpoffset + ins.size() + 2);
 
-    ins.push_back(std::make_shared<discode::InstructionCJump>(jumpoffset + ins.size() + else_part.size() + 2));
+    ins.push_back(std::make_shared<discode::InstructionCJump>(if_statement->left->lineno, jumpoffset + ins.size() + else_part.size() + 2));
     
     ins.insert(ins.end(), else_part.begin(), else_part.end());
 
-    ins.push_back(std::make_shared<discode::InstructionUJump>(jumpoffset + ins.size() + if_part.size() + 1));
+    ins.push_back(std::make_shared<discode::InstructionUJump>(if_statement->left->lineno, jumpoffset + ins.size() + if_part.size() + 1));
 
     ins.insert(ins.end(), if_part.begin(), if_part.end());
 
@@ -406,13 +410,13 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildWhileS
 
     std::vector<std::shared_ptr<discode::Instruction>> loop_part = discode_internal::buildStatements(while_statement->right, jumpoffset + 1);
 
-    ins.push_back(std::make_shared<discode::InstructionUJump>(jumpoffset + loop_part.size() + 1));
+    ins.push_back(std::make_shared<discode::InstructionUJump>(while_statement->left->lineno, jumpoffset + loop_part.size() + 1));
     
     ins.insert(ins.end(), loop_part.begin(), loop_part.end());
 
     ins.insert(ins.end(), expr.begin(), expr.end());
 
-    ins.push_back(std::make_shared<discode::InstructionCJump>(jumpoffset + 1));
+    ins.push_back(std::make_shared<discode::InstructionCJump>(while_statement->left->lineno, jumpoffset + 1));
 
     return ins;
 }
@@ -492,6 +496,7 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
             // Todo
         break;
         case AST_NODE_DECLARE_FUNCTION:
+            printNode(node, "");
             func = discode_internal::buildFunction(node);
             std::cout << func.first->deepRepr() << std::endl;
             vm->writeGlobal(channel, func.second, func.first);

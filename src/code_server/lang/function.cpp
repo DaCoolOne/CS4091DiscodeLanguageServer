@@ -110,7 +110,9 @@ std::string discode::Function::deepRepr(std::string indentation)
     for(uint32_t i = 0; i < instructions.size(); ++i)
     {
         Instruction * ins = instructions.at(i).get();
-        out.push_back(ins->repr());
+        std::string line_num = std::to_string(ins->linenum);
+        while(line_num.size() < 3) line_num += " ";
+        out.push_back(line_num + ": " + ins->repr());
         indent.push_back(ArrowIndent());
         arrow_depths.push_back(0);
     }

@@ -9,10 +9,16 @@ namespace lib {
 
 class LibFunction : public discode::Data
 {
-    std::vector<discode::Type> type_vec;
+    std::vector<std::vector<discode::Type>> type_vec;
     std::string name;
 public:
-    LibFunction(std::vector<discode::Type> types): discode::Data(discode::Type::TYPE_INTERNAL_FUNCTION), type_vec(types) {}
+    LibFunction(std::vector<discode::Type> types): discode::Data(discode::Type::TYPE_INTERNAL_FUNCTION) {
+        type_vec.reserve(types.size());
+        for(uint8_t i = 0; i < types.size(); ++i) {
+            type_vec.push_back(std::vector<discode::Type>(1, types[i]));
+        }
+    }
+    LibFunction(std::vector<std::vector<discode::Type>> types): discode::Data(discode::Type::TYPE_INTERNAL_FUNCTION), type_vec(types) {}
     std::string repr() {
         std::string s = "FUNCTION(";
         for (uint16_t i = 0; i < type_vec.size(); i ++) {

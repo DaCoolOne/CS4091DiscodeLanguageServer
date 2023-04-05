@@ -14,6 +14,9 @@ class VM;
 
 struct Instruction
 {
+    uint16_t linenum;
+    Instruction(uint16_t lineno): linenum(lineno) {}
+
     virtual void execute(discode::VM * vm) { throw std::logic_error("No execution specified"); }
     virtual std::string repr() { throw std::logic_error("No representation of instruction"); }
     virtual uint32_t arrow(uint32_t curr) { throw std::logic_error("No arrow defined"); }
@@ -27,7 +30,7 @@ class InstructionPush : public Instruction
 {
     std::shared_ptr<Data> _data;
 public:
-    InstructionPush(std::shared_ptr<Data> data): _data(data) { }
+    InstructionPush(uint16_t lineno, std::shared_ptr<Data> data): Instruction(lineno), _data(data) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -36,6 +39,7 @@ public:
 class InstructionPop : public Instruction
 {
 public:
+    InstructionPop(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -44,7 +48,7 @@ class InstructionFunctionCall : public Instruction
 {
     uint16_t _num_args;
 public:
-    InstructionFunctionCall(uint16_t num_args): _num_args(num_args) { }
+    InstructionFunctionCall(uint16_t lineno, uint16_t num_args): Instruction(lineno), _num_args(num_args) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -53,6 +57,7 @@ public:
 class InstructionReturn : public Instruction
 {
 public:
+    InstructionReturn(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -61,7 +66,7 @@ class InstructionUJump : public Instruction
 {
     uint32_t targetIndex;
 public:
-    InstructionUJump(uint32_t endpoint): targetIndex(endpoint) { }
+    InstructionUJump(uint16_t lineno, uint32_t endpoint): Instruction(lineno), targetIndex(endpoint) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -73,7 +78,7 @@ class InstructionCJump : public Instruction
 {
     uint32_t targetIndex;
 public:
-    InstructionCJump(uint32_t endpoint): targetIndex(endpoint) { }
+    InstructionCJump(uint16_t lineno, uint32_t endpoint): Instruction(lineno), targetIndex(endpoint) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -85,7 +90,7 @@ class InstructionGetLocal : public Instruction
 {
     std::string name;
 public:
-    InstructionGetLocal(std::string identifier): name(identifier) { }
+    InstructionGetLocal(uint16_t lineno, std::string identifier): Instruction(lineno), name(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -95,7 +100,7 @@ class InstructionGetGlobal : public Instruction
 {
     std::string name;
 public:
-    InstructionGetGlobal(std::string identifier): name(identifier) { }
+    InstructionGetGlobal(uint16_t lineno, std::string identifier): Instruction(lineno), name(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -105,7 +110,7 @@ class InstructionGetLib : public Instruction
 {
     std::string name;
 public:
-    InstructionGetLib(std::string identifier): name(identifier) { }
+    InstructionGetLib(uint16_t lineno, std::string identifier): Instruction(lineno), name(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -115,7 +120,7 @@ class InstructionGetStack : public Instruction
 {
     std::string name;
 public:
-    InstructionGetStack(std::string indentifier): name(indentifier) { }
+    InstructionGetStack(uint16_t lineno, std::string indentifier): Instruction(lineno), name(indentifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -124,8 +129,7 @@ public:
 class InstructionGetIndexedStack : public Instruction
 {
 public:
-    InstructionGetIndexedStack() { }
-
+    InstructionGetIndexedStack(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -134,7 +138,7 @@ class InstructionWriteLocal : public Instruction
 {
     std::string ident;
 public:
-    InstructionWriteLocal(std::string identifier): ident(identifier) { }
+    InstructionWriteLocal(uint16_t lineno, std::string identifier): Instruction(lineno), ident(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -144,7 +148,7 @@ class InstructionWriteLibrary : public Instruction
 {
     std::string ident;
 public:
-    InstructionWriteLibrary(std::string identifier): ident(identifier) { }
+    InstructionWriteLibrary(uint16_t lineno, std::string identifier): Instruction(lineno), ident(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -154,7 +158,7 @@ class InstructionWriteGlobal : public Instruction
 {
     std::string ident;
 public:
-    InstructionWriteGlobal(std::string identifier): ident(identifier) { }
+    InstructionWriteGlobal(uint16_t lineno, std::string identifier): Instruction(lineno), ident(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -164,7 +168,7 @@ class InstructionWriteStack : public Instruction
 {
     std::string ident;
 public:
-    InstructionWriteStack(std::string identifier): ident(identifier) { }
+    InstructionWriteStack(uint16_t lineno, std::string identifier): Instruction(lineno), ident(identifier) { }
 
     void execute(discode::VM * vm);
     std::string repr();
@@ -173,6 +177,7 @@ public:
 class InstructionAdd : public Instruction
 {
 public:
+    InstructionAdd(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -180,6 +185,7 @@ public:
 class InstructionSub : public Instruction
 {
 public:
+    InstructionSub(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -187,6 +193,7 @@ public:
 class InstructionMul : public Instruction
 {
 public:
+    InstructionMul(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -194,6 +201,15 @@ public:
 class InstructionDivide : public Instruction
 {
 public:
+    InstructionDivide(uint16_t lineno): Instruction(lineno) {}
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionMod : public Instruction
+{
+public:
+    InstructionMod(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -201,6 +217,7 @@ public:
 class InstructionAnd : public Instruction
 {
 public:
+    InstructionAnd(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -208,6 +225,7 @@ public:
 class InstructionOr : public Instruction
 {
 public:
+    InstructionOr(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -215,6 +233,7 @@ public:
 class InstructionNot : public Instruction
 {
 public:
+    InstructionNot(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -222,6 +241,7 @@ public:
 class InstructionNeg : public Instruction
 {
 public:
+    InstructionNeg(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -229,6 +249,7 @@ public:
 class InstructionGtr : public Instruction
 {
 public:
+    InstructionGtr(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -236,6 +257,7 @@ public:
 class InstructionGteq : public Instruction
 {
 public:
+    InstructionGteq(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };
@@ -243,6 +265,7 @@ public:
 class InstructionEq : public Instruction
 {
 public:
+    InstructionEq(uint16_t lineno): Instruction(lineno) {}
     void execute(discode::VM * vm);
     std::string repr();
 };

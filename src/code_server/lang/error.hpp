@@ -58,6 +58,7 @@ class ErrorUnexpectedType : public Error
 {
 public:
     ErrorUnexpectedType(Type expected, Type got): Error("Unexpected type " + getTypeStr(got) + ", expected "  + getTypeStr(expected)) { }
+    ErrorUnexpectedType(std::vector<Type> expected, Type got): Error("Unexpected type " + getTypeStr(got) + ", expected "  + getTypeStr(expected)) { }
 };
 
 class InfiniteLoopError : public Error

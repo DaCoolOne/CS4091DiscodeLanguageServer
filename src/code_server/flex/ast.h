@@ -18,6 +18,7 @@ typedef enum {
     AST_NODE_SUB,
     AST_NODE_MUL,
     AST_NODE_DIV,
+    AST_NODE_MOD,
     AST_NODE_AND,
     AST_NODE_OR,
     AST_NODE_NOT,
@@ -60,6 +61,7 @@ typedef enum {
 struct AST_Node_raw
 {
     AST_NODE_TYPE type;
+    unsigned short lineno;
     struct AST_Node_raw * left;
     struct AST_Node_raw * right;
 
@@ -78,64 +80,65 @@ AST_Bool getBool(AST_Node * node);
 char * getStr(AST_Node * node);
 double getDouble(AST_Node * node);
 
-AST_Node * createNull();
-AST_Node * createBool(AST_Bool val);
-AST_Node * createNumber(char * value);
-AST_Node * createString(char * value);
-AST_Node * createIdentifier(char * value);
+AST_Node * createNull(short lineno);
+AST_Node * createBool(short lineno, AST_Bool val);
+AST_Node * createNumber(short lineno, char * value);
+AST_Node * createString(short lineno, char * value);
+AST_Node * createIdentifier(short lineno, char * value);
 
 // Unary expressions
-AST_Node * createNegExpr(AST_Node * lhs);
-AST_Node * createNotExpr(AST_Node * lhs);
+AST_Node * createNegExpr(short lineno, AST_Node * lhs);
+AST_Node * createNotExpr(short lineno, AST_Node * lhs);
 
 // Binary exptressions
-AST_Node * createAddExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createSubExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createMulExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createDivExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createAndExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createOrExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createEqExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createGtrExpr(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createGteqExpr(AST_Node * lhs, AST_Node * rhs);
+AST_Node * createAddExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createSubExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createMulExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createDivExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createModExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createAndExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createOrExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createEqExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createGtrExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createGteqExpr(short lineno, AST_Node * lhs, AST_Node * rhs);
 
 // Name resolution operations
-AST_Node * createIdentifierPath(AST_Node * lhs, AST_Node * rhs);
-AST_Node * createGlobalResolution(AST_Node * lhs);
-AST_Node * createLibraryResolution(AST_Node * lhs);
+AST_Node * createIdentifierPath(short lineno, AST_Node * lhs, AST_Node * rhs);
+AST_Node * createGlobalResolution(short lineno, AST_Node * lhs);
+AST_Node * createLibraryResolution(short lineno, AST_Node * lhs);
 
 // Lists
-AST_Node * createIdentList(AST_Node * rhs);
-AST_Node * createIdentListElement(AST_Node * value, AST_Node * rhs);
+AST_Node * createIdentList(short lineno, AST_Node * rhs);
+AST_Node * createIdentListElement(short lineno, AST_Node * value, AST_Node * rhs);
 
-AST_Node * createExprList(AST_Node * rhs);
-AST_Node * createExprListElement(AST_Node * expr, AST_Node * rhs);
+AST_Node * createExprList(short lineno, AST_Node * rhs);
+AST_Node * createExprListElement(short lineno, AST_Node * expr, AST_Node * rhs);
 
-AST_Node * createStatementList(AST_Node * current, AST_Node * next);
+AST_Node * createStatementList(short lineno, AST_Node * current, AST_Node * next);
 
 // Statement types
-AST_Node * createAssign(AST_Node * dest, AST_Node * expr);
-AST_Node * createFCall(AST_Node * src, AST_Node * args);
-AST_Node * createReturn(AST_Node * retValue);
-AST_Node * createIf(AST_Node * eval, AST_Node * statements);
-AST_Node * createWhile(AST_Node * eval, AST_Node * statements);
+AST_Node * createAssign(short lineno, AST_Node * dest, AST_Node * expr);
+AST_Node * createFCall(short lineno, AST_Node * src, AST_Node * args);
+AST_Node * createReturn(short lineno, AST_Node * retValue);
+AST_Node * createIf(short lineno, AST_Node * eval, AST_Node * statements);
+AST_Node * createWhile(short lineno, AST_Node * eval, AST_Node * statements);
 
 // Outer level declarations
-AST_Node * createDeclare(AST_Node * dest, AST_Node * expr);
-AST_Node * createDeclareFunction(AST_Node * signature, AST_Node * code);
-AST_Node * createDeclareMethod(AST_Node * signature, AST_Node * code);
+AST_Node * createDeclare(short lineno, AST_Node * dest, AST_Node * expr);
+AST_Node * createDeclareFunction(short lineno, AST_Node * signature, AST_Node * code);
+AST_Node * createDeclareMethod(short lineno, AST_Node * signature, AST_Node * code);
 
-AST_Node * createSignature(AST_Node * identifier, AST_Node * arglist);
+AST_Node * createSignature(short lineno, AST_Node * identifier, AST_Node * arglist);
 
 // Indexing, arrays, objects
-AST_Node * createIndex(AST_Node * base, AST_Node * index);
+AST_Node * createIndex(short lineno, AST_Node * base, AST_Node * index);
 
-AST_Node * createArray(AST_Node * elements);
-AST_Node * createObject(AST_Node * elements);
-AST_Node * createKeyValueList(AST_Node * keyvalue, AST_Node * next);
-AST_Node * createKeyValuePair(AST_Node * key, AST_Node * value);
+AST_Node * createArray(short lineno, AST_Node * elements);
+AST_Node * createObject(short lineno, AST_Node * elements);
+AST_Node * createKeyValueList(short lineno, AST_Node * keyvalue, AST_Node * next);
+AST_Node * createKeyValuePair(short lineno, AST_Node * key, AST_Node * value);
 
-AST_Node * createObjectDefinition(AST_Node * def);
+AST_Node * createObjectDefinition(short lineno, AST_Node * def);
 
 // Memory management
 void freeAST(AST_Node * node);

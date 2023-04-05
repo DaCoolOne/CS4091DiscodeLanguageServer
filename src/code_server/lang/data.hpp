@@ -118,6 +118,7 @@ public:
 };
 
 std::string getTypeStr(Type type);
+std::string getTypeStr(std::vector<Type> types);
 
 };
 #endif

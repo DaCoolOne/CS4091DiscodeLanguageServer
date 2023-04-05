@@ -65,14 +65,16 @@ def build_parser():
     global DOING
 
     _cwd = os.getcwd()
-    os.chdir(os.path.join(os.path.dirname(__file__), 'flex'))
 
     yacc_path = os.path.join(os.path.dirname(__file__), 'flex', 'parser.yacc')
     lex_path = os.path.join(os.path.dirname(__file__), 'flex', 'parser.lex')
 
+    os.chdir(os.path.join(os.path.dirname(__file__), 'build_objects'))
     hashes = filter_to_out_of_date_hashes([ yacc_path, lex_path ])
 
     if len(hashes) > 0:
+        print("Building flex/bison")
+        os.chdir(os.path.join(os.path.dirname(__file__), 'flex'))
         for f in [ "lex.yy.c", "y.tab.c", "y.tab.h" ]:
             if os.path.exists(f):
                 os.remove(f)
@@ -82,6 +84,7 @@ def build_parser():
         DOING = "building lexical analyzer"
         subprocess.check_call([ 'flex', lex_path ])
 
+        os.chdir(os.path.join(os.path.dirname(__file__), 'build_objects'))
         save_hashes(hashes)
 
     os.chdir(_cwd)

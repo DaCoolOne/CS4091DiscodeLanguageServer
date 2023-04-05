@@ -237,16 +237,25 @@ void discode::InstructionAdd::execute(discode::VM * vm) {
     auto b = vm->pop();
     auto a = vm->pop();
 
-    if (a->type != Type::TYPE_NUMBER) {
-        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+    if (a->type == Type::TYPE_NUMBER) {
+        if (b->type != Type::TYPE_NUMBER) {
+            vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+            return;
+        }
+        vm->push(a->getNumber() + b->getNumber());
         return;
     }
-    if (b->type != Type::TYPE_NUMBER) {
-        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+    if (a->type == Type::TYPE_STRING) {
+        if (b->type != Type::TYPE_STRING) {
+            vm->error(discode::ErrorUnexpectedType(Type::TYPE_STRING, b->type));
+            return;
+        }
+        std::string res = a->getString() + b->getString();
+        vm->push(res);
         return;
     }
 
-    vm->push(a->getNumber() + b->getNumber());
+    vm->error(discode::ErrorUnexpectedType({ Type::TYPE_NUMBER, Type::TYPE_STRING }, a->type));
 }
 std::string discode::InstructionAdd::repr() {
     return "ADD";
@@ -317,6 +326,35 @@ void discode::InstructionDivide::execute(discode::VM * vm) {
 }
 std::string discode::InstructionDivide::repr() {
     return "DIV";
+}
+
+void discode::InstructionMod::execute(discode::VM * vm) {
+    auto b = vm->pop();
+    auto a = vm->pop();
+
+    if (a->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, a->type));
+        return;
+    }
+    if (b->type != Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(Type::TYPE_NUMBER, b->type));
+        return;
+    }
+
+    if (b->getNumber() == 0) {
+        if (a->getNumber() >= 0) {
+            vm->push(std::numeric_limits<double>::infinity());
+        }
+        else {
+            vm->push(-std::numeric_limits<double>::infinity());
+        }
+    }
+    else {
+        vm->push(a->getNumber() - b->getNumber() * static_cast<int>(a->getNumber() / b->getNumber()));
+    }
+}
+std::string discode::InstructionMod::repr() {
+    return "MOD";
 }
 
 void discode::InstructionAnd::execute(discode::VM * vm) {
