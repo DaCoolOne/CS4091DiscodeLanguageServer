@@ -96,6 +96,13 @@ async def handle_message(message: dict):
             await send_message(message['Channel_ID'], message['Message'])
             print("Message should be sent!")
             # The ID of the message that requested the server run the command, and the desired output in response to that.
+        
+        elif message['Name'] == 'Error' :
+            # Server says something went wrong either at runtime or during compiling
+
+            print("Sending error", message['Error'], "to", message['Channel_ID'])
+            await send_message(message['Channel_ID'], message['Error'])
+            print("Error should be sent.")
 
 
 
@@ -120,13 +127,13 @@ async def on_message(message):
 
     # Don't freak out if the channel has no category...
     if (category == None) :
-        cat_name = "none"
+        cat_name = "NONE"
         # Just give a default value that won't set off the command
     else :
         cat_name = category.name
 
     # Check if the message is code in the appropriate channel
-    if message.content.startswith("```") and cat_name == "DISCODE-CODE" :
+    if message.content.startswith("```") and cat_name.upper() == "DISCODE-CODE" :
         server_id = message.guild.id
         server_name = message.guild.name
         channel_id = message.channel.id
