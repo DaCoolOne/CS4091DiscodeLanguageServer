@@ -17,9 +17,9 @@ namespace discode {
 void analyze_file(std::string path);
 void analyze_string(std::string str);
 
-void load(discode::VM * vm, AST_Node * node, std::string channel);
-void loadVM(discode::VM * vm, std::string channel, std::string path);
-void loadVM_string(discode::VM * vm, std::string channel, std::string str);
+void load(discode::VM * vm, AST_Node * node, std::string channel, std::string msg_id);
+void loadVM(discode::VM * vm, std::string channel, std::string path, std::string msg_id);
+void loadVM_string(discode::VM * vm, std::string channel, std::string str, std::string msg_id);
 
 std::vector<std::string> getArgs(AST_Node * node);
 

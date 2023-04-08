@@ -62,7 +62,19 @@ void discode::VM::step()
         json::JsonObject obj = json::JsonObject();
         obj.add("Name", std::make_shared<json::JsonString>("Error"));
         obj.add("Error", std::make_shared<json::JsonString>(err->what()));
+        std::string where = "";
+        while(function_stack.size()) {
+            if (function_stack.back().messageId() != "") {
+                where = function_stack.back().messageId();
+                break;
+            }
+            function_stack.pop_back();
+        }
+        obj.add("Message_id", std::make_shared<json::JsonString>(where));
         sendObject(&obj);
+
+        function_stack.clear();
+        argument_stack.clear();
     }
 
     // smallprint();
@@ -138,9 +150,6 @@ std::shared_ptr<discode::Data> discode::VM::pop()
 void discode::VM::error(discode::Error error)
 {
     err = std::make_shared<discode::Error>(error);
-
-    argument_stack.clear();
-    function_stack.clear();
 }
 
 void discode::VM::clearError()

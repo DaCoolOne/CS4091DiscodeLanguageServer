@@ -120,7 +120,7 @@ int main(int argc, char* argv[]) {
                             
                             std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
 
-                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code);
+                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code, channel_id);
                         }
                         else if (command == "Run") {
 

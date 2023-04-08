@@ -485,7 +485,7 @@ std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::bui
 }
 
 // Loads an AST into the VM
-void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
+void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::string msg_id)
 {
     std::pair<std::shared_ptr<discode::Function>, std::string> func;
     json::JsonArray arglist;
@@ -498,6 +498,7 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel)
         case AST_NODE_DECLARE_FUNCTION:
             printNode(node, "");
             func = discode_internal::buildFunction(node);
+            func.first->messageId = msg_id;
             std::cout << func.first->deepRepr() << std::endl;
             vm->writeGlobal(channel, func.second, func.first);
             if(channel == "commands") {
@@ -557,29 +558,30 @@ void discode::analyze_string(std::string str)
     discode::analyze_file("temp.txt");
 }
 
-void discode::loadVM(discode::VM * vm, std::string channel, std::string path)
+void discode::loadVM(discode::VM * vm, std::string channel, std::string path, std::string msg_id)
 {
     Parse_Error err;
     AST_Node * ast = parse(path.c_str(), &err);
 
     if(ast) {
-        load(vm, ast, channel);
+        load(vm, ast, channel, msg_id);
         freeAST(ast);
     }
     else {
         json::JsonObject obj = json::JsonObject();
         obj.add("Name", std::make_shared<json::JsonString>("Error"));
         obj.add("Error", std::make_shared<json::JsonString>(err.txt));
+        obj.add("Message_id", std::make_shared<json::JsonString>(msg_id));
         vm->sendObject(&obj);
     }
 }
 
-void discode::loadVM_string(discode::VM * vm, std::string channel, std::string str)
+void discode::loadVM_string(discode::VM * vm, std::string channel, std::string str, std::string msg_id)
 {
     std::ofstream out;
     out.open("temp.txt");
     out << str;
     out.close();
 
-    discode::loadVM(vm, channel, "temp.txt");
+    discode::loadVM(vm, channel, "temp.txt", msg_id);
 }

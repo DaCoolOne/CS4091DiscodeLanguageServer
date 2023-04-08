@@ -16,6 +16,7 @@ class Function : public Data
     std::vector<std::string> argnames;
     std::vector<std::shared_ptr<Instruction>> instructions;
 public:
+    std::string messageId;
     Function(): Data(Type::TYPE_FUNCTION) { }
     Function(std::vector<std::string> &args, std::vector<std::shared_ptr<Instruction>> &ins): Data(Type::TYPE_FUNCTION), argnames(args), instructions(ins) { }
 
@@ -44,6 +45,7 @@ public:
     void gotoIndex(uint32_t index) { ins_cnt = index; }
     bool isComplete() { return ins_cnt >= f_ptr->length(); }
 
+    std::string messageId() { return f_ptr->messageId; }
     std::string repr();
     std::string smallrepr() { return std::string("F_ptr -> ") + std::to_string(ins_cnt); }
 };
