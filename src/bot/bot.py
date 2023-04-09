@@ -72,7 +72,9 @@ async def add_func(Server_id, Function_name, arguments):
     @guild_only()
     async def temp(ctx):
         interaction = await ctx.respond("Sending command to server...")
-        run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, ctx.message.id)
+        original_response = await interaction.original_response()
+        message_id = original_response.id
+        run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id)
         await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
 
     await bot.sync_commands(force = True, guild_ids=[Server_id])
@@ -102,8 +104,8 @@ async def handle_message(message: dict):
         elif message['Name'] == 'Error' :
             # Server says something went wrong either at runtime or during compiling
 
-            print("Sending error", message['Error'], "to", message['Channel_ID'])
-            await send_message(message['Channel_ID'], message['Error'])
+            print("Sending error", message['Error'], "to", message['Message_id'])
+            await send_message(message['Message_id'], message['Error'])
             print("Error should be sent.")
 
 
