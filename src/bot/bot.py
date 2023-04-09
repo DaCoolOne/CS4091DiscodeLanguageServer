@@ -41,13 +41,14 @@ def load(server_id: int, server_name: str, channel_id: int, channel_name:str, me
         "Server_Name": server_name,
         "Channel_ID": str(channel_id),
         "Channel_Name": channel_name,
+        "Message_ID": str(message_id),
         "Code": code
     }
 
     nonBlockSend(3540, message)
 
 
-def run(func_name: str, server_id: int, server_name: str, channel_id: int, channel_name: str, arguments = {}):
+def run(func_name: str, server_id: int, server_name: str, channel_id: int, channel_name: str, message_id: int, arguments = {}):
     # Tell the server to run a command, probably triggered by a user's slash command
 
     print ("Trying to run function", func_name)
@@ -57,6 +58,7 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
         "Server_Name": server_name,
         "Channel_ID": str(channel_id),
         "Channel_Name": channel_name,
+        "Message_ID": str(message_id),
         "Function": func_name,
         "Message": {  },
     }
@@ -70,7 +72,7 @@ async def add_func(Server_id, Function_name, arguments):
     @guild_only()
     async def temp(ctx):
         interaction = await ctx.respond("Sending command to server...")
-        run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name)
+        run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, ctx.message.id)
         await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
 
     await bot.sync_commands(force = True, guild_ids=[Server_id])
