@@ -116,11 +116,12 @@ int main(int argc, char* argv[]) {
                             std::string server_name = data->at("Server_Name")->asString();
                             std::string channel_id = data->at("Channel_ID")->asString();
                             std::string channel_name = data->at("Channel_Name")->asString();
+                            std::string message_id = data->at("Message_ID")->asString();
                             std::string code = data->at("Code")->asString();
                             
                             std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
 
-                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code, channel_id);
+                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code, message_id);
                         }
                         else if (command == "Run") {
 
