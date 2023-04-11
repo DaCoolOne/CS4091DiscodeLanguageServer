@@ -45,7 +45,7 @@ void discode::InstructionFunctionCall::execute(discode::VM * vm) {
         // Make sure that function expects the number of arguments we have.
         if (function->args().size() != args.size())
         {
-            vm->error(discode::ErrorBadArgumentCount(function->args().size()));
+            vm->error(discode::ErrorBadArgumentCount(function->args().size(), args.size()));
             return;
         }
 
@@ -101,7 +101,7 @@ std::string discode::InstructionCJump::repr() {
     return "CJMP " + std::to_string(targetIndex);
 }
 
-void discode::InstructionIter::execute(discode::VM * vm) {
+void discode::InstructionIterCheck::execute(discode::VM * vm) {
     std::shared_ptr<Data> jump_val = vm->pop();
     vm->pushLocal(reg);
     std::shared_ptr<Data> ct = vm->pop();
@@ -118,12 +118,18 @@ void discode::InstructionIter::execute(discode::VM * vm) {
     if (jump_val->getNumber() <= ct->getNumber()) {
         vm->jump(targetIndex);
     }
-    else {
-        vm->writeLocal(reg, std::make_shared<discode::Number>(ct->getNumber()+1));
-    }
 }
-std::string discode::InstructionIter::repr() {
-    return "ITER " + reg + " " + std::to_string(targetIndex);
+std::string discode::InstructionIterCheck::repr() {
+    return "ITER CHECK " + reg + " " + std::to_string(targetIndex);
+}
+
+void discode::InstructionIterInc::execute(discode::VM * vm) {
+    vm->pushLocal(reg);
+    std::shared_ptr<Data> ct = vm->pop();
+    vm->writeLocal(reg, std::make_shared<discode::Number>(ct->getNumber()+1));
+}
+std::string discode::InstructionIterInc::repr() {
+    return "ITER INC " + reg;
 }
 
 void discode::InstructionGetLocal::execute(discode::VM * vm) {

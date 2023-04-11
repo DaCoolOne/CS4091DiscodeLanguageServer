@@ -9,7 +9,7 @@
 void lib::LibFunction::call(discode::VM * vm, std::vector<std::shared_ptr<discode::Data>> data)
 {
     if (type_vec.size() != data.size()) {
-        vm->error(discode::ErrorBadArgumentCount(type_vec.size()));
+        vm->error(discode::ErrorBadArgumentCount(type_vec.size(), data.size()));
         return;
     }
 

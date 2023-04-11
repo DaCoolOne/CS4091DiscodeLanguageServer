@@ -1,3 +1,3 @@
 function factorial6: msg {
-    !message.send(msg.channel.id, !conv.num_str(#math.factorial(6)));
+    !message.send(msg.channel.id, !conv.str(#math.factorial(6)));
 }

@@ -33,7 +33,7 @@ public:
 class ErrorBadArgumentCount : public Error
 {
 public:
-    ErrorBadArgumentCount(uint16_t expected): Error("Incorrect number of argument in function call! Expected " + std::to_string(expected)) {}
+    ErrorBadArgumentCount(uint16_t expected, uint16_t got): Error("Incorrect number of argument in function call! Expected " + std::to_string(expected) + " got " + std::to_string(got)) {}
 };
 
 class ErrorFunctionStackFull : public Error

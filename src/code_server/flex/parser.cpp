@@ -493,10 +493,11 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildForSta
     auto comp_expr = discode_internal::buildExpressionEval(for_statement->left->right->right);
 
     auto body = discode_internal::buildStatements(for_statement->right, jumpoffset + init.size() + comp_expr.size() + 1);
+    body.push_back(std::make_shared<discode::InstructionIterInc>(for_statement->left->lineno, iterval));
 
     ins.insert(ins.end(), init.begin(), init.end());
     ins.insert(ins.end(), comp_expr.begin(), comp_expr.end());
-    ins.push_back(std::make_shared<discode::InstructionIter>(for_statement->left->lineno, iterval, jumpoffset + body.size() + ins.size() + 2));
+    ins.push_back(std::make_shared<discode::InstructionIterCheck>(for_statement->left->lineno, iterval, jumpoffset + body.size() + ins.size() + 2));
     ins.insert(ins.end(), body.begin(), body.end());
     ins.push_back(std::make_shared<discode::InstructionUJump>(for_statement->left->lineno, jumpoffset + init.size()));
 

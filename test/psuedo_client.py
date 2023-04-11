@@ -98,10 +98,10 @@ def run_test():
             for msg in os.listdir(os.path.join(base, channel)):
                 with open(os.path.join(base, channel, msg)) as f:
                     code = f.read()
-                    send_msg(client, {
+                    """send_msg(client, {
                         "Name": "ParseTree",
                         "Code": code
-                    })
+                    })"""
                     send_msg(client, {
                         "Name": "Load",
                         "Server_ID": "psuedo",

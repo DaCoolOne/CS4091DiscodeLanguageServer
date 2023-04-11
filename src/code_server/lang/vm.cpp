@@ -26,7 +26,7 @@ void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
     discode::Function * function = dynamic_cast<discode::Function *>(obj.get());
 
     if(function->args().size() != 1) {
-        error(discode::ErrorBadArgumentCount(function->args().size()));
+        error(discode::ErrorBadArgumentCount(1, function->args().size()));
         return;
     }
     Scope locals;
