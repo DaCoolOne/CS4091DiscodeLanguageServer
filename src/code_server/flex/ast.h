@@ -43,7 +43,11 @@ typedef enum {
     AST_NODE_FCALL,
     AST_NODE_RETURN,
     AST_NODE_IF,
+    AST_NODE_BRANCH,
+    AST_NODE_ALSO,
     AST_NODE_WHILE,
+    AST_NODE_FOR,
+    AST_NODE_FOR_ARGS,
 
     AST_NODE_DECLARE,
     AST_NODE_DECLARE_FUNCTION,
@@ -129,7 +133,11 @@ AST_Node * createAssign(short lineno, AST_Node * dest, AST_Node * expr);
 AST_Node * createFCall(short lineno, AST_Node * src, AST_Node * args);
 AST_Node * createReturn(short lineno, AST_Node * retValue);
 AST_Node * createIf(short lineno, AST_Node * eval, AST_Node * statements);
+AST_Node * createBranchingPath(short lineno, AST_Node * path1, AST_Node * path2);
+AST_Node * createConditionalEvaluator(short lineno, AST_Node * eval, AST_Node * statements);
 AST_Node * createWhile(short lineno, AST_Node * eval, AST_Node * statements);
+AST_Node * createFor(short lineno, AST_Node * eval, AST_Node * statements);
+AST_Node * createForArgs(short lineno, AST_Node * lhs, AST_Node * rhs);
 
 // Outer level declarations
 AST_Node * createDeclare(short lineno, AST_Node * dest, AST_Node * expr);

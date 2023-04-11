@@ -2,6 +2,7 @@
 
 #include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
 #include "flex/ast.h"
 
@@ -130,7 +131,11 @@ AST_Node * createAssign(short lineno, AST_Node * dest, AST_Node * expr) { return
 AST_Node * createFCall(short lineno, AST_Node * src, AST_Node * args) { return createBinaryExpr(lineno, AST_NODE_FCALL, src, args); }
 AST_Node * createReturn(short lineno, AST_Node * retValue) { return createUnaryExpr(lineno, AST_NODE_RETURN, retValue); }
 AST_Node * createIf(short lineno, AST_Node * eval, AST_Node * statements) { return createBinaryExpr(lineno, AST_NODE_IF, eval, statements); }
+AST_Node * createBranchingPath(short lineno, AST_Node * eval, AST_Node * statements) { return createBinaryExpr(lineno, AST_NODE_BRANCH, eval, statements); }
+AST_Node * createConditionalEvaluator(short lineno, AST_Node * eval, AST_Node * statements) { return createBinaryExpr(lineno, AST_NODE_ALSO, eval, statements); }
 AST_Node * createWhile(short lineno, AST_Node * eval, AST_Node * statements) { return createBinaryExpr(lineno, AST_NODE_WHILE, eval, statements); }
+AST_Node * createFor(short lineno, AST_Node * eval, AST_Node * statements) { return createBinaryExpr(lineno, AST_NODE_FOR, eval, statements); }
+AST_Node * createForArgs(short lineno, AST_Node * lhs, AST_Node * rhs) { return createBinaryExpr(lineno, AST_NODE_FOR_ARGS, lhs, rhs); }
 
 AST_Node * createDeclare(short lineno, AST_Node * dest, AST_Node * expr) { return createBinaryExpr(lineno, AST_NODE_DECLARE, dest, expr); }
 AST_Node * createDeclareFunction(short lineno, AST_Node * signature, AST_Node * code) { return createBinaryExpr(lineno, AST_NODE_DECLARE_FUNCTION, signature, code); }
@@ -194,7 +199,10 @@ void freeAST(AST_Node * node)
         case AST_NODE_ASSIGN:
         case AST_NODE_FCALL:
         case AST_NODE_IF:
+        case AST_NODE_ALSO:
+        case AST_NODE_BRANCH:
         case AST_NODE_WHILE:
+        case AST_NODE_FOR:
         case AST_NODE_DECLARE:
         case AST_NODE_DECLARE_FUNCTION:
         case AST_NODE_DECLARE_METHOD:
@@ -208,6 +216,9 @@ void freeAST(AST_Node * node)
         case AST_NODE_IDENT_LIST_CONT:
             if (node->right) freeAST(node->right);
             break;
+        
+        default:
+            assert(25);
     }
 
     free(node);

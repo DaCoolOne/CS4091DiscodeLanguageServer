@@ -43,7 +43,9 @@ std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node *
 std::vector<std::shared_ptr<discode::Instruction>> buildAssignReturn(AST_Node * ret_node);
 std::vector<std::shared_ptr<discode::Instruction>> buildReturn(AST_Node * ret_node);
 std::vector<std::shared_ptr<discode::Instruction>> buildIfStatement(AST_Node * if_statement, uint16_t jumpoffset);
+std::vector<std::vector<std::shared_ptr<discode::Instruction>>> buildAlsoChain(AST_Node * also_root, uint16_t jumpoffset);
 std::vector<std::shared_ptr<discode::Instruction>> buildWhileStatement(AST_Node * while_statement, uint16_t jumpoffset);
+std::vector<std::shared_ptr<discode::Instruction>> buildForStatement(AST_Node * for_statement, uint16_t jumpoffset);
 std::vector<std::shared_ptr<discode::Instruction>> buildIndexResolve(AST_Node * index);
 
 };

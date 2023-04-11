@@ -86,6 +86,19 @@ public:
     uint32_t arrow(uint32_t index) { return targetIndex; }
 };
 
+class InstructionIter : public Instruction
+{
+    uint32_t targetIndex;
+    std::string reg;
+public:
+    InstructionIter(uint16_t lineno, std::string local, uint32_t endpoint): Instruction(lineno), reg(local), targetIndex(endpoint) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+    bool hasArrow() { return true; }
+    uint32_t arrow(uint32_t index) { return targetIndex; }
+};
+
 class InstructionGetLocal : public Instruction
 {
     std::string name;

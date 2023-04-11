@@ -1,0 +1,16 @@
+
+
+function main: msg {
+
+    if msg also msg.channel also msg.channel.id {
+        !message.send(msg.channel.id, "Hi");
+    }
+    else if msg also msg.channel {
+        a <- 10;
+    }
+    else {
+        b <- 102;
+    }
+
+}
+

@@ -93,12 +93,37 @@ std::string discode::InstructionUJump::repr() {
 void discode::InstructionCJump::execute(discode::VM * vm) {
     std::shared_ptr<Data> jump_val = vm->pop();
     
-    if (discode::isTruthy(jump_val)) {
+    if (!discode::isTruthy(jump_val)) {
         vm->jump(targetIndex);
     }
 }
 std::string discode::InstructionCJump::repr() {
     return "CJMP " + std::to_string(targetIndex);
+}
+
+void discode::InstructionIter::execute(discode::VM * vm) {
+    std::shared_ptr<Data> jump_val = vm->pop();
+    vm->pushLocal(reg);
+    std::shared_ptr<Data> ct = vm->pop();
+
+    if (ct->type != discode::Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_NUMBER, ct->type));
+        return;
+    }
+    if (jump_val->type != discode::Type::TYPE_NUMBER) {
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_NUMBER, jump_val->type));
+        return;
+    }
+    
+    if (jump_val->getNumber() <= ct->getNumber()) {
+        vm->jump(targetIndex);
+    }
+    else {
+        vm->writeLocal(reg, std::make_shared<discode::Number>(ct->getNumber()+1));
+    }
+}
+std::string discode::InstructionIter::repr() {
+    return "ITER " + reg + " " + std::to_string(targetIndex);
 }
 
 void discode::InstructionGetLocal::execute(discode::VM * vm) {

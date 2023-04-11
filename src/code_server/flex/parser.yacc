@@ -24,6 +24,9 @@ AST_Node* node;
 }
 
 %token KEYWORD_IF
+%token KEYWORD_ALSO
+%token KEYWORD_ELSE
+%token KEYWORD_FOR
 %token KEYWORD_WHILE
 %token KEYWORD_RETURN
 %token KEYWORD_DECLARE
@@ -94,12 +97,23 @@ STATEMENT_LIST      :                           { $<node>$ = NULL; }
                     | STATEMENT STATEMENT_LIST  { $<node>$ = createStatementList(yylineno, $<node>1, $<node>2); }
                     ;
 
+ALSO_CHAIN          : EXPRESSION KEYWORD_ALSO ALSO_CHAIN                                { $<node>$ = createConditionalEvaluator(yylineno, $<node>1, $<node>3); }
+                    | EXPRESSION                                                        { $<node>$ = createConditionalEvaluator(yylineno, $<node>1, NULL); }
+                    ;
+
+IF_STATEMENT        : KEYWORD_IF ALSO_CHAIN CODE_BLOCK                                  { $<node>$ = createIf(yylineno, $<node>2, createBranchingPath(yylineno, $<node>3, NULL)); }
+                    | KEYWORD_IF ALSO_CHAIN CODE_BLOCK KEYWORD_ELSE IF_STATEMENT        { $<node>$ = createIf(yylineno, $<node>2, createBranchingPath(yylineno, $<node>3, createStatementList(yylineno, $<node>5, NULL))); }
+                    | KEYWORD_IF ALSO_CHAIN CODE_BLOCK KEYWORD_ELSE CODE_BLOCK          { $<node>$ = createIf(yylineno, $<node>2, createBranchingPath(yylineno, $<node>3, $<node>5)); }
+                    ;
+
 STATEMENT           : FULL_IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_SEMICOLON     { $<node>$ = createAssign(yylineno, $<node>1, $<node>3); }
                     | EXPRESSION OPERATOR_SEMICOLON                                     { $<node>$ = createAssign(yylineno, NULL, $<node>1); }
-                    | KEYWORD_IF EXPRESSION CODE_BLOCK                                  { $<node>$ = createIf(yylineno, $<node>2, $<node>3); }
-                    | KEYWORD_WHILE EXPRESSION CODE_BLOCK                               { $<node>$ = createWhile(yylineno, $<node>2, $<node>3); }
+                    | KEYWORD_WHILE ALSO_CHAIN CODE_BLOCK                               { $<node>$ = createWhile(yylineno, $<node>2, $<node>3); }
+                    | KEYWORD_FOR IDENTIFIER OPERATOR_ASSIGN EXPRESSION
+                        OPERATOR_COMMA EXPRESSION CODE_BLOCK                            { $<node>$ = createFor(yylineno, createForArgs(yylineno, $<node>2, createForArgs(yylineno, $<node>4, $<node>6)), $<node>7); }
                     | KEYWORD_RETURN OPERATOR_SEMICOLON                                 { $<node>$ = createReturn(yylineno, NULL); }
                     | KEYWORD_RETURN EXPRESSION OPERATOR_SEMICOLON                      { $<node>$ = createReturn(yylineno, $<node>2); }
+                    | IF_STATEMENT                                                      { $<node>$ = $<node>1; }
                     ;
 
 FUNCTION_CALL       : TERMINAL OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN    { $<node>$ = createFCall(yylineno, $<node>1, $<node>3); }
@@ -130,7 +144,7 @@ IDENTIFIER_PATH     : IDENTIFIER                                { $<node>$ = cre
                     | IDENTIFIER_PATH OPERATOR_DOT IDENTIFIER   { $<node>$ = createIdentifierPath(yylineno, $<node>1, $<node>3); }
                     ;
 
-EXPRESSION          : UNARY_BOOL_EXPR
+EXPRESSION          : OR_EXPR
                     ;
 
 INDEX               : TERMINAL OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQUARE     { $<node>$ = createIndex(yylineno, $<node>1, $<node>3); }
@@ -147,16 +161,16 @@ KEY_VALUE_LIST      :                                                           
                     | IDENTIFIER OPERATOR_COLON EXPRESSION OPERATOR_COMMA KEY_VALUE_LIST    { $<node>$ = createKeyValueList(yylineno, createKeyValuePair(yylineno, $<node>1, $<node>3), $<node>5); }
                     ;
 
-UNARY_BOOL_EXPR     : KEYWORD_NOT OR_EXPR   { $<node>$ = createNotExpr(yylineno, $<node>2); }
-                    | OR_EXPR               { $<node>$ = $<node>1; }
-                    ;
-
 OR_EXPR             : OR_EXPR KEYWORD_OR AND_EXPR   { $<node>$ = createOrExpr(yylineno, $<node>1, $<node>3); }
                     | AND_EXPR                      { $<node>$ = $<node>1; }
                     ;
 
 AND_EXPR            : AND_EXPR KEYWORD_AND COMP_EXPR    { $<node>$ = createAndExpr(yylineno, $<node>1, $<node>3); }
-                    | COMP_EXPR                         { $<node>$ = $<node>1; }
+                    | UNARY_BOOL_EXPR                   { $<node>$ = $<node>1; }
+                    ;
+
+UNARY_BOOL_EXPR     : KEYWORD_NOT COMP_EXPR { $<node>$ = createNotExpr(yylineno, $<node>2); }
+                    | COMP_EXPR             { $<node>$ = $<node>1; }
                     ;
 
 COMP_EXPR           : COMP_EXPR OPERATOR_LSS ADD_EXPR   { $<node>$ = createGtrExpr(yylineno, $<node>3, $<node>1); }

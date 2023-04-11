@@ -1,0 +1,7 @@
+function fizzbuzz50: msg {
+  fb <- "";
+  for ct <- 0, 50 {
+    fb <- fb + #fizzbuzz.fizzbuzz(ct) + "\n";
+  }
+  !message.send(msg.channel.id, fb);
+}

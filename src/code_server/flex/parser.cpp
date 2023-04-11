@@ -28,7 +28,10 @@ std::string getNodeName(AST_Node * node)
         case AST_NODE_ASSIGN: return "ASSIGN";
         case AST_NODE_FCALL: return "FCALL";
         case AST_NODE_IF: return "IF";
+        case AST_NODE_ALSO: return "ALSO";
+        case AST_NODE_BRANCH: return "BRANCH";
         case AST_NODE_WHILE: return "WHILE";
+        case AST_NODE_FOR: return "FOR";
         case AST_NODE_DECLARE: return "DECLARE";
         case AST_NODE_DECLARE_FUNCTION: return "DECLARE_FUNCTION";
         case AST_NODE_DECLARE_METHOD: return "DECLARE_METHOD";
@@ -70,7 +73,10 @@ void printNode(AST_Node * node, std::string indent)
         case AST_NODE_ASSIGN:
         case AST_NODE_FCALL:
         case AST_NODE_IF:
+        case AST_NODE_ALSO:
+        case AST_NODE_BRANCH:
         case AST_NODE_WHILE:
+        case AST_NODE_FOR:
         case AST_NODE_DECLARE:
         case AST_NODE_DECLARE_FUNCTION:
         case AST_NODE_DECLARE_METHOD:
@@ -130,6 +136,8 @@ std::vector<std::string> discode_internal::getArgs(AST_Node * node) {
 }
 
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::constructNameResolution(AST_Node * name, AST_NODE_TYPE scope) {
+    // std::cout << "NAME RESOLUTION" << std::endl;
+
     if (name->left == nullptr) {
         std::vector<std::shared_ptr<discode::Instruction>> ins;
         
@@ -156,6 +164,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::constructNa
 
 // Pre: node is of type AST_NODE_LIB_SCOPE, AST_NODE_GLOBAL_SCOPE, or AST_NODE_RESOLVE_NAME 
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::resolveName(AST_Node * name) {
+    // std::cout << "RESOLVE NAME" << std::endl;
+
     switch (name->type)
     {
         case AST_NODE_GLOBAL_SCOPE:
@@ -171,6 +181,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::resolveName
 
 // Pre: node is of type AST_RESOLVE_NAME
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIndexResolve(AST_Node * index) {
+    // std::cout << "INDEX_RESOLVE" << std::endl;
+
     auto lhs = discode_internal::buildExpressionEval(index->left);
     auto rhs = discode_internal::buildExpressionEval(index->right);
     lhs.reserve(lhs.size() + rhs.size() + 1);
@@ -180,6 +192,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIndexR
 }
 
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConstant(AST_Node * constant) {
+    // std::cout << "CONSTANT" << std::endl;
+
     std::shared_ptr<discode::Data> data;
     std::vector<std::shared_ptr<discode::Instruction>> ins_list;
     std::string _temp;
@@ -211,6 +225,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConsta
 }
 
 std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t> discode_internal::buildArgList(AST_Node * arglist) {
+    // std::cout << "ARG_LIST" << std::endl;
+
     if (arglist == NULL) {
         return std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t>(std::vector<std::shared_ptr<discode::Instruction>>(), 0);
     }
@@ -229,6 +245,8 @@ std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t> discode_
 
 // Pre: fcall is a AST_NODE_FCALL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFunctionCall(AST_Node * fcall) {
+    // std::cout << "FCALL" << std::endl;
+
     // Get the function arguments
     auto arglist = discode_internal::buildArgList(fcall->right->right);
 
@@ -244,6 +262,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFuncti
 
 // Pre: expr is an operator
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildBinaryOperator(AST_Node * node) {
+    // std::cout << "BINARY_OPERATOR" << std::endl;
+
     auto lhs = discode_internal::buildExpressionEval(node->left);
     auto rhs = discode_internal::buildExpressionEval(node->right);
 
@@ -271,6 +291,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildBinary
 }
 
 std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node * node) {
+    // std::cout << "UNARY" << std::endl;
+
     auto rhs = discode_internal::buildExpressionEval(node->right);
 
     switch (node->type)
@@ -287,6 +309,8 @@ std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node *
 
 // Pre: expr is not NULL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpressionEval(AST_Node * expr) {
+    // std::cout << "EXPRESSION" << std::endl;
+
     switch (expr->type)
     {
         case AST_NODE_FCALL:
@@ -327,6 +351,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
 
 // Pre: node type is NAME_RESOLVE, LOCAL, or GLOBAL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssignReturn(AST_Node * ret_node) {
+    // std::cout << "RETURN" << std::endl;
+
     // For now, only assign local
     std::vector<std::shared_ptr<discode::Instruction>> ins;
     if (ret_node->type == AST_NODE_RESOLVE_NAME) {
@@ -344,6 +370,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
 }
 
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign(AST_Node * assign, uint16_t jumpoffset) {
+    // std::cout << "ASSIGN" << std::endl;
 
     AST_Node * returns_to = assign->left;
     AST_Node * expr = assign->right;
@@ -368,6 +395,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
 
 // Pre: node is AST_NODE_RETURN
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildReturn(AST_Node * ret_node) {
+    // std::cout << "RETURN" << std::endl;
+
     std::vector<std::shared_ptr<discode::Instruction>> ins;
 
     if(ret_node->right) {
@@ -382,47 +411,102 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildReturn
     return ins;
 }
 
+std::vector<std::vector<std::shared_ptr<discode::Instruction>>> discode_internal::buildAlsoChain(AST_Node * also_root, uint16_t jumpoffset) {
+    // std::cout << "ALSO_CHAIN" << std::endl;
+
+    std::vector<std::vector<std::shared_ptr<discode::Instruction>>> ins;
+
+    AST_Node * pos = also_root;
+    do {
+        auto expr = discode_internal::buildExpressionEval(pos->left);
+        ins.push_back(expr);
+        pos = pos->right;
+    } while(pos);
+
+    return ins;
+}
+
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildIfStatement(AST_Node * if_statement, uint16_t jumpoffset) {
-    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    // std::cout << "IF" << std::endl;
+
     // Let the conditional branch shenanigans begin!
-    ins = discode_internal::buildExpressionEval(if_statement->left);
+    auto alsoChain = discode_internal::buildAlsoChain(if_statement->left, jumpoffset);
+    uint16_t alsoChainSize = alsoChain.size();
+    for(auto const& a : alsoChain) {
+        alsoChainSize += a.size();
+    }
 
-    // Compute the else portion of the statement (todo)
-    std::vector<std::shared_ptr<discode::Instruction>> else_part;
-
-    std::vector<std::shared_ptr<discode::Instruction>> if_part = discode_internal::buildStatements(if_statement->right, jumpoffset + ins.size() + 2);
-
-    ins.push_back(std::make_shared<discode::InstructionCJump>(if_statement->left->lineno, jumpoffset + ins.size() + else_part.size() + 2));
+    std::vector<std::shared_ptr<discode::Instruction>> if_part = discode_internal::buildStatements(if_statement->right->left, jumpoffset + alsoChainSize);
     
-    ins.insert(ins.end(), else_part.begin(), else_part.end());
+    std::vector<std::shared_ptr<discode::Instruction>> else_part;
+    if(if_statement->right->right) {
+        else_part = discode_internal::buildStatements(if_statement->right->right, jumpoffset + alsoChainSize + if_part.size() + 1);
+    }
 
-    ins.push_back(std::make_shared<discode::InstructionUJump>(if_statement->left->lineno, jumpoffset + ins.size() + if_part.size() + 1));
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    for(auto const& also : alsoChain) {
+        ins.insert(ins.end(), also.begin(), also.end());
+        ins.push_back(std::make_shared<discode::InstructionCJump>(if_statement->left->lineno, jumpoffset + alsoChainSize + if_part.size() + (else_part.size() ? 1 : 0)));
+    }
 
     ins.insert(ins.end(), if_part.begin(), if_part.end());
+
+    if (else_part.size()) {
+        ins.push_back(std::make_shared<discode::InstructionUJump>(if_statement->left->lineno, jumpoffset + ins.size() + else_part.size() + 1));
+        ins.insert(ins.end(), else_part.begin(), else_part.end());
+    }
 
     return ins;
 }
 
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildWhileStatement(AST_Node * while_statement, uint16_t jumpoffset) {
+    // std::cout << "WHILE" << std::endl;
+
+    auto alsoChain = discode_internal::buildAlsoChain(while_statement->left, jumpoffset);
+    uint16_t alsoChainSize = alsoChain.size();
+    for(auto const& a : alsoChain) {
+        alsoChainSize += a.size();
+    }
+
+    std::vector<std::shared_ptr<discode::Instruction>> while_part = discode_internal::buildStatements(while_statement->right, jumpoffset + alsoChainSize);
+
     std::vector<std::shared_ptr<discode::Instruction>> ins;
-    
-    auto expr = discode_internal::buildExpressionEval(while_statement->left);
+    for(auto const& also : alsoChain) {
+        ins.insert(ins.end(), also.begin(), also.end());
+        ins.push_back(std::make_shared<discode::InstructionCJump>(while_statement->left->lineno, jumpoffset + alsoChainSize + while_part.size() + 1));
+    }
 
-    std::vector<std::shared_ptr<discode::Instruction>> loop_part = discode_internal::buildStatements(while_statement->right, jumpoffset + 1);
+    ins.insert(ins.end(), while_part.begin(), while_part.end());
+    ins.push_back(std::make_shared<discode::InstructionUJump>(while_statement->left->lineno, jumpoffset));
 
-    ins.push_back(std::make_shared<discode::InstructionUJump>(while_statement->left->lineno, jumpoffset + loop_part.size() + 1));
-    
-    ins.insert(ins.end(), loop_part.begin(), loop_part.end());
+    return ins;
+}
 
-    ins.insert(ins.end(), expr.begin(), expr.end());
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildForStatement(AST_Node * for_statement, uint16_t jumpoffset) {
+    // std::cout << "FOR" << std::endl;
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
 
-    ins.push_back(std::make_shared<discode::InstructionCJump>(while_statement->left->lineno, jumpoffset + 1));
+    auto iterval = getStr(for_statement->left->left);
+
+    auto init = discode_internal::buildExpressionEval(for_statement->left->right->left);
+    init.push_back(std::make_shared<discode::InstructionWriteLocal>(for_statement->left->left->lineno, iterval));
+    auto comp_expr = discode_internal::buildExpressionEval(for_statement->left->right->right);
+
+    auto body = discode_internal::buildStatements(for_statement->right, jumpoffset + init.size() + comp_expr.size() + 1);
+
+    ins.insert(ins.end(), init.begin(), init.end());
+    ins.insert(ins.end(), comp_expr.begin(), comp_expr.end());
+    ins.push_back(std::make_shared<discode::InstructionIter>(for_statement->left->lineno, iterval, jumpoffset + body.size() + ins.size() + 2));
+    ins.insert(ins.end(), body.begin(), body.end());
+    ins.push_back(std::make_shared<discode::InstructionUJump>(for_statement->left->lineno, jumpoffset + init.size()));
 
     return ins;
 }
 
 // Pre: statement is not NULL
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatement(AST_Node * statement, uint16_t jumpoffset) {
+    // std::cout << "STATEMENT" << std::endl;
+
     switch (statement->type)
     {
         case AST_NODE_ASSIGN:
@@ -433,6 +517,9 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatem
         
         case AST_NODE_WHILE:
             return discode_internal::buildWhileStatement(statement, jumpoffset); 
+        
+        case AST_NODE_FOR:
+            return discode_internal::buildForStatement(statement, jumpoffset); 
 
         case AST_NODE_RETURN:
             return discode_internal::buildReturn(statement);
@@ -448,6 +535,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatem
 
 // Pre: AST_Node is of type STATEMENT_LIST
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatements(AST_Node * node, uint16_t jumpoffset) {
+    // std::cout << "STATEMENTS" << std::endl;
+
     if (node == NULL) {
         return std::vector<std::shared_ptr<discode::Instruction>>();
     }
@@ -467,6 +556,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatem
 
 // Pre: AST_Node is of type function
 std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::buildFunction(AST_Node * node) {
+    // std::cout << "FUNCTION" << std::endl;
+
     AST_Node * f_sig = node->left;
     if (f_sig->type != AST_NODE_FUNCTION_SIGNATURE) { throw std::logic_error("Expected function signature!"); }
 
@@ -496,7 +587,9 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::
             // Todo
         break;
         case AST_NODE_DECLARE_FUNCTION:
+            // std::cout << "START DECL F" << std::endl;
             printNode(node, "");
+            // std::cout << "WHAT THE FRICK IS GOING ON?" << std::endl;
             func = discode_internal::buildFunction(node);
             func.first->messageId = msg_id;
             std::cout << func.first->deepRepr() << std::endl;

@@ -10,7 +10,7 @@ import queue
 import subprocess
 import threading
 
-CREATE_SERVER = True
+CREATE_SERVER = False
 
 def send_msg(client: socket.socket, obj: dict):
     client.send((json.dumps(obj) + '\n').encode(encoding='utf8'))
@@ -108,6 +108,7 @@ def run_test():
                         "Server_Name": "pseudo",
                         "Channel_ID": channel,
                         "Channel_Name": channel,
+                        "Message_ID": f"{channel}-{msg}",
                         "Code": code
                     })
                     time.sleep(1)

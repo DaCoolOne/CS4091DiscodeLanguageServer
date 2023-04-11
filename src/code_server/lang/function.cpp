@@ -116,6 +116,9 @@ std::string discode::Function::deepRepr(std::string indentation)
         indent.push_back(ArrowIndent());
         arrow_depths.push_back(0);
     }
+    out.push_back("");
+    indent.push_back(ArrowIndent());
+    arrow_depths.push_back(0);
     // Draw arrows
     for(uint32_t i = 0; i < instructions.size(); ++i)
     {

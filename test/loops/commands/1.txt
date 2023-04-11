@@ -1,0 +1,9 @@
+function fizzbuzz100: msg {
+  fb <- "";
+  ct <- 1;
+  while ct <= 100 {
+    fb <- fb + #fizzbuzz.fizzbuzz(ct) + "\n";
+    ct <- ct + 1;
+  }
+  !message.send(msg.channel.id, fb);
+}

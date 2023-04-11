@@ -11,6 +11,9 @@
 %%
 
 if                          { return KEYWORD_IF; }
+also                        { return KEYWORD_ALSO; }
+else                        { return KEYWORD_ELSE; }
+for                         { return KEYWORD_FOR; }
 while                       { return KEYWORD_WHILE; }
 return                      { return KEYWORD_RETURN; }
 declare                     { return KEYWORD_DECLARE; }
