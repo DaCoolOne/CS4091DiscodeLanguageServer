@@ -54,6 +54,17 @@ public:
     std::string repr();
 };
 
+class InstructionMethodCall : public Instruction
+{
+    uint16_t _num_args;
+    std::string method_name;
+public:
+    InstructionMethodCall(uint16_t lineno, uint16_t num_args, std::string name): Instruction(lineno), _num_args(num_args), method_name(name) { }
+
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
 class InstructionReturn : public Instruction
 {
 public:

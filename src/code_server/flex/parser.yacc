@@ -106,17 +106,24 @@ IF_STATEMENT        : KEYWORD_IF ALSO_CHAIN CODE_BLOCK                          
                     | KEYWORD_IF ALSO_CHAIN CODE_BLOCK KEYWORD_ELSE CODE_BLOCK          { $<node>$ = createIf(yylineno, $<node>2, createBranchingPath(yylineno, $<node>3, $<node>5)); }
                     ;
 
+FOR_BODY            : IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_COMMA EXPRESSION   { $<node>$ = createForArgs(yylineno, $<node>1, $<node>3, $<node>5); }
+                    | OPERATOR_OPEN_PAREN FOR_BODY OPERATOR_CLOSE_PAREN                 { $<node>$ = $<node>2; }
+                    ;
+
 STATEMENT           : FULL_IDENTIFIER OPERATOR_ASSIGN EXPRESSION OPERATOR_SEMICOLON     { $<node>$ = createAssign(yylineno, $<node>1, $<node>3); }
                     | EXPRESSION OPERATOR_SEMICOLON                                     { $<node>$ = createAssign(yylineno, NULL, $<node>1); }
                     | KEYWORD_WHILE ALSO_CHAIN CODE_BLOCK                               { $<node>$ = createWhile(yylineno, $<node>2, $<node>3); }
-                    | KEYWORD_FOR IDENTIFIER OPERATOR_ASSIGN EXPRESSION
-                        OPERATOR_COMMA EXPRESSION CODE_BLOCK                            { $<node>$ = createFor(yylineno, createForArgs(yylineno, $<node>2, createForArgs(yylineno, $<node>4, $<node>6)), $<node>7); }
+                    | KEYWORD_FOR FOR_BODY CODE_BLOCK                                   { $<node>$ = createFor(yylineno, $<node>2, $<node>3); }
                     | KEYWORD_RETURN OPERATOR_SEMICOLON                                 { $<node>$ = createReturn(yylineno, NULL); }
                     | KEYWORD_RETURN EXPRESSION OPERATOR_SEMICOLON                      { $<node>$ = createReturn(yylineno, $<node>2); }
                     | IF_STATEMENT                                                      { $<node>$ = $<node>1; }
                     ;
 
-FUNCTION_CALL       : TERMINAL OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN    { $<node>$ = createFCall(yylineno, $<node>1, $<node>3); }
+FUNCTION_CALL       : TERMINAL OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN   { $<node>$ = createFCall(yylineno, $<node>1, $<node>3); }
+                    ;
+
+METHOD_CALL         : TERMINAL OPERATOR_COLON IDENTIFIER
+                        OPERATOR_OPEN_PAREN ARGUMENT_LIST OPERATOR_CLOSE_PAREN          { $<node>$ = createMCall(yylineno, $<node>1, $<node>3, $<node>5); }    
                     ;
 
 ARGUMENT_LIST       :               { $<node>$ = createExprList(yylineno, NULL); }
@@ -205,6 +212,7 @@ TERMINAL            : NUMBER                                                { $<
                     | FULL_IDENTIFIER                                       { $<node>$ = $<node>1; }
                     | OPERATOR_OPEN_PAREN EXPRESSION OPERATOR_CLOSE_PAREN   { $<node>$ = $<node>2; }
                     | FUNCTION_CALL                                         { $<node>$ = $<node>1; }
+                    | METHOD_CALL                                           { $<node>$ = $<node>1; }
                     | INDEX                                                 { $<node>$ = $<node>1; }
                     | ARRAY                                                 { $<node>$ = $<node>1; }
                     | OBJECT                                                { $<node>$ = $<node>1; }

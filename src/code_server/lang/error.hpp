@@ -67,5 +67,11 @@ public:
     InfiniteLoopError(): Error("Code took too long to run.") { }
 };
 
+class ErrorOutOfBounds : public Error
+{
+public:
+    ErrorOutOfBounds(uint16_t got): Error("Index " + std::to_string(got) + " is out of bounds.") {}
+};
+
 };
 #endif

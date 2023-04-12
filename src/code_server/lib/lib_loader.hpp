@@ -5,7 +5,8 @@
 #include "lang/vm.hpp"
 #include <vector>
 
-namespace lib {
+namespace lib
+{
 
 class LibFunction : public discode::Data
 {
@@ -45,6 +46,8 @@ public:
     }
 
     void load(discode::VM * vm);
+
+    void load(std::map<std::string, std::shared_ptr<LibFunction>> * map);
 };
 
 };

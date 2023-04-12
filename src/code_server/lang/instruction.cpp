@@ -37,7 +37,6 @@ void discode::InstructionFunctionCall::execute(discode::VM * vm) {
         args.push_back(vm->pop());
     }
     // Check function type
-    // Todo: method calls
     if (fdata->type == discode::Type::TYPE_FUNCTION)
     {
         Function * function = dynamic_cast<Function*>(fdata.get());
@@ -69,11 +68,78 @@ void discode::InstructionFunctionCall::execute(discode::VM * vm) {
     }
     else
     {
-        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_FUNCTION, fdata->type)); return;
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_FUNCTION, fdata->type));
     }
 }
 std::string discode::InstructionFunctionCall::repr() {
     return "FCALL " + std::to_string(_num_args);
+}
+
+void discode::InstructionMethodCall::execute(discode::VM * vm) {
+    std::shared_ptr<Data> object = vm->pop();
+    std::shared_ptr<Data> fdata;
+
+    // Attempt to resolve functions based on arg type
+    if (object->type == discode::Type::TYPE_OBJECT) {
+        auto map = object->getMap();
+        if (map->count(method_name) == 0) {
+            vm->error(discode::ErrorKeyNotFound(method_name));
+            return;
+        }
+        fdata = map->at(method_name);
+    }
+    else {
+        fdata = vm->getMethod(object->type, method_name);
+        if (fdata == nullptr) {
+            vm->error(discode::ErrorKeyNotFound(method_name));
+            return;
+        }
+    }
+
+    std::vector<std::shared_ptr<Data>> args;
+    args.push_back(object);
+    for(uint16_t i = 0; i < _num_args; ++i)
+    {
+        args.push_back(vm->pop());
+    }
+
+    // Check function type
+    if (fdata->type == discode::Type::TYPE_FUNCTION)
+    {
+        Function * function = dynamic_cast<Function*>(fdata.get());
+
+        // Make sure that function expects the number of arguments we have.
+        if (function->args().size() != args.size())
+        {
+            vm->error(discode::ErrorBadArgumentCount(function->args().size(), args.size()));
+            return;
+        }
+
+        // Assemble the local scope
+        discode::Scope locals;
+        for(uint16_t i = 0; i < args.size(); ++i)
+        {
+            locals.insert(std::pair<std::string, std::shared_ptr<discode::Data>>(function->args().at(i), args.at(i)));
+        }
+
+        // Push function ptr to stack
+        FunctionPtr fptr(function, locals);
+        vm->pushFunction(fptr); // discard return since we don't use it
+    }
+    // Library function hooks
+    else if(fdata->type == discode::Type::TYPE_INTERNAL_FUNCTION)
+    {
+        lib::LibFunction * function = dynamic_cast<lib::LibFunction*>(fdata.get());
+
+        function->call(vm, args);
+    }
+    else
+    {
+        vm->error(discode::ErrorUnexpectedType(discode::Type::TYPE_FUNCTION, fdata->type));
+    }
+}
+std::string discode::InstructionMethodCall::repr() {
+    return "MCALL " + method_name + " " + std::to_string(_num_args);
 }
 
 void discode::InstructionReturn::execute(discode::VM * vm) {

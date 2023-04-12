@@ -33,11 +33,12 @@ std::vector<std::shared_ptr<discode::Instruction>> constructNameResolution(AST_N
 std::vector<std::shared_ptr<discode::Instruction>> resolveName(AST_Node * name);
 std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t> buildArgList(AST_Node * arglist);
 std::vector<std::shared_ptr<discode::Instruction>> buildFunctionCall(AST_Node * fcall);
+std::vector<std::shared_ptr<discode::Instruction>> buildMethodCall(AST_Node * mcall);
 std::vector<std::shared_ptr<discode::Instruction>> buildExpressionEval(AST_Node * expr);
 std::vector<std::shared_ptr<discode::Instruction>> buildAssign(AST_Node * assign, uint16_t jumpoffset);
 std::vector<std::shared_ptr<discode::Instruction>> buildStatement(AST_Node * statement, uint16_t jumpoffset);
 std::vector<std::shared_ptr<discode::Instruction>> buildStatements(AST_Node * node, uint16_t jumpoffset = 0);
-std::pair<std::shared_ptr<discode::Function>, std::string> buildFunction(AST_Node * node);
+std::pair<std::shared_ptr<discode::Function>, std::string> buildFunction(AST_Node * node, bool isMethod = false);
 std::vector<std::shared_ptr<discode::Instruction>> buildBinaryOperator(AST_Node * node);
 std::vector<std::shared_ptr<discode::Instruction>> buildUnaryOperator(AST_Node * node);
 std::vector<std::shared_ptr<discode::Instruction>> buildAssignReturn(AST_Node * ret_node);

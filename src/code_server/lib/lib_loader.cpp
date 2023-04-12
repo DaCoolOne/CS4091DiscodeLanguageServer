@@ -31,3 +31,8 @@ void lib::LibLoader::load(discode::VM * vm) {
     }
 }
 
+void lib::LibLoader::load(std::map<std::string, std::shared_ptr<LibFunction>> * map) {
+    for(auto const& f : functions) {
+        map->insert_or_assign(f.first, f.second);
+    }
+}

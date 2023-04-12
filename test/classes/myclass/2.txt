@@ -1,0 +1,6 @@
+
+
+method sub: n {
+    this.value <- this.value - n;
+}
+

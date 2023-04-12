@@ -1,0 +1,6 @@
+
+
+method add: n {
+    this.value <- this.value + n;
+}
+

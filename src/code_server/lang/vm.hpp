@@ -25,6 +25,8 @@ class VM {
 
     std::shared_ptr<discode::Error> err;
 
+    std::map<Type, std::shared_ptr<Data>> builtin_map;
+
     Socket * _sock;
 
     std::string __server_id;
@@ -47,6 +49,8 @@ public:
     void error(Error error);
     void clearError();
     discode::Error * getError();
+
+    std::shared_ptr<Data> getMethod(Type type, std::string name);
 
     void pushGlobal(std::string ident);
     void pushLocal(std::string ident);
@@ -74,6 +78,8 @@ public:
 
     // Functions for sending stuff to the server
     void sendObject(json::JsonData * data);
+    void sendError(discode::Error * err);
+    void sendError(std::string err, std::string msg_id);
 
 };
 

@@ -59,25 +59,14 @@ void discode::VM::step()
     ins->execute(this);
 
     if (err) {
-        json::JsonObject obj = json::JsonObject();
-        obj.add("Name", std::make_shared<json::JsonString>("Error"));
-        obj.add("Error", std::make_shared<json::JsonString>(err->what()));
-        std::string where = "";
-        while(function_stack.size()) {
-            if (function_stack.back().messageId() != "") {
-                where = function_stack.back().messageId();
-                break;
-            }
-            function_stack.pop_back();
-        }
-        obj.add("Message_id", std::make_shared<json::JsonString>(where));
-        sendObject(&obj);
+        sendError(err.get());
 
         function_stack.clear();
         argument_stack.clear();
+
+        err = nullptr;
     }
 
-    // smallprint();
 }
 
 void discode::VM::run(uint16_t max_ins)
@@ -269,6 +258,25 @@ void printScope(discode::Scope scope)
     }
 }
 
+std::shared_ptr<discode::Data> discode::VM::getMethod(discode::Type type, std::string name)
+{
+    if (builtin_map.count(type) == 0) {
+        return nullptr;
+    }
+
+    auto bt = builtin_map.at(type);
+    if (bt->type != discode::Type::TYPE_OBJECT) {
+        return nullptr;
+    }
+
+    auto map = bt->getMap();
+    if (map->count(name) == 0) {
+        return nullptr;
+    }
+
+    return map->at(name);
+}
+
 void discode::VM::print()
 {
     std::cout << " --------- ARG STACK ---------" << std::endl;
@@ -308,9 +316,37 @@ void discode::VM::smallprint()
 discode::VM::VM(Socket * sock, std::string server_id): _sock(sock), __server_id(server_id)
 {
     lib::loadAll(this);
+    
+    builtin_map.insert_or_assign(discode::Type::TYPE_STRING, lib.at("str"));
+    builtin_map.insert_or_assign(discode::Type::TYPE_ARRAY, lib.at("array"));
 }
 
 void discode::VM::sendObject(json::JsonData * data)
 {
     _sock->SendLine(data->toJsonString());
+}
+
+void discode::VM::sendError(discode::Error * err) {
+    json::JsonObject obj = json::JsonObject();
+    obj.add("Name", std::make_shared<json::JsonString>("Error"));
+    obj.add("Error", std::make_shared<json::JsonString>(err->what()));
+    std::string where = "";
+    while(function_stack.size()) {
+        if (function_stack.back().messageId() != "") {
+            where = function_stack.back().messageId();
+            break;
+        }
+        function_stack.pop_back();
+    }
+    obj.add("Message_id", std::make_shared<json::JsonString>(where));
+    sendObject(&obj);
+}
+
+void discode::VM::sendError(std::string err, std::string msg_id)
+{
+    json::JsonObject obj = json::JsonObject();
+    obj.add("Name", std::make_shared<json::JsonString>("Error"));
+    obj.add("Error", std::make_shared<json::JsonString>(err));
+    obj.add("Message_id", std::make_shared<json::JsonString>(msg_id));
+    sendObject(&obj);
 }

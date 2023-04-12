@@ -27,6 +27,7 @@ std::string getNodeName(AST_Node * node)
         case AST_NODE_STATEMENT_LIST: return "STATEMENT_LIST";
         case AST_NODE_ASSIGN: return "ASSIGN";
         case AST_NODE_FCALL: return "FCALL";
+        case AST_NODE_MCALL: return "MCALL";
         case AST_NODE_IF: return "IF";
         case AST_NODE_ALSO: return "ALSO";
         case AST_NODE_BRANCH: return "BRANCH";
@@ -72,6 +73,7 @@ void printNode(AST_Node * node, std::string indent)
         case AST_NODE_STATEMENT_LIST:
         case AST_NODE_ASSIGN:
         case AST_NODE_FCALL:
+        case AST_NODE_MCALL:
         case AST_NODE_IF:
         case AST_NODE_ALSO:
         case AST_NODE_BRANCH:
@@ -260,6 +262,25 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildFuncti
     return arglist.first;
 }
 
+// Pre: fcall is a AST_NODE_MCALL
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildMethodCall(AST_Node * mcall) {
+    // std::cout << "MCALL" << std::endl;
+
+    // Get the function arguments
+    auto arglist = discode_internal::buildArgList(mcall->right->right);
+
+    // Get the namespace of the function
+    auto name_resolution = discode_internal::buildExpressionEval(mcall->left->left);
+
+    auto name = getStr(mcall->left->right);
+
+    arglist.first.reserve(name_resolution.size() + arglist.first.size() + 1);
+    arglist.first.insert(arglist.first.end(), name_resolution.begin(), name_resolution.end());
+    arglist.first.push_back(std::make_shared<discode::InstructionMethodCall>(mcall->lineno, arglist.second, name));
+
+    return arglist.first;
+}
+
 // Pre: expr is an operator
 std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildBinaryOperator(AST_Node * node) {
     // std::cout << "BINARY_OPERATOR" << std::endl;
@@ -315,6 +336,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
     {
         case AST_NODE_FCALL:
             return discode_internal::buildFunctionCall(expr);
+        case AST_NODE_MCALL:
+            return discode_internal::buildMethodCall(expr);
         case AST_NODE_RESOLVE_NAME:
         case AST_NODE_LIB_SCOPE:
         case AST_NODE_GLOBAL_SCOPE:
@@ -357,7 +380,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildAssign
     std::vector<std::shared_ptr<discode::Instruction>> ins;
     if (ret_node->type == AST_NODE_RESOLVE_NAME) {
         if (ret_node->left) {
-            
+            ins = discode_internal::resolveName(ret_node->left);
+            ins.push_back(std::make_shared<discode::InstructionWriteStack>(ret_node->lineno, getStr(ret_node->right)));
         }
         else {
             ins.push_back(std::make_shared<discode::InstructionWriteLocal>(ret_node->lineno, getStr(ret_node->right)));
@@ -556,7 +580,7 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildStatem
 }
 
 // Pre: AST_Node is of type function
-std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::buildFunction(AST_Node * node) {
+std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::buildFunction(AST_Node * node, bool isMethod) {
     // std::cout << "FUNCTION" << std::endl;
 
     AST_Node * f_sig = node->left;
@@ -566,7 +590,22 @@ std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::bui
     if (f_name->type != AST_NODE_IDENT) { throw std::logic_error("Expected function name!"); }
     std::string function_name = getStr(f_name);
 
-    std::vector<std::string> arglist = discode_internal::getArgs(f_sig->right->right);
+    std::vector<std::string> arglist;
+    // Method has implicit "this" first argument.
+    if (isMethod) {
+        arglist.push_back("this");
+    }
+    auto args = discode_internal::getArgs(f_sig->right->right);
+    arglist.insert(arglist.end(), args.begin(), args.end());
+
+    // Check for duplicate argument names
+    for(uint8_t i = 0; i < arglist.size() - 1; ++i) {
+        for(uint8_t j = i + 1; j < arglist.size(); ++ j) {
+            if (arglist[i] == arglist[j]) {
+                return std::pair<std::shared_ptr<discode::Function>, std::string>(nullptr, "Duplicate argument name " + arglist[i] = " is not allowed!");
+            }
+        }
+    }
 
     AST_Node * f_body = node->right;
     if (f_body->type != AST_NODE_STATEMENT_LIST) { throw std::logic_error("Expected statement list!"); }
@@ -587,11 +626,14 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::
         case AST_NODE_DECLARE:
             // Todo
         break;
+        case AST_NODE_DECLARE_METHOD:
         case AST_NODE_DECLARE_FUNCTION:
-            // std::cout << "START DECL F" << std::endl;
             printNode(node, "");
-            // std::cout << "WHAT THE FRICK IS GOING ON?" << std::endl;
-            func = discode_internal::buildFunction(node);
+            func = discode_internal::buildFunction(node, node->type == AST_NODE_DECLARE_METHOD);
+            if (func.first == nullptr) {
+                vm->sendError(func.second, msg_id);
+                return;
+            }
             func.first->messageId = msg_id;
             std::cout << func.first->deepRepr() << std::endl;
             vm->writeGlobal(channel, func.second, func.first);
@@ -605,9 +647,6 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::
                 jsonData.add("Arguments", std::make_shared<json::JsonArray>(arglist));
                 vm->sendObject(&jsonData);
             }
-        break;
-        case AST_NODE_DECLARE_METHOD:
-            // Todo
         break;
         default:
             throw std::logic_error("Unknown entry node type");
@@ -662,11 +701,7 @@ void discode::loadVM(discode::VM * vm, std::string channel, std::string path, st
         freeAST(ast);
     }
     else {
-        json::JsonObject obj = json::JsonObject();
-        obj.add("Name", std::make_shared<json::JsonString>("Error"));
-        obj.add("Error", std::make_shared<json::JsonString>(err.txt));
-        obj.add("Message_id", std::make_shared<json::JsonString>(msg_id));
-        vm->sendObject(&obj);
+        vm->sendError(err.txt, msg_id);
     }
 }
 

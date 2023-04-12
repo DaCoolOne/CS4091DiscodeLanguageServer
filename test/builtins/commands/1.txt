@@ -1,0 +1,7 @@
+
+
+function strtest: msg {
+    m <- "Hello World";
+    !message.send(msg.channel.id, !conv.str(m:length()));
+}
+
