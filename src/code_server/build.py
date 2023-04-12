@@ -7,6 +7,8 @@
 import os
 import re
 import subprocess
+import threading
+import queue
 from typing import List, Tuple, Dict
 
 from hashlib import md5
@@ -133,21 +135,42 @@ def build_server():
             "ws2_32"
         ]
 
+        errors = queue.Queue()
         to_build_c = filterToMatching(cfiles, to_build)
         to_build_cpp = filterToMatching(cppfiles, to_build)
-        proc_compile_c = [ 'gcc', '-g', '-std=c99', '-c', *to_build_c, '-I', base_dir ]
-        proc_compile_cpp = [ 'g++', '--std=c++17', '-g', '-c', *to_build_cpp, '-I', base_dir ]
+
+        def cmd_build_c(file):
+            try:
+                subprocess.check_call([ 'gcc', '-g', '-std=c99', '-c', file, '-I', base_dir ])
+            except Exception as e:
+                errors.put(e)
+        def cmd_build_cpp(file):
+            try:
+                subprocess.check_call([ 'g++', '--std=c++17', '-g', '-c', file, '-I', base_dir ])
+            except Exception as e:
+                errors.put(e)
+        
         proc_link = [ 'g++', '-o', os.path.join(base_dir, 'server.exe'), *construct_linker_list(cppfiles + cfiles), *[ f'-l{lib}' for lib in libs ] ]
 
+        DOING = "building C/C++ files"
+        procs = [  ]
         if len(to_build_c) > 0:
-            DOING = "building C files"
             print("Building C Files", *filterToMatching(cfiles, to_build), sep='\n')
-            subprocess.check_call(proc_compile_c)
+            for file in to_build_c:
+                procs.append(threading.Thread(target=cmd_build_c, args=(file,)))
         if len(to_build_cpp) > 0:
-            DOING = "building C++ files"
             print("Building C++ Files", *filterToMatching(cppfiles, to_build), sep='\n')
-            subprocess.check_call(proc_compile_cpp)
-
+            for file in to_build_cpp:
+                procs.append(threading.Thread(target=cmd_build_cpp, args=(file,)))
+        
+        for proc in procs:
+            proc.start()
+        for proc in procs:
+            proc.join()
+        
+        if not errors.empty():
+            raise errors.get()
+        
         DOING = "linking object files"
         print("Linking")
         subprocess.check_call(proc_link)

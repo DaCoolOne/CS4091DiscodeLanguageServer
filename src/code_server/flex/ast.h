@@ -156,8 +156,6 @@ AST_Node * createObject(short lineno, AST_Node * elements);
 AST_Node * createKeyValueList(short lineno, AST_Node * keyvalue, AST_Node * next);
 AST_Node * createKeyValuePair(short lineno, AST_Node * key, AST_Node * value);
 
-AST_Node * createObjectDefinition(short lineno, AST_Node * def);
-
 // Memory management
 void freeAST(AST_Node * node);
 

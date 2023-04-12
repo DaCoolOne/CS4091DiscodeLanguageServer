@@ -5,6 +5,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdexcept>
+#include <algorithm>
 
 #include "lang/function.hpp"
 
@@ -46,6 +47,10 @@ std::string getNodeName(AST_Node * node)
         case AST_NODE_RETURN: return "RETURN";
         case AST_NODE_IDENT_LIST_CONT: return "IDENT_LIST_CONT";
         case AST_NODE_INDEX: return "INDEX";
+        case AST_NODE_ARRAY_DEF: return "ARRAY_DEF";
+        case AST_NODE_OBJECT_DEF: return "OBJECT_DEF";
+        case AST_NODE_OBJECT_LIST: return "OBJECT_LIST";
+        case AST_NODE_KEY_VALUE_PAIR: return "KEY_VALUE_PAIR";
     }
 
     return "Unknown";
@@ -86,6 +91,8 @@ void printNode(AST_Node * node, std::string indent)
 
         case AST_NODE_IDENT_LIST_CONT:
         case AST_NODE_INDEX:
+        case AST_NODE_KEY_VALUE_PAIR:
+        case AST_NODE_OBJECT_LIST:
 
             std::cout << indent << getNodeName(node) << std::endl;
             printNode(node->left, indent + "  ");
@@ -101,6 +108,9 @@ void printNode(AST_Node * node, std::string indent)
         case AST_NODE_IDENT_LIST_START:
         case AST_NODE_ARG_LIST_START:
         case AST_NODE_RETURN:
+
+        case AST_NODE_ARRAY_DEF:
+        case AST_NODE_OBJECT_DEF:
             std::cout << indent << getNodeName(node) << std::endl;
             printNode(node->right, indent + "  ");
         break;
@@ -216,6 +226,8 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConsta
             data = std::make_shared<discode::String>(util::unescape(_temp));
         break;
     
+        // case AST_NODE_
+
         default:
             throw std::logic_error("Cannot create object of type " + std::to_string(constant->type));
         break;
@@ -224,6 +236,40 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildConsta
         ins_list.push_back(std::make_shared<discode::InstructionPush>(constant->lineno, data));
     }
     return ins_list;
+}
+
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildArray(AST_Node * expr) {
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    
+    auto arglist = discode_internal::buildArgList(expr->right->right);
+
+    ins.reserve(arglist.first.size() + 1);
+    ins.insert(ins.end(), arglist.first.begin(), arglist.first.end());
+    ins.push_back(std::make_shared<discode::InstructionConstructArray>(expr->lineno, arglist.second));
+
+    return ins;
+}
+
+std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildObject(AST_Node * expr) {
+    std::vector<std::shared_ptr<discode::Instruction>> ins;
+    
+    std::vector<std::string> keys;
+
+    auto currlst = expr->right;
+    while(currlst) {
+        auto kv = currlst->left;
+        auto key = getStr(kv->left);
+        keys.push_back(key);
+        auto value = discode_internal::buildExpressionEval(kv->right);
+        ins.insert(ins.end(), value.begin(), value.end());
+        currlst = currlst->right;
+    }
+
+    std::reverse(keys.begin(), keys.end());
+    
+    ins.push_back(std::make_shared<discode::InstructionConstructObject>(expr->lineno, keys));
+
+    return ins;
 }
 
 std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t> discode_internal::buildArgList(AST_Node * arglist) {
@@ -350,6 +396,11 @@ std::vector<std::shared_ptr<discode::Instruction>> discode_internal::buildExpres
         case AST_NODE_NUM:
         case AST_NODE_STR:
             return discode_internal::buildConstant(expr);
+        
+        case AST_NODE_ARRAY_DEF:
+            return discode_internal::buildArray(expr);
+        case AST_NODE_OBJECT_DEF:
+            return discode_internal::buildObject(expr);
         
         case AST_NODE_ADD:
         case AST_NODE_SUB:

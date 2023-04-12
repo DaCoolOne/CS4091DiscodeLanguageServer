@@ -304,5 +304,23 @@ public:
     std::string repr();
 };
 
+class InstructionConstructArray : public Instruction
+{
+    uint16_t _num_args;
+public:
+    InstructionConstructArray(uint16_t lineno, uint16_t num_args): Instruction(lineno), _num_args(num_args) {}
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
+class InstructionConstructObject : public Instruction
+{
+    std::vector<std::string> keys;
+public:
+    InstructionConstructObject(uint16_t lineno, std::vector<std::string> keylist): Instruction(lineno), keys(keylist) {}
+    void execute(discode::VM * vm);
+    std::string repr();
+};
+
 };
 #endif

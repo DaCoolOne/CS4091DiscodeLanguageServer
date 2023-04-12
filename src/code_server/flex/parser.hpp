@@ -29,6 +29,8 @@ namespace discode_internal {
 
 std::vector<std::string> getArgs(AST_Node * node);
 std::vector<std::shared_ptr<discode::Instruction>> buildConstant(AST_Node * constant);
+std::vector<std::shared_ptr<discode::Instruction>> buildArray(AST_Node * expr);
+std::vector<std::shared_ptr<discode::Instruction>> buildObject(AST_Node * expr);
 std::vector<std::shared_ptr<discode::Instruction>> constructNameResolution(AST_Node * name, AST_NODE_TYPE scope);
 std::vector<std::shared_ptr<discode::Instruction>> resolveName(AST_Node * name);
 std::pair<std::vector<std::shared_ptr<discode::Instruction>>, uint16_t> buildArgList(AST_Node * arglist);

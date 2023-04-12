@@ -151,8 +151,6 @@ AST_Node * createObject(short lineno, AST_Node * elements) { return createUnaryE
 AST_Node * createKeyValueList(short lineno, AST_Node * keyvalue, AST_Node * next) { return createBinaryExpr(lineno, AST_NODE_OBJECT_LIST, keyvalue, next); }
 AST_Node * createKeyValuePair(short lineno, AST_Node * key, AST_Node * value) { return createBinaryExpr(lineno, AST_NODE_KEY_VALUE_PAIR, key, value); }
 
-AST_Node * createObjectDefinition(short lineno, AST_Node * def) { return createUnaryExpr(lineno, AST_NODE_ARRAY_DEF, def); }
-
 void freeAST(AST_Node * node)
 {
     switch (node->type)
@@ -214,6 +212,18 @@ void freeAST(AST_Node * node)
             if (node->right) freeAST(node->right);
             break;
         
+        // Objects and arrays
+        case AST_NODE_ARRAY_DEF:
+        case AST_NODE_OBJECT_DEF:
+            if (node->right) freeAST(node->right);
+            break;
+        case AST_NODE_KEY_VALUE_PAIR:
+        case AST_NODE_OBJECT_LIST:
+            if (node->left) freeAST(node->left);
+            if (node->right) freeAST(node->right);
+            break;
+
+
         // Special cases
         case AST_NODE_IDENT_LIST_CONT:
             if (node->right) freeAST(node->right);

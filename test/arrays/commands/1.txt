@@ -1,0 +1,8 @@
+
+
+function test: msg {
+    myarr <- [ 100, 50 + 10, 20 ];
+
+    // Todo: indexing
+}
+

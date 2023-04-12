@@ -1,0 +1,12 @@
+
+
+function test: msg {
+    myobj <- {
+        key: "A key!",
+        value: "A value!",
+        sum: 10 + 20
+    };
+
+    !message.send(msg.channel.id, myobj.value);
+}
+

@@ -560,3 +560,31 @@ std::string discode::InstructionEq::repr() {
     return "EQ";
 }
 
+void discode::InstructionConstructArray::execute(discode::VM * vm) {
+    std::vector<std::shared_ptr<Data>> args;
+    for(uint16_t i = 0; i < _num_args; ++i)
+    {
+        args.push_back(vm->pop());
+    }
+    vm->push(args);
+}
+std::string discode::InstructionConstructArray::repr() {
+    return "CARR " + std::to_string(_num_args);
+}
+
+void discode::InstructionConstructObject::execute(discode::VM * vm) {
+    auto obj = std::make_shared<discode::Object>();
+    for(uint16_t i = 0; i < keys.size(); ++i)
+    {
+        obj->getMap()->insert_or_assign(keys[i], vm->pop());
+    }
+    vm->push(obj);
+}
+std::string discode::InstructionConstructObject::repr() {
+    std::string s = "COBJ";
+    for(auto const& key : keys) {
+        s += " " + key;
+    }
+    return s;
+}
+

@@ -160,7 +160,7 @@ INDEX               : TERMINAL OPERATOR_OPEN_SQUARE EXPRESSION OPERATOR_CLOSE_SQ
 ARRAY               : OPERATOR_OPEN_SQUARE ARGUMENT_LIST OPERATOR_CLOSE_SQUARE  { $<node>$ = createArray(yylineno, $<node>2); }
                     ;
 
-OBJECT              : OPERATOR_OPEN_BRACE KEY_VALUE_LIST OPERATOR_CLOSE_BRACE   { $<node>$ = createObjectDefinition(yylineno, $<node>2); }
+OBJECT              : OPERATOR_OPEN_BRACE KEY_VALUE_LIST OPERATOR_CLOSE_BRACE   { $<node>$ = createObject(yylineno, $<node>2); }
                     ;
 
 KEY_VALUE_LIST      :                                                                       { $<node>$ = NULL; }
