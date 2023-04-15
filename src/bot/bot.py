@@ -23,6 +23,8 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("localhost", 3540))
 client.setblocking(False)
 
+bot_is_busy = False
+
 # =================== Server Communication =================== #
 
 def nonBlockSend(port: int, message):
@@ -68,14 +70,16 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
 
 
 async def add_func(Server_id, Function_name, arguments):
-    @bot.slash_command(name=Function_name, guild_ids = [Server_id])
-    @guild_only()
-    async def temp(ctx):
-        interaction = await ctx.respond("Sending command to server...")
-        original_response = await interaction.original_response()
-        message_id = original_response.id
-        run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id)
-        await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
+    names = [command.name for command in bot.commands]
+    if Function_name not in names :
+        @bot.slash_command(name=Function_name, guild_ids = [Server_id])
+        @guild_only()
+        async def temp(ctx):
+            interaction = await ctx.respond("Sending command to server...")
+            original_response = await interaction.original_response()
+            message_id = original_response.id
+            run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id)
+            await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
 
     await bot.sync_commands(force = True, guild_ids=[Server_id])
 
@@ -83,6 +87,12 @@ async def add_func(Server_id, Function_name, arguments):
 async def send_message(channel_id, output):
     channel = bot.get_channel(int(channel_id))
     await channel.send(output)
+
+async def reply_message(message_id, output):
+    message = bot.get_message(int(message_id))
+    
+    if message is not None :
+        await message.reply(output)
 
 
 async def handle_message(message: dict):
@@ -105,7 +115,7 @@ async def handle_message(message: dict):
             # Server says something went wrong either at runtime or during compiling
 
             print("Sending error", message['Error'], "to", message['Message_id'])
-            await send_message(message['Message_id'], message['Error'])
+            await reply_message(message['Message_id'], message['Error'])
             print("Error should be sent.")
 
 
@@ -120,6 +130,14 @@ bot = discord.Bot(intents = intents)
 
 @bot.event
 async def on_ready():
+    global bot_is_busy
+    for guild in bot.guilds :
+        for channel in guild.text_channels :
+            if channel.category is not None and channel.category.name.upper() == "DISCODE-CODE" :
+                async for message in channel.history(oldest_first=True) :
+                    if message.content.startswith("```") :
+                        load(guild.id, guild.name, channel.id, channel.name, message.id, message.content)
+                    await asyncio.sleep(.1)
     print(f"{bot.user} is ready and online!")
 
 
@@ -168,7 +186,6 @@ async def main_loop():
             except Exception as e :
                 print('Error: ', e)
                 raise e
-                break
             await asyncio.sleep(.01)
     except Exception as e :
         print('Error: ', e)
