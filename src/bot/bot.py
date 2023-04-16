@@ -93,6 +93,8 @@ async def reply_message(message_id, output):
     
     if message is not None :
         await message.reply(output)
+    else :
+        print("Could not find message", message_id)
 
 
 async def handle_message(message: dict):
@@ -148,7 +150,7 @@ async def on_message(message):
     category = bot.get_channel(message.channel.category_id)
 
     # Don't freak out if the channel has no category...
-    if (category == None) :
+    if (category is None) :
         cat_name = "NONE"
         # Just give a default value that won't set off the command
     else :
@@ -164,6 +166,32 @@ async def on_message(message):
         code = message.content[3:-3]
         load(server_id, server_name, channel_id, channel_name, message_id, code)
 
+
+@bot.event
+async def on_raw_message_edit(payload):
+    print(payload.data)
+    channel = bot.get_channel(int(payload.data["channel_id"]))
+    category = bot.get_channel(channel.category_id)
+
+    if (category is None) :
+        cat_name = "NONE"
+    else :
+        cat_name = category.name
+    
+    print(cat_name)
+
+    try :
+        if (str(payload.data["content"]).startswith("```") and cat_name.upper() == "DISCODE-CODE" ) :
+            server_id = int(payload.data["guild_id"])
+            server_name = bot.get_guild(server_id).name
+            channel_id = int(payload.data["channel_id"])
+            channel_name = channel.name
+            message_id = int(payload.data["id"])
+            code = payload.data["content"][3:-3]
+            load(server_id, server_name, channel_id, channel_name, message_id, code)
+    except Exception as e:
+        print(e)
+        
 
 
 # =========================== MAIN =========================== #
