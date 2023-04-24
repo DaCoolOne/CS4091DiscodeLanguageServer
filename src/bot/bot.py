@@ -72,7 +72,18 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
 async def add_func(Server_id, Function_name, arguments):
     names = [command.name for command in bot.commands]
     if Function_name not in names :
-        @bot.slash_command(name=Function_name, guild_ids = [Server_id])
+        arg_str = ""
+        for i in arguments :
+            arg_name = i["Name"]
+            arg_desc = i["Description"]
+            required = i["Default"] is not None
+            default = ''
+            if not required :
+                default = i["Default"]
+            arg_str += f", {arg_name}=Option(str, description={arg_desc}, required={required}, default = {default})"
+            
+        exec(f"""
+        @bot.slash_command(name={Function_name}, guild_ids = [{Server_id}]{arguments})
         @guild_only()
         async def temp(ctx):
             interaction = await ctx.respond("Sending command to server...")
@@ -80,7 +91,7 @@ async def add_func(Server_id, Function_name, arguments):
             message_id = original_response.id
             run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id)
             await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
-
+        """)
     await bot.sync_commands(force = True, guild_ids=[Server_id])
 
 
