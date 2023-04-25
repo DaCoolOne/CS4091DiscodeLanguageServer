@@ -30,7 +30,7 @@ public:
     virtual bool asBool() { throw std::logic_error("Could not decode bool"); }
     virtual std::string asString() { throw std::logic_error("Could not decode string"); }
     virtual std::vector<std::shared_ptr<JsonData>> asVector() { throw std::logic_error("Could not decode vector"); }
-    virtual std::shared_ptr<JsonData> at(std::string key) { throw std::logic_error("Could not decode vector"); }
+    virtual std::shared_ptr<JsonData> at(std::string key) { throw std::logic_error("Could not decode map"); }
 
     virtual std::string toJsonString() { throw std::exception(); return ""; }
 

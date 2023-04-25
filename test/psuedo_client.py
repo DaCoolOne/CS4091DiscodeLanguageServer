@@ -45,22 +45,22 @@ def run_test():
                 # Todo: make data have more length
                 try:
                     data = response_client.recv(4096)
-                    obj = json.loads(data.decode(encoding='utf8'))
-                    print(obj)
-                    if obj['Name'] == 'Add Func':
-                        server_id = obj['Server_ID']
-                        name = obj['Function_name']
-                        args = obj['Arguments']
-                        arg_str = ','.join(args)
-                        print(f"Register command {name}({arg_str})")
-                        EXISTING_COMMANDS.add(name)
-                    elif obj['Name'] == 'Send Message':
-                        chid = obj['Channel_ID']
-                        msg = obj['Message']
-                        print(f'#{chid}: {msg}')
-                    elif obj['Name'] == 'Error':
-                        err = obj['Error']
-                        print(f'ERROR: {err}')
+                    for line in data.decode(encoding='utf8').splitlines():
+                        obj = json.loads(line)
+                        if obj['Name'] == 'Add Func':
+                            server_id = obj['Server_ID']
+                            name = obj['Function_name']
+                            args = obj['Arguments']
+                            arg_str = ','.join(args)
+                            print(f"Register command {name}({arg_str})")
+                            EXISTING_COMMANDS.add(name)
+                        elif obj['Name'] == 'Send Message':
+                            chid = obj['Channel_ID']
+                            msg = obj['Message']
+                            print(f'#{chid}: {msg}')
+                        elif obj['Name'] == 'Error':
+                            err = obj['Error']
+                            print(f'ERROR: {err}')
                 except BlockingIOError:
                     pass
                 
@@ -80,7 +80,7 @@ def run_test():
                         "Channel_ID": "tester",
                         "Channel_Name": "tester",
                         "Function": cmd,
-                        "Message": {  }
+                        "Args": []
                     })
                 else:
                     print(f"{cmd} is not a command")

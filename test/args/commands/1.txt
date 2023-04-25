@@ -1,0 +1,6 @@
+
+
+function echo: msg, contents {
+    !message.send(msg.channel.id, contents);
+}
+

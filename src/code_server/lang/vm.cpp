@@ -10,7 +10,7 @@
 #include <chrono>
 #include <thread>
 
-void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
+void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg, json::JsonData * args)
 {
     if(globals.count("commands") == 0 || globals.at("commands")->type != Type::TYPE_OBJECT || globals.at("commands")->getMap()->count(fname) == 0) {
         error(discode::Error("Could not find #commands." + fname));
@@ -25,12 +25,16 @@ void discode::VM::init(std::string fname, std::shared_ptr<discode::Data> msg)
 
     discode::Function * function = dynamic_cast<discode::Function *>(obj.get());
 
-    if(function->args().size() != 1) {
+    if(function->args().size() == 0) {
         error(discode::ErrorBadArgumentCount(1, function->args().size()));
         return;
     }
     Scope locals;
     locals.insert(std::pair<std::string, std::shared_ptr<discode::Data>>(function->args().at(0), msg));
+    for(uint16_t i = 1; i < function->args().size(); i ++) {
+        std::string argname = function->args().at(i);
+        locals.insert_or_assign(argname, std::make_shared<discode::String>(args->at(argname)->asString()));
+    }
     
     argument_stack.clear();
     function_stack.clear();
@@ -43,7 +47,7 @@ void discode::VM::step()
 {
     if (function_stack.empty())
     {
-        std::this_thread::sleep_for(std::chrono::milliseconds(5));
+        // std::this_thread::sleep_for(std::chrono::milliseconds(5));
         return;
     }
 
@@ -331,22 +335,26 @@ void discode::VM::sendError(discode::Error * err) {
     obj.add("Name", std::make_shared<json::JsonString>("Error"));
     obj.add("Error", std::make_shared<json::JsonString>(err->what()));
     std::string where = "";
+    std::string whereCh = "";
     while(function_stack.size()) {
         if (function_stack.back().messageId() != "") {
             where = function_stack.back().messageId();
+            whereCh = function_stack.back().channelId();
             break;
         }
         function_stack.pop_back();
     }
     obj.add("Message_id", std::make_shared<json::JsonString>(where));
+    obj.add("Channel_id", std::make_shared<json::JsonString>(whereCh));
     sendObject(&obj);
 }
 
-void discode::VM::sendError(std::string err, std::string msg_id)
+void discode::VM::sendError(std::string err, std::string msg_id, std::string ch_id)
 {
     json::JsonObject obj = json::JsonObject();
     obj.add("Name", std::make_shared<json::JsonString>("Error"));
     obj.add("Error", std::make_shared<json::JsonString>(err));
     obj.add("Message_id", std::make_shared<json::JsonString>(msg_id));
+    obj.add("Channel_id", std::make_shared<json::JsonString>(ch_id));
     sendObject(&obj);
 }

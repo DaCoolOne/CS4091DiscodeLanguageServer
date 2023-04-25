@@ -121,16 +121,17 @@ int main(int argc, char* argv[]) {
                             
                             std::cout << "(" << server_name << ") #" << channel_name << '\n' << code << std::endl;
 
-                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code, message_id);
+                            discode::loadVM_string(vms.get(s_out, server_id), channel_name, code, message_id, channel_id);
                         }
                         else if (command == "Run") {
+                            std::cout << "RUN COMMAND" << std::endl;
 
                             std::string server_id = data->at("Server_ID")->asString();
                             std::string server_name = data->at("Server_Name")->asString();
                             std::string channel_id = data->at("Channel_ID")->asString();
                             std::string channel_name = data->at("Channel_Name")->asString();
                             std::string function = data->at("Function")->asString();
-                            json::JsonData * message = data->at("Message").get();
+                            json::JsonData * args = data->at("Args").get();
 
                             std::cout << "RUN (" << server_name << ") #" << channel_name << '.' << function << std::endl;
 
@@ -147,7 +148,7 @@ int main(int argc, char* argv[]) {
                             message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("channel", channel_object));
                             message_object->getMap()->insert(std::pair<std::string, std::shared_ptr<discode::Data>>("server", server_object));
 
-                            vms.get(s_out, server_id)->init(function, message_object);
+                            vms.get(s_out, server_id)->init(function, message_object, args);
 
                         }
                         else if (command == "ParseTree") {

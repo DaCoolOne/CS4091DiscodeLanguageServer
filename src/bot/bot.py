@@ -62,7 +62,7 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
         "Channel_Name": channel_name,
         "Message_ID": str(message_id),
         "Function": func_name,
-        "Message": arguments,
+        "Args": arguments,
     }
 
     nonBlockSend(3540, message)
@@ -84,7 +84,7 @@ async def add_func(Server_id, Function_name, arguments):
                 arg_str += f", {i}: discord.commands.Option(str, description = '', required = False, default = '')"
                 dict_def_str += f"args[\"{i}\"] = {i}\n"
         print("Trying to add command...")
-        print(f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
+        cmd = f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
 @guild_only()
 async def temp(ctx{arg_str}):
     interaction = await ctx.respond("Sending command to server...")
@@ -94,20 +94,12 @@ async def temp(ctx{arg_str}):
     {dict_def_str}
     run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id, args)
     await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
-""")
-        exec(f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
-@guild_only()
-async def temp(ctx{arg_str}):
-    interaction = await ctx.respond("Sending command to server...")
-    original_response = await interaction.original_response()
-    message_id = original_response.id
-    args = {{}}
-    {dict_def_str}
-    run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id, args)
-    await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
-""")
-        print("Command should be in?")
-    await bot.sync_commands(force = True, guild_ids=[Server_id])
+"""
+        print(cmd)
+        exec(cmd)
+        print("Command should be in? Syncing")
+        await bot.sync_commands(force = False, guild_ids=[Server_id])
+        print("Sync complete")
 
 
 async def send_message(channel_id, output):
@@ -231,8 +223,12 @@ async def main_loop():
         while True :
             try :
                 message = s.recv(4096)
+                print("MSG RCV")
                 msg = message.decode(encoding='utf8')
+                print(msg)
                 for line in msg.splitlines():
+                    print("Proc line")
+                    print(line)
                     obj = json.loads(line)
                     await handle_message(obj)
             except BlockingIOError :

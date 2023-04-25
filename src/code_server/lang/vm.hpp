@@ -61,7 +61,7 @@ public:
 
     void jump(uint32_t newindex);
 
-    void init(std::string fname, std::shared_ptr<Data> msg);
+    void init(std::string fname, std::shared_ptr<Data> msg, json::JsonData * args);
     void step();
     void run(uint16_t max_ins = 0);
 
@@ -79,7 +79,7 @@ public:
     // Functions for sending stuff to the server
     void sendObject(json::JsonData * data);
     void sendError(discode::Error * err);
-    void sendError(std::string err, std::string msg_id);
+    void sendError(std::string err, std::string msg_id, std::string ch_id);
 
 };
 

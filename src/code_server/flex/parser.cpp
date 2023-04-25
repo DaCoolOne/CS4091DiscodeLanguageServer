@@ -667,7 +667,7 @@ std::pair<std::shared_ptr<discode::Function>, std::string> discode_internal::bui
 }
 
 // Loads an AST into the VM
-void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::string msg_id)
+void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::string msg_id, std::string ch_id)
 {
     std::pair<std::shared_ptr<discode::Function>, std::string> func;
     json::JsonArray arglist;
@@ -682,10 +682,11 @@ void discode::load(discode::VM * vm, AST_Node * node, std::string channel, std::
             printNode(node, "");
             func = discode_internal::buildFunction(node, node->type == AST_NODE_DECLARE_METHOD);
             if (func.first == nullptr) {
-                vm->sendError(func.second, msg_id);
+                vm->sendError(func.second, msg_id, ch_id);
                 return;
             }
             func.first->messageId = msg_id;
+            func.first->channelId = ch_id;
             std::cout << func.first->deepRepr() << std::endl;
             vm->writeGlobal(channel, func.second, func.first);
             if(channel == "commands") {
@@ -742,26 +743,26 @@ void discode::analyze_string(std::string str)
     discode::analyze_file("temp.txt");
 }
 
-void discode::loadVM(discode::VM * vm, std::string channel, std::string path, std::string msg_id)
+void discode::loadVM(discode::VM * vm, std::string channel, std::string path, std::string msg_id, std::string ch_id)
 {
     Parse_Error err;
     AST_Node * ast = parse(path.c_str(), &err);
 
     if(ast) {
-        load(vm, ast, channel, msg_id);
+        load(vm, ast, channel, msg_id, ch_id);
         freeAST(ast);
     }
     else {
-        vm->sendError(err.txt, msg_id);
+        vm->sendError(err.txt, msg_id, ch_id);
     }
 }
 
-void discode::loadVM_string(discode::VM * vm, std::string channel, std::string str, std::string msg_id)
+void discode::loadVM_string(discode::VM * vm, std::string channel, std::string str, std::string msg_id, std::string ch_id)
 {
     std::ofstream out;
     out.open("temp.txt");
     out << str;
     out.close();
 
-    discode::loadVM(vm, channel, "temp.txt", msg_id);
+    discode::loadVM(vm, channel, "temp.txt", msg_id, ch_id);
 }
