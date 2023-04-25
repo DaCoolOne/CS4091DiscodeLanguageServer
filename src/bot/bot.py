@@ -62,7 +62,7 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
         "Channel_Name": channel_name,
         "Message_ID": str(message_id),
         "Function": func_name,
-        "Message": {  },
+        "Message": arguments,
     }
 
     nonBlockSend(3540, message)
@@ -72,26 +72,41 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
 async def add_func(Server_id, Function_name, arguments):
     names = [command.name for command in bot.commands]
     if Function_name not in names :
+        # Used below to define arguments for the slash command
         arg_str = ""
+
+        # Used below to access the values of these arguments and add them to a
+        # dictionary, to be passed to run().
+        dict_def_str = ""
+
         for i in arguments :
-            arg_name = i["Name"]
-            arg_desc = i["Description"]
-            required = i["Default"] is not None
-            default = ''
-            if not required :
-                default = i["Default"]
-            arg_str += f", {arg_name}=Option(str, description={arg_desc}, required={required}, default = {default})"
-            
-        exec(f"""
-        @bot.slash_command(name={Function_name}, guild_ids = [{Server_id}]{arguments})
-        @guild_only()
-        async def temp(ctx):
-            interaction = await ctx.respond("Sending command to server...")
-            original_response = await interaction.original_response()
-            message_id = original_response.id
-            run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id)
-            await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
-        """)
+            if i != "msg" :
+                arg_str += f", {i}: discord.commands.Option(str, description = '', required = False, default = '')"
+                dict_def_str += f"args[\"{i}\"] = {i}\n"
+        print("Trying to add command...")
+        print(f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
+@guild_only()
+async def temp(ctx{arg_str}):
+    interaction = await ctx.respond("Sending command to server...")
+    original_response = await interaction.original_response()
+    message_id = original_response.id
+    args = {{}}
+    {dict_def_str}
+    run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id, args)
+    await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
+""")
+        exec(f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
+@guild_only()
+async def temp(ctx{arg_str}):
+    interaction = await ctx.respond("Sending command to server...")
+    original_response = await interaction.original_response()
+    message_id = original_response.id
+    args = {{}}
+    {dict_def_str}
+    run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id, args)
+    await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
+""")
+        print("Command should be in?")
     await bot.sync_commands(force = True, guild_ids=[Server_id])
 
 
