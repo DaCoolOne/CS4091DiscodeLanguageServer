@@ -23,7 +23,7 @@ client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 client.connect(("localhost", 3540))
 client.setblocking(False)
 
-bot_is_busy = False
+sync_flag = False
 
 # =================== Server Communication =================== #
 
@@ -70,6 +70,7 @@ def run(func_name: str, server_id: int, server_name: str, channel_id: int, chann
 
 
 async def add_func(Server_id, Function_name, arguments):
+    global sync_flag
     names = [command.name for command in bot.commands]
     if Function_name not in names :
         # Used below to define arguments for the slash command
@@ -97,9 +98,7 @@ async def temp(ctx{arg_str}):
 """
         print(cmd)
         exec(cmd)
-        print("Command should be in? Syncing")
-        await bot.sync_commands(force = False, guild_ids=[Server_id])
-        print("Sync complete")
+        sync_flag = True
 
 
 async def send_message(channel_id, output):
@@ -150,7 +149,6 @@ bot = discord.Bot(intents = intents)
 
 @bot.event
 async def on_ready():
-    global bot_is_busy
     for guild in bot.guilds :
         for channel in guild.text_channels :
             if channel.category is not None and channel.category.name.upper() == "DISCODE-CODE" :
@@ -214,6 +212,21 @@ async def on_raw_message_edit(payload):
 
 # =========================== MAIN =========================== #
 
+async def sync_loop():
+    global sync_flag
+    await bot.wait_until_ready()
+
+    while (True):
+        if (sync_flag):
+            sync_flag = False
+            print("Syncing...")
+            await bot.sync_commands()
+
+        else:
+            pass
+        await asyncio.sleep(.01)
+
+
 async def main_loop():
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.connect(("localhost", 3541))
@@ -247,6 +260,9 @@ async def main_loop():
 if __name__ == "__main__" :
     # Process server inputs as a thread on their own,
     # as bot.run seems to be a constant loop
-    asyncio.get_event_loop().create_task(main_loop())
+    # asyncio.get_event_loop().create_task(sync_loop())
+
+    main_thread = asyncio.get_event_loop().create_task(main_loop())
+    sync_thread = asyncio.get_event_loop().create_task(sync_loop())
 
     bot.run(token)
