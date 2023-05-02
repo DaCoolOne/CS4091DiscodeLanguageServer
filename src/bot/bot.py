@@ -130,7 +130,7 @@ async def handle_message(message: dict):
             print("Message should be sent!")
             # The ID of the message that requested the server run the command, and the desired output in response to that.
         
-        elif message['Name'] == "interaction":
+        elif message['Name'] == "role":
             for guild in bot.guilds:
                 if str(guild.name) == message['Server_ID']:
                     print(message['User'])

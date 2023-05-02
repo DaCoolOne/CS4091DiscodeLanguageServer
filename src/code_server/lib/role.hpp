@@ -22,7 +22,7 @@ namespace lib
 class Role : public LibLoader
 {
 public:
-    Role(): LibLoader("interaction") {
+    Role(): LibLoader("role") {
         add("send", std::make_shared<lib_role::Send>());
     }
 };
