@@ -1,0 +1,6 @@
+function count : msg {
+    a <- "There are 6 e's in this here string";
+    b <- "e";
+    c <- !str.count(a, b);
+    !message.send(msg.channel.id, !conv.str(c));
+}
