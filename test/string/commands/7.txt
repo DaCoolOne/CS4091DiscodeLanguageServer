@@ -1,0 +1,6 @@
+function firstof : msg {
+    a <- "....Hello, Hello, world!....";
+    b <- "Hello";
+    c <- !str.firstof(a, b);
+    !message.send(msg.channel.id, !conv.str(c));
+}

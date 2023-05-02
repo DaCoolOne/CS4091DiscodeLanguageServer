@@ -1,0 +1,4 @@
+function upper : msg {
+    a <- "uppercase string";
+    !message.send(msg.channel.id, !str.upper(a));
+}

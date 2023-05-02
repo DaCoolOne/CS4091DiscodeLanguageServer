@@ -1,0 +1,4 @@
+function popback : msg {
+    a <- "This string ends too soon";
+    !message.send(msg.channel.id, !str.popback(a));
+}

@@ -1,0 +1,4 @@
+function lower : msg {
+    a <- "LOWERCASE STRING";
+    !message.send(msg.channel.id, !str.lower(a));
+}
