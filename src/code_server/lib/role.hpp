@@ -9,7 +9,7 @@ namespace lib_role
 class Send : public lib::LibFunction
 {
 public:
-    Send(): lib::LibFunction(std::vector<discode::Type>{ discode::Type::TYPE_STRING, discode::Type::TYPE_STRING, discode::Type::TYPE_STRING }) {}
+    Send(): lib::LibFunction(std::vector<discode::Type>{ discode::Type::TYPE_STRING, discode::Type::TYPE_STRING, discode::Type::TYPE_STRING,discode::Type::TYPE_STRING }) {}
 
     std::shared_ptr<discode::Data> execute(discode::VM * vm, std::vector<std::shared_ptr<discode::Data>> data) override;
 };

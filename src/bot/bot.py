@@ -135,7 +135,11 @@ async def handle_message(message: dict):
                 if str(guild.name) == message['Server_ID']:
                     print(message['User'])
                     if message['User'] == "":
-                        await guild.create_role(name = message['Role'])
+                        role = discord.utils.get(guild.roles, name=message['Role'])
+                        if role != None:
+                            await send_message(message['Channel_ID'], "Cannot create role [" + message['Role'] +"] as it already exists.")
+                        else:
+                            await guild.create_role(name = message['Role'])
                     else:
                         for user in guild.members:
                             if str(user) == message['User']:
@@ -144,6 +148,7 @@ async def handle_message(message: dict):
                                     await user.add_roles(role)
                                     break
                                 except:
+                                    await send_message(message['Channel_ID'], "The role you entered does not exist.")
                                     break
         
         elif message['Name'] == 'Error' :
