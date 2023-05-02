@@ -133,7 +133,18 @@ async def handle_message(message: dict):
         elif message['Name'] == "interaction":
             for guild in bot.guilds:
                 if str(guild.name) == message['Server_ID']:
-                    await guild.create_role(name = message['Role'])
+                    print(message['User'])
+                    if message['User'] == "":
+                        await guild.create_role(name = message['Role'])
+                    else:
+                        for user in guild.members:
+                            if str(user) == message['User']:
+                                try:
+                                    role = discord.utils.get(guild.roles, name=message['Role'])
+                                    await user.add_roles(role)
+                                    break
+                                except:
+                                    break
         
         elif message['Name'] == 'Error' :
             # Server says something went wrong either at runtime or during compiling
