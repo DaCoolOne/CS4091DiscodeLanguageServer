@@ -72,7 +72,6 @@ std::shared_ptr<discode::Data> lib_str::FirstOf::execute(discode::VM * vm, std::
                 if (inc == keyLen) { return std::make_shared<discode::Number>(i); }
             }
         }
-    }
-    auto result = key + " not found";
-    return std::make_shared<discode::String>(result);
+    };
+    return std::make_shared<discode::Null>();
 }
