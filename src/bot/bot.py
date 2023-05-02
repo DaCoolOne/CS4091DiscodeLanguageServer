@@ -83,7 +83,7 @@ async def add_func(Server_id, Function_name, arguments):
         for i in arguments :
             if i != "msg" :
                 arg_str += f", {i}: discord.commands.Option(str, description = '', required = False, default = '')"
-                dict_def_str += f"args[\"{i}\"] = {i}\n"
+                dict_def_str += f"    args[\"{i}\"] = {i}\n"
         print("Trying to add command...")
         cmd = f"""@bot.slash_command(name="{Function_name}", guild_ids = [{Server_id}])
 @guild_only()
@@ -92,7 +92,7 @@ async def temp(ctx{arg_str}):
     original_response = await interaction.original_response()
     message_id = original_response.id
     args = {{}}
-    {dict_def_str}
+{dict_def_str}
     run((ctx.command.name), ctx.guild_id, ctx.guild.name, ctx.channel_id, ctx.channel.name, message_id, args)
     await interaction.edit_original_response(content="The server is running your command!", delete_after=1.5)
 """
@@ -129,6 +129,11 @@ async def handle_message(message: dict):
             await send_message(message['Channel_ID'], message['Message'])
             print("Message should be sent!")
             # The ID of the message that requested the server run the command, and the desired output in response to that.
+        
+        elif message['Name'] == "interaction":
+            for guild in bot.guilds:
+                if str(guild.name) == message['Server_ID']:
+                    await guild.create_role(name = message['Role'])
         
         elif message['Name'] == 'Error' :
             # Server says something went wrong either at runtime or during compiling
