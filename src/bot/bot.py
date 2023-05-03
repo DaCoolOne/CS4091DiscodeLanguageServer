@@ -125,10 +125,11 @@ async def handle_message(message: dict):
         elif message['Name'] == 'Send Message' :
             # Server says we need to send output
 
-            print("Sending message", message['Message'], "to", message['Channel_ID'])
-            await send_message(message['Channel_ID'], message['Message'])
-            print("Message should be sent!")
-            # The ID of the message that requested the server run the command, and the desired output in response to that.
+            if len(message['Message']) > 0:
+                print("Sending message", message['Message'], "to", message['Channel_ID'])
+                await send_message(message['Channel_ID'], message['Message'])
+                print("Message should be sent!")
+                # The ID of the message that requested the server run the command, and the desired output in response to that.
         
         elif message['Name'] == "role":
             for guild in bot.guilds:
