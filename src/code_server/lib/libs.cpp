@@ -6,6 +6,7 @@
 #include "lib/conv.hpp"
 #include "lib/str.hpp"
 #include "lib/array.hpp"
+#include "lib/math.hpp"
 
 void lib::loadAll(discode::VM * vm) {
 
@@ -13,6 +14,7 @@ void lib::loadAll(discode::VM * vm) {
     lib::Message().load(vm);
     lib::Str().load(vm);
     lib::Array().load(vm);
+    lib::Math().load(vm);
 
 }
 
