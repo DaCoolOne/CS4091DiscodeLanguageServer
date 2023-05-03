@@ -105,13 +105,25 @@ async def send_message(channel_id, output):
     channel = bot.get_channel(int(channel_id))
     await channel.send(output)
 
-async def reply_message(message_id, output):
+async def reply_message(message_id, channel_id, output):
     message = bot.get_message(int(message_id))
     
-    if message is not None :
+    if message is None :
+        channel = bot.get_channel(channel_id)
+        # Try to get it a potentially slower way.
+        if channel is None:
+            channel = await bot.fetch_channel(channel_id)
+
+        message = await channel.fetch_message(message_id)
+
+    if message is not None:
         await message.reply(output)
-    else :
-        print("Could not find message", message_id)
+    else:
+        print("Could not reply to message", message_id)
+        
+
+
+
 
 
 async def handle_message(message: dict):
@@ -156,7 +168,7 @@ async def handle_message(message: dict):
             # Server says something went wrong either at runtime or during compiling
 
             print("Sending error", message['Error'], "to", message['Message_id'])
-            await reply_message(message['Message_id'], message['Error'])
+            await reply_message(message['Message_id'], message["Channel_id"], message['Error'])
             print("Error should be sent.")
 
 
