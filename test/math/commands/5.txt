@@ -1,0 +1,6 @@
+function random : msg {
+    a <- 0;
+    b <- 100;
+    c <- !math.random(a, b);
+    !message.send(msg.channel.id, !conv.str(c));
+}

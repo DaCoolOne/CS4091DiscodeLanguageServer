@@ -1,0 +1,6 @@
+function mod : msg {
+    a <- 10;
+    b <- 3;
+    c <- !math.mod(a, b);
+    !message.send(msg.channel.id, !conv.str(c));
+}

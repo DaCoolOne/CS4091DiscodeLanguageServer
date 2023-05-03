@@ -1,0 +1,5 @@
+function sqrt : msg {
+    a <- 64;
+    b <- !math.sqrt(a);
+    !message.send(msg.channel.id, !conv.str(b));
+}

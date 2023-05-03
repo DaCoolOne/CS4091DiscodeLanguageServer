@@ -1,0 +1,5 @@
+function min : msg {
+    a <- [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    b <- !math.min(a);
+    !message.send(msg.channel.id, !conv.str(b));
+}

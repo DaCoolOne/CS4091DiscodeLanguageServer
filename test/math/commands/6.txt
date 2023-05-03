@@ -1,0 +1,6 @@
+function power : msg {
+    a <- 2;
+    b <- 8;
+    c <- !math.power(a, b);
+    !message.send(msg.channel.id, !conv.str(c));
+}
